@@ -122,7 +122,7 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
                     inserted++;
 
                 } catch (Exception e) {
-                    System.out.println("Failed : " + chequeNo + " | " + e.getMessage());
+                    System.out.println("Failed Cheque : " + chequeNo + " | " + e.getMessage());
                     failed++;
                 }
 
