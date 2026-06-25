@@ -155,13 +155,14 @@
                     </combobox>
                 </div>
 
-			
+			<!-- Text Area for other reasons to write -->
 			    <div id="divOtherErrorReason" sclass="popup-field-group popup-field-group-wide" visible="false">
 			        <label value="Other Reason:" sclass="popup-field-label" />
 			        <textbox id="tbOtherReason" sclass="popup-field-input" visible="false"
 			                 placeholder="Enter reason..." />
 			    </div>
 			
+            <!-- After choosing other's from dropbox, these buttons will be enabled -->
 			<div sclass="popup-field-group popup-btn-group-right">
 				    <label value="&#160;" sclass="popup-field-label" />
 				
@@ -196,12 +197,14 @@
                     </combobox>
                 </div>
 			
+    			<!-- Text Area for other reasons to write -->
 			    <div id="divOtherReferReason" sclass="popup-field-group popup-field-group-wide" visible="false">
 			        <label value="Other Reason:" sclass="popup-field-label" />
 			        <textbox id="tbOtherReferReason" sclass="popup-field-input" visible="false"
 			                 placeholder="Enter reason..." />
 			    </div>
-			
+	
+    	        <!-- After choosing other's from dropbox, these buttons will be enabled -->
 			    <div sclass="popup-field-group popup-btn-group-right">
 				    <label value="&#160;" sclass="popup-field-label" />
 				
@@ -238,12 +241,14 @@
                     </combobox>
                 </div>
 
+    			<!-- Text Area for other reasons to write -->
                 <div id="divOtherSendBackReason" sclass="popup-field-group popup-field-group-wide" visible="false">
                     <label value="Other Reason:" sclass="popup-field-label" />
                     <textbox id="tbOtherSendBackReason" sclass="popup-field-input" visible="false"
                              placeholder="Enter reason..." />
                 </div>
 
+            <!-- After choosing other's from dropbox, these buttons will be enabled -->
                 <div sclass="popup-field-group popup-btn-group-right">
                     <label value="&#160;" sclass="popup-field-label" />
                     <hlayout spacing="6px">

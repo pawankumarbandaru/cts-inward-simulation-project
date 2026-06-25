@@ -169,5 +169,10 @@ public interface InwardChequeMICRService {
             String amountStr,
             String amountInWords);
 
-    public boolean isMakerEditedAndPendingReview(InwardCheque cheque);
+        public boolean isMakerEditedAndPendingReview(InwardCheque cheque);
+
+        public void updateMICR(InwardCheque selectedCheque, DecisionStatus newDecision,
+                ChequeStatus newChequeStatus, SendTo newSendTo
+        );
+        
 }

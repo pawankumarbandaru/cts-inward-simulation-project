@@ -200,14 +200,15 @@ public class ChequeEditPopupComposer extends SelectorComposer<Component> {
         // Locked by default until updateButtonState() decides otherwise
         setFieldsEditable(false);
 
-        Map<?, ?> args = Executions.getCurrent().getArg();
-        popupSource = (String) args.get("popupSource");
-        if (args != null && args.containsKey("selectedCheque")) {
-            Object cheque = args.get("selectedCheque");
+        Map<?, ?> chequeData = Executions.getCurrent().getArg();
+        popupSource = (String) chequeData.get("popupSource");
+        if (chequeData != null && chequeData.containsKey("selectedCheque")) {
+            Object cheque = chequeData.get("selectedCheque");
             if (cheque instanceof InwardCheque) {
                 selectedCheque = (InwardCheque) cheque;
                 if (selectedCheque != null) {
-                    populateAllFields(selectedCheque);
+                    // It fills all the cheque data along with the images
+                    loadChequeDetails(selectedCheque);
                     updateButtonState();
                 }
             }
@@ -239,7 +240,16 @@ public class ChequeEditPopupComposer extends SelectorComposer<Component> {
     // Populate fields from entity
     // =============================================
 
-    private void populateAllFields(InwardCheque cheque) {
+    private void loadChequeDetails(InwardCheque cheque) {
+
+        // Show refer reason from previous checker decision (if any)
+        String referReason = cheque.getReferReason();
+        if (referReason != null && !referReason.trim().isEmpty()) {
+            lbReferReason.setValue("📋 Refer Reason: " + referReason);
+            divReferReasonBanner.setVisible(true);
+        } else {
+            divReferReasonBanner.setVisible(false);
+        }
 
         // Header
         lblPopupTitle.setValue("View Cheque - " + safe(cheque.getChequeNo()));
@@ -289,18 +299,14 @@ public class ChequeEditPopupComposer extends SelectorComposer<Component> {
         tbAmountInWords.setValue(!stored.isEmpty() ? stored
                 : (cheque.getAmount() != null ? chequeService.convertAmountToWords(cheque.getAmount()) : ""));
         
-     // Show refer reason from previous checker decision (if any)
-        String referReason = cheque.getReferReason();
-        if (referReason != null && !referReason.trim().isEmpty()) {
-            lbReferReason.setValue("📋 Refer Reason: " + referReason);
-            divReferReasonBanner.setVisible(true);
-        } else {
-            divReferReasonBanner.setVisible(false);
-        }
-        
+     
+        // To remove all Reasons of the cheque at top bar
         clearAllValidationMessages();
+
+        // Storing the initial values, which can be used further
         captureOriginalValues();
         
+        // Used to highlight the maker edited field
         restoreEditedHighlights(cheque.getId());
 
         // Only Maker edits live; TV1/TV2 are read-only reviewers, so wiring
@@ -309,9 +315,13 @@ public class ChequeEditPopupComposer extends SelectorComposer<Component> {
         // (called right after this method) re-applies field lock state per
         // role; listeners are attached only when MAKER unlocks the fields.
         if ("MAKER".equals(currentRole)) {
+            // For Highlight Purpose
             attachEditListeners();
+            // For MICR Line Purpose
             attachMicrListeners();
+            // For Amount to String
             attachAmountListener();
+            // For Field Verification
             runInitialFieldValidation();
         }
     }
@@ -410,13 +420,11 @@ public class ChequeEditPopupComposer extends SelectorComposer<Component> {
                     tbAmount.getValue().trim(),
                     tbAmountInWords.getValue().trim());
 
-            // saveChequeEdit() sets ChequeStatus.Normal internally but does
-            // not touch Decision/SendTo — Maker save always routes back to
-            // MAKER with a fresh PENDING decision so it re-enters the TV1
-            // queue cleanly.
-            selectedCheque.setDecision(DecisionStatus.PENDING);
-            selectedCheque.setSendTo(SendTo.MAKER);
-            new InwardChequeDaoImpl().updateMICR(selectedCheque);
+            /* saveChequeEdit() sets ChequeStatus.Normal internally but does
+            not touch Decision/SendTo — Maker save always routes back to
+            MAKER with a fresh PENDING decision so it re-enters the TV1
+            queue cleanly. */
+            chequeService.updateMICR(selectedCheque,DecisionStatus.PENDING,ChequeStatus.Normal,SendTo.MAKER);
             
             persistHighlightsToDesktop(selectedCheque.getId());  
             resetErrorStyles();
@@ -463,14 +471,8 @@ public class ChequeEditPopupComposer extends SelectorComposer<Component> {
             return;
         }
         try {
-            // Set the new decision on the in-memory entity, then let
-            // InwardChequeMICRDaoImpl.update() re-fetch the managed entity
-            // inside its own session and persist the change. This avoids
-            // detached-entity / session-closed issues entirely.
-            selectedCheque.setDecision(newDecision);
-            selectedCheque.setChequeStatus(newChequeStatus);
-            selectedCheque.setSendTo(newSendTo);
-            new InwardChequeDaoImpl().updateMICR(selectedCheque);
+            // For updating the cheque status
+            chequeService.updateMICR(selectedCheque,newDecision,newChequeStatus,newSendTo);
             
          // CHECK WHETHER BATCH CAN BE CLEARED
             if (selectedCheque.getBatch() != null) {
@@ -507,25 +509,8 @@ public class ChequeEditPopupComposer extends SelectorComposer<Component> {
         }
     }
 
-    @Listen("onSelect = #cbChequeRejectionReason")
-    public void onErrorReasonSelected() {
-        Comboitem selected = cbChequeRejectionReason.getSelectedItem();
-        boolean isOther = selected != null && "Other".equals(selected.getLabel());
 
-        if (isOther) {
-            tbOtherReason.setVisible(true);
-            divOtherErrorReason.setVisible(true);
-        } else {
-            tbOtherReason.setVisible(false);
-            divOtherErrorReason.setVisible(false);
-        }
-
-        btnConfirmReject.setVisible(true);
-        btnCancelReject.setVisible(true);
-    }
-
-
-
+    // On clicking reject button
     @Listen("onClick = #btnConfirmReject")
     public void onConfirmReject() {
         Comboitem selected = cbChequeRejectionReason.getSelectedItem();
@@ -557,29 +542,32 @@ public class ChequeEditPopupComposer extends SelectorComposer<Component> {
         updateChequeStatus(DecisionStatus.REJECTED, ChequeStatus.Reject, SendTo.TV_1);
     }
 
+    // On selecting any reason from dropdown
+    @Listen("onSelect = #cbChequeRejectionReason")
+    public void onErrorReasonSelected() {
+        Comboitem selected = cbChequeRejectionReason.getSelectedItem();
+        boolean isOther = selected != null && "Other".equals(selected.getLabel());
+
+        if (isOther) {
+            tbOtherReason.setVisible(true);
+            divOtherErrorReason.setVisible(true);
+        } else {
+            tbOtherReason.setVisible(false);
+            divOtherErrorReason.setVisible(false);
+        }
+
+        btnConfirmReject.setVisible(true);
+        btnCancelReject.setVisible(true);
+    }
+
+
     @Listen("onClick = #btnCancelReject")
     public void onCancelReject() {
     	resetActionArea();
     }
 
 
-    @Listen("onSelect = #cbChequeReferralReason")
-    public void onReferkReasonSelected() {
-        Comboitem selected = cbChequeReferralReason.getSelectedItem();
-        boolean isOther = selected != null && "Other".equals(selected.getLabel());
-
-        if (isOther) {
-        	tbOtherReferReason.setVisible(true);
-        	divOtherReferReason.setVisible(true);
-        } else {
-        	tbOtherReferReason.setVisible(false);
-        	divOtherReferReason.setVisible(false);
-        }
-
-        btnConfirmRefer.setVisible(true);
-        btnCancelRefer.setVisible(true);
-    }
-
+    // On clicking refer button
     @Listen("onClick = #btnConfirmRefer")
     public void onConfirmRefer() {
         Comboitem selected = cbChequeReferralReason.getSelectedItem();
@@ -610,29 +598,33 @@ public class ChequeEditPopupComposer extends SelectorComposer<Component> {
         updateChequeStatus(DecisionStatus.REFERRED, ChequeStatus.Repair, SendTo.TV_2);
     }
 
+
+    // On selecting any refer reason from dropdown
+    @Listen("onSelect = #cbChequeReferralReason")
+    public void onReferkReasonSelected() {
+        Comboitem selected = cbChequeReferralReason.getSelectedItem();
+        boolean isOther = selected != null && "Other".equals(selected.getLabel());
+
+        if (isOther) {
+        	tbOtherReferReason.setVisible(true);
+        	divOtherReferReason.setVisible(true);
+        } else {
+        	tbOtherReferReason.setVisible(false);
+        	divOtherReferReason.setVisible(false);
+        }
+
+        btnConfirmRefer.setVisible(true);
+        btnCancelRefer.setVisible(true);
+    }
+
+    
     @Listen("onClick = #btnCancelRefer")
     public void onCancelRefer() {
     	resetActionArea();
     }
 
 
-    @Listen("onSelect = #cbChequeSendBackReason")
-    public void onSendBackReasonSelected() {
-        Comboitem selected = cbChequeSendBackReason.getSelectedItem();
-        boolean isOther = selected != null && "Other".equals(selected.getLabel());
-
-        if (isOther) {
-        	tbOtherSendBackReason.setVisible(true);
-        	divOtherSendBackReason.setVisible(true);
-        } else {
-        	tbOtherSendBackReason.setVisible(false);
-            divOtherSendBackReason.setVisible(false);
-        }
-
-        btnConfirmSendBack.setVisible(true);
-        btnCancelSendBack.setVisible(true);
-    }
-
+    // On clicking send back button
     @Listen("onClick = #btnConfirmSendBack")
     public void onConfirmSendBack() {
         Comboitem selected = cbChequeSendBackReason.getSelectedItem();
@@ -663,12 +655,33 @@ public class ChequeEditPopupComposer extends SelectorComposer<Component> {
         updateChequeStatus(DecisionStatus.REFERRED, ChequeStatus.Repair, SendTo.MAKER);
     }
 
+
+    // On selecting send back reason from dropdown
+    @Listen("onSelect = #cbChequeSendBackReason")
+    public void onSendBackReasonSelected() {
+        Comboitem selected = cbChequeSendBackReason.getSelectedItem();
+        boolean isOther = selected != null && "Other".equals(selected.getLabel());
+
+        if (isOther) {
+        	tbOtherSendBackReason.setVisible(true);
+        	divOtherSendBackReason.setVisible(true);
+        } else {
+        	tbOtherSendBackReason.setVisible(false);
+            divOtherSendBackReason.setVisible(false);
+        }
+
+        btnConfirmSendBack.setVisible(true);
+        btnCancelSendBack.setVisible(true);
+    }
+
+    
     @Listen("onClick = #btnCancelSendBack")
     public void onCancelSendBack() {
     	resetActionArea();
     }
 
 
+    // After all actions on cheque is processed, reseting them
     private void resetActionArea() {
         // ── Hide all reason sections ──
         divErrorReason.setVisible(false);
@@ -773,28 +786,6 @@ public class ChequeEditPopupComposer extends SelectorComposer<Component> {
             }
 
             break;
-
-            // ==================================================
-            // TV1
-            // ==================================================
-//            case "TV1":
-
-//                // TV1 only reviews
-//                setFieldsEditable(false);
-//
-//                btnApprove.setVisible(true);
-//                btnReject.setVisible(true);
-//                btnRefer.setVisible(true);
-//                btnSendBack.setVisible(true);
-//
-//                btnApprove.setDisabled(false);
-//                btnReject.setDisabled(false);
-//                btnRefer.setDisabled(false);
-//                btnSendBack.setDisabled(false);
-//
-//                btnSaveChnages.setVisible(false);
-//
-//                break;
             	
             case "TV1":
                 setFieldsEditable(false);

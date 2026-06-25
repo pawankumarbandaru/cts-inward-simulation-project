@@ -565,7 +565,22 @@ public class InwardChequeServiceMICRImpl implements InwardChequeMICRService {
 
 	@Override
 	public long getTotalChequeCount(Long batchId, String role) {
-		// TODO Auto-generated method stub
 		return inwardChequeDao.countByBatchId(batchId, role);
 	}
+
+
+    @Override
+    public void updateMICR(InwardCheque selectedCheque, DecisionStatus newDecision,
+                ChequeStatus newChequeStatus, SendTo newSendTo
+        ){
+            // Set the new decision on the in-memory entity, then let
+            // InwardChequeMICRDaoImpl.update() re-fetch the managed entity
+            // inside its own session and persist the change. This avoids
+            // detached-entity / session-closed issues entirely.
+            selectedCheque.setDecision(newDecision);
+            selectedCheque.setChequeStatus(newChequeStatus);
+            selectedCheque.setSendTo(newSendTo);
+
+            inwardChequeDao.updateMICR(selectedCheque);
+        }
 }

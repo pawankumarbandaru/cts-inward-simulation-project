@@ -44,10 +44,10 @@ public class BatchDetailComposer extends SelectorComposer<Component> {
     // ── Session key — matches LoginComposer ───────────────────────────────────
     private static final String SESS_USER_ROLE = "userRole";
 
-//    // ── Popup paths ───────────────────────────────────────────────────────────
-//    private static final String POPUP_MAKER   = "/component/chequeEditPopup.zul";
-//    private static final String POPUP_TV1     = "/component/TV1ChequeEditPopup.zul";
-//    private static final String POPUP_TV2     = "/component/TV2ChequeEditPopup.zul";
+    /**
+     * Returns correct popup ZUL path based on current role.
+     */
+    private static final String POPUP_PATH = "/component/chequeEditPopup.zul";
 
     // ── Services ──────────────────────────────────────────────────────────────
     private final InwardChequeMICRService chequeService = new InwardChequeServiceMICRImpl();
@@ -94,7 +94,7 @@ public class BatchDetailComposer extends SelectorComposer<Component> {
 
         // ── STEP 2: Resolve batchDbId ─────────────────────────────────────────
 
-        // a) String batchId from Desktop (checker/tv2 dashboard row click)
+        // a) String batchId from Desktop (tv1/tv2 dashboard row click)
         String batchIdFromDesktop = (String) Executions.getCurrent()
                 .getDesktop().getAttribute("batchId");
         if (batchIdFromDesktop != null && !batchIdFromDesktop.trim().isEmpty()) {
@@ -124,14 +124,6 @@ public class BatchDetailComposer extends SelectorComposer<Component> {
             }
         }
 
-        // c) String batchId from URL parameter
-//        if (currentBatchId == null) {
-//            String batchIdParam = Executions.getCurrent().getParameter("batchId");
-//            if (batchIdParam != null && !batchIdParam.trim().isEmpty()) {
-//                InwardBatch batch = batchService.findByBatchId(batchIdParam.trim());
-//                if (batch != null) currentBatchId = batch.getId();
-//            }
-//        }
 
         // d) Fallback — latest batch (sidebar navigation, no id passed)
         if (currentBatchId == null || currentBatchId <= 0) {
@@ -195,10 +187,6 @@ public class BatchDetailComposer extends SelectorComposer<Component> {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Resolve latest batch from DB
-    // ─────────────────────────────────────────────────────────────────────────
-
     
     // ─────────────────────────────────────────────────────────────────────────
     // Cheque row click → open correct popup based on role
@@ -226,23 +214,19 @@ public class BatchDetailComposer extends SelectorComposer<Component> {
             Component existing = self.getFellowIfAny("chequeEditPopupWindow");
             if (existing != null) existing.detach();
 
-            Map<String, Object> args = new HashMap<>();
-            args.put("selectedCheque", cheque);
-            args.put("userRole", currentRole);
+            // Here Storing the cheque data as object and User role as String for showing 
+            // cheque popup for enabling button's
+            Map<String, Object> chequeData = new HashMap<>();
+            chequeData.put("selectedCheque", cheque);
+            chequeData.put("userRole", currentRole);
 
             Executions.createComponents(
                     POPUP_PATH,
                     self,
-                    args);
+                    chequeData);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-    /**
-     * Returns correct popup ZUL path based on current role.
-     */
-    private static final String POPUP_PATH =
-            "/component/chequeEditPopup.zul";
 }
