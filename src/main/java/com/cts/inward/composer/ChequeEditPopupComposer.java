@@ -167,7 +167,9 @@ public class ChequeEditPopupComposer extends SelectorComposer<Component> {
     // tbMicrNumber and tbAmountInWords are deliberately excluded —
     // they're always auto-derived/read-only regardless of edit mode.
     private List<InputElement> editableFields;
-
+    
+    
+    // DoAfter Compose Method
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
