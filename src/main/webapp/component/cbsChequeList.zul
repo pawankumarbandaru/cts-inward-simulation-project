@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Macro Component : CBS Cheque List
+    Component Class : com.cts.component.CbsChequeListComponent
+    Composer        : com.cts.inward.composer.CbsChequeListComposer
+
+    FIX 1: instant="true" added to tbCbsSearch
+           → onChange fires on every keystroke, not only on blur
+
+    FIX 2: <combobox> replaced with <listbox mold="select">
+           → readonly Combobox fires onChange not onSelect — wrong event.
+           → listbox mold="select" fires onSelect correctly.
+           → This matches the same pattern used in chequeList.zul (MICR page).
+
+    CHANGE 1: Added labels above search box and status filter dropdown.
+    CHANGE 2: Added CHEQUE DATE column to the results table.
+              Column widths redistributed to fit 7 columns (must still sum to 100%).
+    CHANGE 3: Added Cheque Date datebox filter before Search and Status filter.
+-->
+
+<div apply="com.cts.inward.composer.CbsChequeListComposer"
+     sclass="cbs-cheque-list-wrapper">
+
+    <!--
+        Timer: fires every 100ms.
+        Each tick = one cheque validated + one row added to the list.
+        running="false" → stopped at start; composer calls start() when batch arrives.
+    -->
+    <timer id="cbsProcessTimer" delay="100" repeats="true" running="false"/>
+
+    <!-- Header bar -->
+    <div sclass="cheque-list-header">
+        <div sclass="cheque-list-title-area">
+            <label value="CBS VALIDATION RESULTS"
+                   sclass="cheque-list-title"/>
+            <label value="(cheques appear one by one as they are validated)"
+                   sclass="cheque-list-subtitle"/>
+        </div>
+
+        <div sclass="cheque-list-controls">
+
+            <!-- Search label + input -->
+            <div sclass="cheque-control-group">
+                <label value="Search"
+                       sclass="cheque-control-label"/>
+                <textbox id="tbCbsSearch"
+                         sclass="cheque-search-box"
+                         placeholder="Search cheque no. or account holder..."
+                         instant="true"/>
+            </div>
+
+            <!-- Status filter label + dropdown -->
+            <div sclass="cheque-control-group">
+                <label value="Status"
+                       sclass="cheque-control-label"/>
+                <listbox id="lbCbsStatusFilter"
+                         mold="select"
+                         sclass="cheque-filter-select">
+                    <listitem label="All"     value="ALL"/>
+                    <listitem label="Valid"   value="VALID"/>
+                    <listitem label="Invalid" value="INVALID"/>
+                </listbox>
+            </div>
+
+        </div>
+    </div>
+
+    <!--
+        Cheque result table.
+        CHEQUE DATE column added — widths redistributed across 7 columns.
+        Percentages sum to 100%.
+    -->
+    <listbox id="lbCbsChequeList"
+             sclass="cbs-cheque-listbox">
+
+        <listhead sclass="cheque-list-head">
+            <listheader label="#"
+                        width="4%"
+                        sclass="col-header"/>
+            <listheader label="CHEQUE NO"
+                        width="11%"
+                        sclass="col-header"/>
+            <listheader label="ACCOUNT NO"
+                        width="13%"
+                        sclass="col-header"/>
+            <listheader label="ACCOUNT HOLDER NAME"
+                        width="20%"
+                        sclass="col-header"/>
+            <listheader label="STATUS"
+                        width="12%"
+                        sclass="col-header"/>
+            <listheader label="REASON"
+                        width="28%"
+                        sclass="col-header"/>
+        </listhead>
+
+    </listbox>
+
+    <!-- Pagination -->
+    <div sclass="cheque-pagination-area">
+        <paging id="pgCbsChequeList"
+                pageSize="8"
+                totalSize="0"
+                sclass="cheque-paging"/>
+    </div>
+
+</div>

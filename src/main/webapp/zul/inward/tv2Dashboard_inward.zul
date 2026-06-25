@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="TV2 Dashboard"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml">
+
+    <div id="tv2DashboardWin"
+         apply="com.cts.inward.composer.TV2_InwardDashboardComposer"
+         width="100%">
+
+        <style src="/css/inward/inwardDashboard.css"/>
+
+        <div sclass="page-bg">
+
+            <!-- ── Top Nav Breadcrumb ── -->
+            <div sclass="top-nav">
+                <h:span style="color:#cdd6e8;">Home</h:span>
+                <h:span style="margin:0 7px;color:#6b7fa8;">›</h:span>
+                <h:span style="color:#ffffff;font-weight:600;">TV2 Dashboard</h:span>
+            </div>
+
+            <!-- ── Page Header ── -->
+            <div sclass="page-header">
+                <div>
+                    <div sclass="page-title">TV2 Dashboard</div>
+                    <label id="lblPageMeta" sclass="page-meta"/>
+                </div>
+              
+            </div>
+
+            <!-- ── Stat Cards ── -->
+            <div sclass="cards-row">
+
+                <!-- Pending Batches -->
+                <div sclass="stat-card stat-card-orange">
+                    <div>
+                        <label id="lblPendingBatches" value="0" sclass="stat-number"/>
+                        <div sclass="stat-label-txt">Pending Batches</div>
+                    </div>
+                    <div sclass="stat-icon-txt">⏳</div>
+                </div>
+
+                <!-- Cleared Batches -->
+                <div sclass="stat-card stat-card-green">
+                    <div>
+                        <label id="lblClearedBatches" value="0" sclass="stat-number"/>
+                        <div sclass="stat-label-txt">Cleared Batches</div>
+                    </div>
+                    <div sclass="stat-icon-txt">✅</div>
+                </div>
+
+                <!-- Pending Cheques -->
+                <div sclass="stat-card stat-card-violet">
+                    <div>
+                        <label id="lblPendingCheques" value="0" sclass="stat-number"/>
+                        <div sclass="stat-label-txt">Pending Cheques</div>
+                    </div>
+                    <div sclass="stat-icon-txt">🧾</div>
+                </div>
+
+            </div>
+
+            <!-- ── Batch List Card ── -->
+            <div sclass="batch-card">
+
+                <div sclass="batch-card-header">
+                    <div sclass="batch-card-title">Inward Batch List</div>
+                </div>
+
+                <!-- ── Filter Bar ── -->
+                <div sclass="search-bar">
+
+                    <div sclass="srch-field-grow">
+                        <label value="SEARCH BATCH ID" sclass="srch-label"/>
+                        <textbox id="txtBatchId"
+                                 placeholder="e.g. BATCH001"
+                                 width="100%"/>
+                    </div>
+
+                    <div sclass="srch-field">
+                        <label value="STATUS" sclass="srch-label"/>
+                        <combobox id="cmbStatus"
+                                  readonly="true"
+                                  width="160px"
+                                  value="All">
+                            <comboitem label="All"/>
+                            <comboitem label="PENDING"/>
+                            <comboitem label="AT_MICR_SERVICE"/>
+                            <comboitem label="AT_CHECKER_QUEUE"/>
+                            <comboitem label="CLEARED"/>
+                        </combobox>
+                    </div>
+
+                    <div sclass="srch-field">
+                        <label value="DATE" sclass="srch-label"/>
+                        <datebox id="filterDate"
+                                 width="150px"
+                                 format="dd-MMM-yyyy"/>
+                    </div>
+
+                    <button id="btnSearch" sclass="btn-search-srch" label="🔍 Search"/>
+                    <button id="btnClear"  sclass="btn-clear-srch"  label="✕ Clear"/>
+
+                </div>
+
+                <!-- ── Batch Table (8 columns) ── -->
+                <listbox id="batchListbox"
+                         mold="paging"
+                         pageSize="10"
+                         width="100%"
+                         emptyMessage="No batches found for TV2 on the selected date.">
+
+                    <listhead sizable="false">
+                        <listheader label="BATCH ID"            width="140px"/>
+                        <listheader label="UPLOAD DATE"         width="155px"/>
+                        <listheader label="TOTAL CHEQUES"       width="120px"/>
+                        <listheader label="ASSIGNED TO TV2" 	width="145px"/>
+                        <listheader label="PENDING"             width="100px"/>
+                        <listheader label="CLEARED"             width="100px"/>
+                        <listheader label="STATUS"              width="150px"/>
+                        <listheader label="ACTION"              width="100px"/>
+                    </listhead>
+
+                </listbox>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</zk>

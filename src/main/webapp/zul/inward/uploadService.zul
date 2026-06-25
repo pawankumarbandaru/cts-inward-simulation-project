@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk xmlns:h="native">
+
+    <div apply="com.cts.inward.composer.BatchComposer"
+         sclass="upload-page-wrap">
+ <style src="/css/inward/uploadService.css"/>
+        <!-- BREADCRUMB -->
+         <!-- ── Top Nav Breadcrumb ── -->
+        <div sclass="top-nav">
+            <h:span style="color:#cdd6e8;">Home</h:span>
+            <h:span style="margin:0 7px;color:#6b7fa8;">›</h:span>
+            <h:span style="color:#ffffff;font-weight:600;">Upload Service</h:span>
+        </div>
+
+        <!-- PAGE TITLE -->
+        <label sclass="upload-page-title"
+               value="Inward Clearing Upload" />
+        <label sclass="upload-page-subtitle"
+               value="Upload inward clearing files received from NPCI" />
+
+        <!-- MAIN CARD -->
+        <h:div class="upload-main-card">
+
+            <!-- TWO UPLOAD BOXES -->
+            <h:div class="upload-boxes-row">
+
+                <!-- LEFT BOX : BPXF / XML -->
+                <h:div class="upload-box-left">
+                    <h:span class="upload-box-icon">📄</h:span>
+                    <h:span class="upload-box-title">BPXF File</h:span>
+                    <h:span class="upload-box-format">Supported Format: .XML</h:span>
+                    <fileupload id="xmlUpload"
+                                label="🔗 Select BPXF File"
+                                sclass="upload-select-btn" />
+                    <label id="xmlFileName"
+                           sclass="upload-file-name"
+                           value="" />
+                </h:div>
+
+                <!-- RIGHT BOX : BIGF / ZIP -->
+                <h:div class="upload-box-right">
+                    <h:span class="upload-box-icon">🖼</h:span>
+                    <h:span class="upload-box-title">BIGF File</h:span>
+                    <h:span class="upload-box-format">Supported Format: .ZIP</h:span>
+                    <fileupload id="zipUpload"
+                                label="🔗 Select BIGF File"
+                                sclass="upload-select-btn" />
+                    <label id="zipFileName"
+                           sclass="upload-file-name"
+                           value="" />
+                </h:div>
+
+            </h:div>
+
+            <!-- VALIDATION STATUS -->
+            <h:div class="validation-box">
+                <h:span class="validation-title">Validation Status</h:span>
+
+                <h:div class="validation-row">
+                    <div id="xmlStatusDot" sclass="v-dot" />
+                    <label id="xmlStatusLabel"
+                           value="BPXF file not selected" />
+                </h:div>
+
+                <h:div class="validation-row">
+                    <div id="zipStatusDot" sclass="v-dot" />
+                    <label id="zipStatusLabel"
+                           value="BIGF file not selected" />
+                </h:div>
+            </h:div>
+
+            <!-- PROCEED BUTTON -->
+            <h:div class="proceed-btn-wrap">
+                <button id="processBtn"
+                        label="Proceed"
+                        sclass="proceed-btn" />
+            </h:div>
+
+        </h:div>
+
+
+    </div>
+
+</zk>

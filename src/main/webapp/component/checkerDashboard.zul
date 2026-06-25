@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?link rel="stylesheet" href="/css/dashboard.css"?>
+<?link rel="stylesheet" href="/css/sidebar.css"?>
+<?link rel="stylesheet" href="/css/header.css"?>
+
+<zk>
+
+    <borderlayout sclass="cts-dashboard-layout">
+
+        <!-- NORTH — Header bar -->
+        <north size="60px" border="none" splittable="false" collapsible="false">
+            <include src="/component/header.zul"/>
+        </north>
+
+        <!-- WEST — Checker Sidebar -->
+        <west size="260px" border="none" splittable="false" collapsible="false">
+            <include src="/component/checkerSidebar.zul"/>
+        </west>
+
+        <!-- CENTER — Main content area -->
+        <center border="none" autoscroll="true">
+            <div sclass="cts-content"
+                 id="checkerContentArea"
+                 apply="com.cts.composer.CheckerDashboardComposer">
+                <label value="Welcome To Checker Dashboard" sclass="cts-page-title"/>
+            </div>
+        </center>
+
+    </borderlayout>
+
+</zk>

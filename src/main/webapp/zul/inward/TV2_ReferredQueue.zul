@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="Referred Cheques - TV II"?>
+
+<zk>
+
+	<div apply="com.cts.inward.composer.TV2_ReferredChequeListComposer"
+	     sclass="maker-page-root">
+
+	    <style src="/css/inward/common.css"/>
+		<style src="/css/inward/referredChequeList.css"/>
+
+    	<div sclass="maker-main-content">
+
+            <div sclass="breadcrumb-bar">
+                <label value="Inward"          sclass="bread-parent"/>
+                <label value=" - "             sclass="bread-sep"/>
+                <label value="Referred Cheques" sclass="bread-current"/>
+            </div>
+
+            <div sclass="page-subtitle-bar">
+                <label id="lblPageSubtitle"
+                       value="Cheques Referred to TV-II"
+                       sclass="page-subtitle-label"/>
+            </div>
+
+            <div sclass="two-panel-layout">
+
+                <div sclass="right-panel">
+
+                    <listbox id="lbReferredChequeList"
+                             sclass="cheque-listbox"
+                             mold="paging"
+                             pageSize="5">
+                        <listhead sclass="cheque-list-head" sizable="true">
+                            <listheader label="#"            width="50px"/>
+                            <listheader label="Cheque No"    hflex="1"/>
+                            <listheader label="Amount"       hflex="1"/>
+                            <listheader label="Cheque Date"  hflex="1"/>
+                            <listheader label="Status"       hflex="1"/>
+                        </listhead>
+                    </listbox>
+
+                    <paging id="pgReferredChequeList" pageSize="5"/>
+
+                </div>
+
+            </div>
+
+        </div>
+
+	</div>
+
+</zk>

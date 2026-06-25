@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<window id="chequeEditPopupWindow"
+        apply="com.cts.inward.composer.ChequeEditPopupComposer"
+        border="none"
+        mode="modal"
+        width="860px"
+        height="auto"
+        sizable="false">
+        
+    <style src="/css/inward/common.css"/>
+	<style src="/css/inward/chequeEditPopup.css"/>
+
+    <!-- ========== HEADER ========== -->
+    <div sclass="popup-header">
+        <div sclass="popup-header-left">
+            <label id="lblPopupTitle" sclass="popup-title"                value="Edit Cheque"/>
+            <label id="lblPopupBadge" sclass="popup-badge badge-popup-normal" value="NORMAL"/>
+        </div>
+        <button id="btnPopupClose" label="X" sclass="popup-close-btn"/>
+    </div>
+
+    <!-- ========== BODY ========== -->
+    <div sclass="popup-body-v2" >
+
+        <!-- SECTION 1: Image — full width with switch button top-right -->
+        <div sclass="popup-img-section" hflex="1">
+        
+        	<div sclass="refer-reason-banner" visible="false" id="divReferReasonBanner">
+			    <label id="lb-refer-reason" sclass="refer-reason-text"/>
+			</div>
+
+            <!-- Label + Switch button on same row -->
+            <div sclass="popup-img-topbar">
+                <label id="lblSideTag" value="■ FRONT SIDE" sclass="popup-side-label"/>
+                <button id="btnSwitchImage" label="⇄ Show Back" sclass="btn-switch-img"/>
+            </div>
+
+            <!-- Front image view -->
+            <div id="divFrontView" >
+                <div sclass="popup-img-frame" style="min-height:280px; max-height:380px; overflow:hidden; border-radius:8px; background:#f5f0e8;">
+                    <image id="imgFront" sclass="popup-real-img" style="display:none; width:100%; height:auto; object-fit:contain;"/>
+                    <div id="divFrontFallback" sclass="popup-cheque-card">
+                        <label id="lblCardBank"  sclass="popup-cheque-bank"/>
+                        <label                   sclass="popup-cheque-sub"  value="Presenting Bank"/>
+                        <div sclass="popup-cheque-payline">
+                            Pay <label id="lblCardPayee" value=""/>
+                        </div>
+                        <div sclass="popup-cheque-amount-box">
+                            <label id="lblCardAmount" value="Rs. 0.00"/>
+                        </div>
+                        <div sclass="popup-cheque-micr">
+                            <label id="lblCardMicr" value=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rear image view (hidden by default) -->
+            <div id="divRearView" visible="false">
+                <div sclass="popup-img-frame" style="min-height:280px; max-height:380px; overflow:hidden; border-radius:8px; background:#f5f0e8;">
+                    <image id="imgRear" sclass="popup-real-img" style="display:none; width:100%; height:auto; object-fit:contain;"/>
+                    <div id="divRearFallback" sclass="popup-back-card">
+                        <label value="[image]"                            sclass="popup-back-icon"/>
+                        <label value="Back of Cheque"                     sclass="popup-back-title"/>
+                        <label value="Endorsement area - Bank stamp zone" sclass="popup-back-sub"/>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SECTION 3: Fields -->
+        <div sclass="popup-fields-section">
+
+            <div sclass="popup-micr-row">
+                <div sclass="popup-field-group">
+                    <label value="CHEQUE NO. " sclass="popup-field-label popup-field-label-req"/>
+                    <textbox id="tbChequeNo" sclass="popup-field-input popup-field-readonly" maxlength="10" width="100%" instant="true"/>
+                </div>
+                <div sclass="popup-field-group">
+                    <label value="CITY  3 DIGITS" sclass="popup-field-label popup-field-label-req"/>
+                    <textbox id="tbCityCode" sclass="popup-field-input popup-field-readonly" maxlength="3" width="100%" instant="true"/>
+                </div>
+                <div sclass="popup-field-group">
+                    <label value="BANK  3 DIGITS" sclass="popup-field-label popup-field-label-req"/>
+                    <textbox id="tbBankCode" sclass="popup-field-input popup-field-readonly" maxlength="3" width="100%" instant="true"/>
+                </div>
+                <div sclass="popup-field-group">
+                    <label value="BRANCH  3 DIGITS" sclass="popup-field-label popup-field-label-req"/>
+                    <textbox id="tbBranchCode" sclass="popup-field-input popup-field-readonly" maxlength="3" width="100%" instant="true"/>
+                </div>
+                <div sclass="popup-field-group">
+                    <label value="MICR NUMBER (AUTO)" sclass="popup-field-label"/>
+                    <textbox id="tbMicrNumber" sclass="popup-field-input popup-field-readonly" readonly="true" width="100%"/>
+                </div>
+                <div sclass="popup-field-group">
+                    <label value="TC  2-3 DIGITS" sclass="popup-field-label"/>
+                    <textbox id="tbTransactionCode" sclass="popup-field-input popup-field-readonly" width="100%"/>
+                </div>
+            </div>
+
+            <!-- MICR validation message — shown when City/Bank/Branch don't match the MICR number -->
+            <label id="lblMicrValidationMsg"
+                   sclass="popup-validation-msg popup-validation-msg-hidden" value=""/>
+
+            <div sclass="popup-detail-row">
+                <div sclass="popup-field-group">
+                    <label value="ACC NO (DRAWEE)" sclass="popup-field-label popup-field-label-req"/>
+                    <textbox id="tbAccountNo" sclass="popup-field-input popup-field-readonly" width="100%"/>
+                </div>
+                <div sclass="popup-field-group">
+                    <label value="DATE  DD/MM/YYYY" sclass="popup-field-label popup-field-label-req"/>
+                    <textbox id="tbClearingDate" sclass="popup-field-input popup-field-readonly" placeholder="dd/MM/yyyy" width="100%"/>
+                </div>
+                <div sclass="popup-field-group">
+                    <label value="AMT IN DIGITS (₹) " sclass="popup-field-label popup-field-label-req"/>
+                    <textbox id="tbAmount" sclass="popup-field-input popup-field-readonly" width="100%" instant="true"/>
+                </div>
+                <div sclass="popup-field-group popup-field-group-wide">
+				    <label value="PAYEE NAME" sclass="popup-field-label"/>
+				    <textbox id="tbPayeeName" sclass="popup-field-input popup-field-readonly" width="100%"/>
+				</div>
+            </div>
+
+            <!-- AMT IN WORDS full width -->
+            <div sclass="popup-field-group popup-amtwords-row">
+                <label value="AMT IN WORDS " sclass="popup-field-label popup-field-label-req"/>
+                <textbox id="tbAmountInWords"
+                         sclass="popup-field-input popup-field-readonly"
+                         readonly="true"
+                         placeholder="Auto-generated from Amount"
+                         width="100%"/>
+            </div>
+
+            <!-- Amount validation message — shown when amount fails format/positivity check -->
+            <label id="lblAmountValidationMsg"
+                   sclass="popup-validation-msg popup-validation-msg-hidden" value=""/>
+            
+            <!-- Reason for Rejection -->
+            <div id="divErrorReason" visible="false" sclass="popup-detail-row">
+                <div sclass="popup-field-group popup-field-group-wide">
+                    <label value="Reason for Rejection:" sclass="popup-field-label" />
+                    <combobox id="cbChequeRejectionReason"   sclass="popup-combo" readonly="true">
+                        <comboitem label="Non CTS Cheque" />
+                        <comboitem label="Void Cheque" />
+                        <comboitem label="Postdated Cheque" />
+                        <comboitem label="Stale Cheque" />
+                        <comboitem label="Insufficient Balance" />
+                        <comboitem label="Account not found" />
+                        <comboitem label="Payee name mismatch" />
+                        <comboitem label="Amount altered" />
+                        <comboitem label="Image not clear" />
+                        <comboitem label="Other" />
+                    </combobox>
+                </div>
+
+			
+			    <div id="divOtherErrorReason" sclass="popup-field-group popup-field-group-wide" visible="false">
+			        <label value="Other Reason:" sclass="popup-field-label" />
+			        <textbox id="tbOtherReason" sclass="popup-field-input" visible="false"
+			                 placeholder="Enter reason..." />
+			    </div>
+			
+			<div sclass="popup-field-group popup-btn-group-right">
+				    <label value="&#160;" sclass="popup-field-label" />
+				
+				    <hlayout spacing="6px">
+				        <button id="btnConfirmReject"
+				                label="Confirm Reject"
+				                visible="false"
+				                sclass="btn-popup-save" />
+				
+				        <button id="btnCancelReject"
+				                label="Cancel"
+				                visible="false"
+				                sclass="btn-popup-cancel" />
+				    </hlayout>
+				</div>
+			</div>
+
+			
+			<!-- Reason for Refer -->
+            <div id="divReferReason" visible="false" sclass="popup-detail-row">
+                <div sclass="popup-field-group popup-field-group-wide">
+                    <label value="Reason for Referral:" sclass="popup-field-label" />
+                    <combobox id="cbChequeReferralReason"
+                      sclass="popup-combo"
+                      readonly="true">
+                        <comboitem label="Image not clear" />
+                        <comboitem label="Amount in words and figure illegible" />
+                        <comboitem label="Signature verification required" />
+                        <comboitem label="Date illegible" />
+                        <comboitem label="High value confirmation required" />
+                        <comboitem label="Other" />
+                    </combobox>
+                </div>
+			
+			    <div id="divOtherReferReason" sclass="popup-field-group popup-field-group-wide" visible="false">
+			        <label value="Other Reason:" sclass="popup-field-label" />
+			        <textbox id="tbOtherReferReason" sclass="popup-field-input" visible="false"
+			                 placeholder="Enter reason..." />
+			    </div>
+			
+			    <div sclass="popup-field-group popup-btn-group-right">
+				    <label value="&#160;" sclass="popup-field-label" />
+				
+				    <hlayout spacing="6px">
+				        <button id="btnConfirmRefer"
+				                label="Confirm Refer"
+				                visible="false"
+				                sclass="btn-popup-save" />
+				
+				        <button id="btnCancelRefer"
+				                label="Cancel"
+				                visible="false"
+				                sclass="btn-popup-cancel" />
+				    </hlayout>
+				</div>
+			</div>
+			
+			
+			<!-- Reason for Send Back -->
+            <div id="divSendBackReason" visible="false" sclass="popup-detail-row">
+                <div sclass="popup-field-group popup-field-group-wide">
+                    <label value="Reason for Send Back:" sclass="popup-field-label" />
+                    <combobox id="cbChequeSendBackReason"
+                              sclass="popup-combo"
+                              readonly="true">
+                        <comboitem label="MICR number mismatch" />
+                        <comboitem label="Transaction code mismatch" />
+                        <comboitem label="Cheque number mismatch" />
+                        <comboitem label="Cheque date mismatch" />
+                        <comboitem label="Account number mismatch" />
+                        <comboitem label="Amount mismatch (Words vs Figures)" />
+                        <comboitem label="Image not clear" />
+                        <comboitem label="Other" />
+                    </combobox>
+                </div>
+
+                <div id="divOtherSendBackReason" sclass="popup-field-group popup-field-group-wide" visible="false">
+                    <label value="Other Reason:" sclass="popup-field-label" />
+                    <textbox id="tbOtherSendBackReason" sclass="popup-field-input" visible="false"
+                             placeholder="Enter reason..." />
+                </div>
+
+                <div sclass="popup-field-group popup-btn-group-right">
+                    <label value="&#160;" sclass="popup-field-label" />
+                    <hlayout spacing="6px">
+                        <button id="btnConfirmSendBack"
+                                label="Confirm Send Back"
+                                visible="false"
+                                sclass="btn-popup-save" />
+                        <button id="btnCancelSendBack"
+                                label="Cancel"
+                                visible="false"
+                                sclass="btn-popup-cancel" />
+                    </hlayout>
+                </div>
+            </div>
+
+			
+
+            <!-- Buttons -->
+            <div sclass="popup-action-row">
+            	<button id="btnSendBack"   label="SendBack"   sclass="btn-popup-refer"/>
+                <button id="btnRefer"   label="Refer"   sclass="btn-popup-refer"/>
+                <button id="btnReject"  label="Reject"  sclass="btn-popup-reject"/>
+                <button id="btnApprove" label="Approve" sclass="btn-popup-approve" iconSclass="z-icon-check"/>
+            	<button id="btnSaveChanges" label="Save Changes" sclass="btn-popup-save"
+                        iconSclass="z-icon-save"/>
+            </div>
+
+        </div>
+    </div>
+
+</window>

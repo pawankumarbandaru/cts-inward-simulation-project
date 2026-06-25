@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<div id="tv2SidebarRoot"
+     apply="com.cts.composer.TV2SidebarComposer"
+     sclass="cts-sidebar">
+
+    <!-- ── MAIN MENU ─────────────────────────── -->
+    <div sclass="cts-section-label">
+        <label value="MAIN MENU"/>
+    </div>
+
+    <div sclass="cts-menu-item active">
+        <custom-attributes perm="DASHBOARD_VIEW"
+            pagePath="/zul/inward/tv2Dashboard_inward.zul"/>
+        <div sclass="cts-row">
+            <div sclass="cts-icon-badge cts-icon-home">
+                <label value="🏠"/>
+            </div>
+            <label sclass="cts-item-label" value="Dashboard"/>
+        </div>
+    </div>
+
+    <!-- ── CLEARING ──────────────────────────── -->
+    <div sclass="cts-section-label">
+        <label value="CLEARING"/>
+    </div>
+
+    <!-- TV2 QUEUE — no pagePath, navigation disabled -->
+   
+    	<div sclass="cts-menu-item">
+			<custom-attributes perm=""
+				pagePath="/zul/inward/TV2_ResubmittedQueue.zul" />
+			<div sclass="cts-sub-row">
+				<label sclass="cts-sub-label" value="Resubmitted Cheques" />
+			</div>
+		</div>
+    
+     	<div sclass="cts-menu-item">
+			<custom-attributes perm=""
+				pagePath="/zul/inward/TV2_ReferredQueue.zul" />
+			<div sclass="cts-sub-row">
+				<label sclass="cts-sub-label" value="Referred Cheques" />
+			</div>
+		</div>
+	
+
+</div>

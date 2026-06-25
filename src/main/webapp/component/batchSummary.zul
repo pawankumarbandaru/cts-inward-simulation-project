@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Macro Component : Batch Summary  (Shared — Maker + Checker)
+    Component Class : com.cts.component.BatchSummaryComponent
+    Composer        : com.cts.inward.composer.BatchSummaryComposer
+
+    Role-based behaviour (role attribute set in parent ZUL):
+
+      role="MAKER"
+        - lblSecondaryLabel shows : "MICR Errors"
+        - lblSecondaryCount shows : count of cheques with ChequeStatus=Repair
+        - divCbsAction            : visible, enabled when MICR errors = 0
+
+      role="CHECKER"
+        - lblSecondaryLabel shows : "TV1 Cheques"
+        - lblSecondaryCount shows : count of cheques where sendTo = TV_1
+        - divCbsAction            : hidden always
+-->
+
+<div apply="com.cts.inward.composer.BatchSummaryComposer"
+     sclass="batch-summary-wrapper">
+
+    <!-- Section Title -->
+    <div sclass="summary-section-title">
+        <label value="BATCH SUMMARY" sclass="section-heading"/>
+    </div>
+
+    <separator/>
+
+    <!-- Batch Info -->
+    <div sclass="summary-group">
+        <label value="BATCH INFO" sclass="summary-group-title"/>
+        <separator/>
+
+        <div sclass="summary-row">
+            <label value="Batch ID"   sclass="summary-label"/>
+            <label id="lblBatchId"    sclass="summary-value-bold"/>
+        </div>
+
+        <div sclass="summary-row">
+            <label value="Upload Time" sclass="summary-label"/>
+            <label id="lblUploadTime"  sclass="summary-value"/>
+        </div>
+
+    </div>
+
+    <separator/>
+
+    <!-- Cheque Counts -->
+    <div sclass="summary-group">
+        <label value="CHEQUE COUNTS" sclass="summary-group-title"/>
+        <separator/>
+
+        <div sclass="summary-row">
+            <label value="Total"      sclass="summary-label"/>
+            <label id="lblTotalCount" sclass="summary-value-bold"/>
+        </div>
+
+        <!--
+            This row is role-aware.
+            BatchSummaryComposer sets lblSecondaryLabel and
+            lblSecondaryCount at runtime based on role attribute.
+              MAKER   → "MICR Errors"  / micrErrorCount
+              CHECKER → "TV1 Cheques"  / tv1ChequeCount
+        -->
+        <div sclass="summary-row">
+            <label id="lblSecondaryLabel" sclass="summary-label"/>
+            <label id="lblSecondaryCount" sclass="summary-value-error"/>
+        </div>
+
+    </div>
+
+    <separator/>
+
+    <!--
+        CBS Validation Button — MAKER role only.
+        Composer hides this entire div for CHECKER role.
+        Enabled only when MICR error count = 0.
+    -->
+    <div id="divCbsAction" sclass="summary-action-area">
+        <button id="btnSendToCbs"
+                label="Send to CBS Validation"
+                sclass="btn-cbs-action"
+                iconSclass="z-icon-university"
+                disabled="true"/>
+    </div>
+
+</div>

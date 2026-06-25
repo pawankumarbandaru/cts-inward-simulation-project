@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Fragment  : TV2_ReviewWorkspace.zul
+    Role      : VERIFIER_2 (Branch Manager) — cheques >= Rs.5,00,000
+    Composer  : TV2_ReviewWorkspaceComposer.java
+-->
+    
+    
+<?component name="chequeImagePanel"   macroURI="/component/chequeImagePanel.zul"         inline="true"?>
+<?component name="micrFieldGroup"     macroURI="/component/micrFieldGroup.zul"            inline="true"?>
+<?component name="chequeDetailsGroup" macroURI="/component/chequeDetailsFieldGroup.zul"   inline="true"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:n="native"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <style src="/css/inward/Inwardmakerstyles.css"/>
+    <style src="/css/inward/checkerStyles.css"/>
+    <script src="/js/inward/cts-workspace.js" defer="true"/>
+
+   
+
+    <div id="v2-modal-root"
+         apply="com.cts.inward.composer.TV2_ReviewWorkspaceComposer"
+         class="v2-popup-root">
+
+        <!-- ══ TITLE BAR ══════════════════════════════════════════════ -->
+        <n:div class="v2-modal-titlebar">
+            <n:span style="font-size:14px;">🔍</n:span>
+            <n:strong style="font-size:12px;letter-spacing:.3px;">BRANCH MANAGER REVIEW</n:strong>
+            <label id="v2-review-chq-pill"
+                   sclass="v2-mode-pill"
+                   value="Cheque —"/>
+            <n:span style="background:rgba(255,255,255,.15);color:#fff;
+                           border:1px solid rgba(255,255,255,.3);
+                           border-radius:100px;padding:2px 9px;
+                           font-size:10px;font-weight:700;">RESUBMITTED</n:span>
+            <n:span style="flex:1;"/>
+            <button id="v2-btn-back-to-queue"
+                    sclass="v2-modal-close-btn"
+                    label="✕ Close"
+                    autodisable="false"/>
+        </n:div>
+
+        <!-- ══ SCROLLABLE CONTENT AREA ════════════════════════════════ -->
+        <div class="v2-content-area">
+
+            <!-- ── Correction Summary Panel ──────────────────────────── -->
+            <!--
+                @Wire IDs:
+                  #v2-original-remark  → verifier's original return remark
+                  #v2-maker-remark     → maker's correction reply
+            -->
+            <n:div class="cts-reason-summary">
+
+                <n:div class="cts-reason-line cts-reason-line-original">
+                    <n:span class="cts-reason-line-icon">⚠</n:span>
+                    <n:span class="cts-reason-line-label">Your Return Reason:</n:span>
+                    <label id="v2-original-remark"
+                           sclass="cts-reason-line-text"
+                           value="—"/>
+                </n:div>
+
+                <n:div class="cts-reason-line cts-reason-line-reply">
+                    <n:span class="cts-reason-line-icon">↩</n:span>
+                    <n:span class="cts-reason-line-label">Maker's Reply:</n:span>
+                    <label id="v2-maker-remark"
+                           sclass="cts-reason-line-text"
+                           value="—"/>
+                </n:div>
+
+            </n:div>
+
+            <!-- ── Edited Fields Banner (hidden until JS shows it) ────── -->
+            <!-- #v2-edited-fields-banner, #v2-edited-fields-list -->
+            <n:div id="v2-edited-fields-banner"
+                   class="v2-edited-fields-banner">
+                <n:span style="font-size:15px;">✏️</n:span>
+                <n:div>
+                    <n:div style="font-size:12px;font-weight:700;color:#92400E;">
+                        Maker edited fields in this cheque
+                    </n:div>
+                    <label id="v2-edited-fields-list"
+                           style="font-size:12px;color:#78350F;font-family:monospace;"
+                           value="—"/>
+                </n:div>
+            </n:div>
+
+            <!-- ── Cheque Image Panel ─────────────────────────────────── -->
+            <!--
+                Uses chequeImagePanel.zul macro.
+                Image @Wire IDs are: chq-real-front, chq-real-back,
+                chq-img-placeholder, chq-real-wrapper,
+                chq-real-back-wrapper, chq-back-placeholder
+                (NO v2- prefix — macro uses fixed IDs)
+            -->
+            <chequeImagePanel/>
+
+            <!-- ── MICR Band Information — read-only ──────────────────── -->
+            <micrFieldGroup/>
+
+            <!-- ── Cheque Details — read-only ─────────────────────────── -->
+            <chequeDetailsGroup/>
+
+            <!-- ── V2 Action Section ───────────────────────────────────── -->
+            <!--
+                @Wire IDs:
+                  #v2-action-btn-row        → Div: Approve/Return/Reject buttons (default view)
+                  #v2-btn-approve           → onApprove() — runs immediately, no reason needed
+                  #v2-btn-return            → onReturnToMaker() — opens reason box (Return list only)
+                  #v2-btn-reject            → onReject()        — opens reason box (Reject list only)
+                  #v2-reason-box            → Div: hidden until Return/Reject clicked
+                  #v2-action-remarks        → Combobox: re-populated per action by the composer
+                                               (Return reasons OR Reject reasons — never both)
+                  #v2-action-remarks-other  → Textbox: free text when "Other" selected
+                  #v2-remarks-error         → shown if no reason chosen on Confirm
+                  #v2-btn-confirm-action    → onConfirmAction() — actually submits Return/Reject
+                  #v2-btn-cancel-action     → onCancelAction()  — back to the 3 buttons
+            -->
+            <n:div class="v2-action-step-bare">
+
+                <!-- Default view: just the 3 buttons. No reason box yet. -->
+                <div id="v2-action-btn-row" class="cts-action-btn-row">
+                    <button id="v2-btn-approve"
+                            sclass="btn-v2-approve"
+                            label="✅ Approve"
+                            autodisable="false"/>
+                    <button id="v2-btn-return"
+                            sclass="btn-v2-return"
+                            label="🔄 Return to Maker"
+                            autodisable="false"/>
+                    <button id="v2-btn-reject"
+                            sclass="btn-v2-reject"
+                            label="❌ Reject"
+                            autodisable="false"/>
+                </div>
+
+                <!--
+                    Reason box — starts hidden (visible="false"). The composer
+                    shows this ONLY after Return or Reject is clicked, and fills
+                    #v2-action-remarks with that one action's reason list only
+                    (populateReasonOptions() in the composer clears + re-adds
+                    items, so Return and Reject reasons are never mixed).
+                -->
+                <div id="v2-reason-box" class="cts-reason-box" visible="false">
+
+                    <!--
+                        Row: dropdown on the LEFT, Confirm/Cancel on the RIGHT.
+                        Replaces the old stacked layout (dropdown, then a
+                        separate button row below it).
+                    -->
+                    <n:div class="cts-reason-row">
+                        <combobox id="v2-action-remarks"
+                                  sclass="fi cts-reason-combo"
+                                  placeholder="— Select a reason —"
+                                  autocomplete="false"
+                                  autodrop="false"/>
+
+                        <n:div class="cts-reason-btn-row">
+                            <button id="v2-btn-confirm-action"
+                                    sclass="btn-cts-confirm"
+                                    label="Confirm"
+                                    autodisable="false"/>
+                            <button id="v2-btn-cancel-action"
+                                    sclass="btn-cts-cancel"
+                                    label="Cancel"
+                                    autodisable="false"/>
+                        </n:div>
+                    </n:div>
+
+                    <!-- "Other" free-text — shown by initV2RemarksDropdown() in JS -->
+                    <n:div id="v2-remarks-other-wrap"
+                           class="cts-reason-other-wrap"
+                           style="display:none;">
+                        <textbox id="v2-action-remarks-other"
+                                 sclass="fi-ta"
+                                 multiline="true"
+                                 rows="3"
+                                 placeholder="Enter your detailed remarks..."
+                                 maxlength="500"/>
+                    </n:div>
+
+                    <label id="v2-remarks-error"
+                           sclass="field-err-msg"
+                           visible="false"
+                           value="⚠ Please select a reason before confirming"/>
+                </div>
+
+            </n:div>
+
+        </div>
+        <!-- end scrollable content -->
+
+        <!--
+            Audit trail container — HIDDEN.
+            Kept so composer @Wire does not throw NullPointerException.
+            DO NOT REMOVE.
+        -->
+        <div id="v2-audit-trail-rows" style="display:none;"/>
+    </div>
+    <!-- end popup root -->
+</zk>

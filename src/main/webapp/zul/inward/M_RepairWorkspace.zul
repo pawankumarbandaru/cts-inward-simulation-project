@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Fragment  : M_RepairWorkspace.zul
+    Location  : webapp/zul/inward/M_RepairWorkspace.zul
+    Role      : MAKER_INWARD
+    Composer  : M_RepairWorkspaceComposer.java
+
+-->
+
+<?component name="chequeImagePanel"   macroURI="/component/chequeImagePanel.zul"        inline="true"?>
+<?component name="micrFieldGroup"     macroURI="/component/micrFieldGroup.zul"           inline="true"?>
+<?component name="chequeDetailsGroup" macroURI="/component/chequeDetailsFieldGroup.zul"  inline="true"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:n="native"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <!--
+        Inwardmakerstyles.css is NOT loaded here — the parent queue page
+        (M_ReturnedByChecker.zul) already loads it. Loading it twice causes
+        a brief flash of unstyled buttons on popup open.
+    -->
+    <script src="/js/inward/cts-workspace.js" defer="true"/>
+
+    <div id="rcb-page-root"
+         apply="com.cts.inward.composer.M_RepairWorkspaceComposer"
+         class="repair-popup-root">
+
+        <!-- ══ TITLE BAR ════════════════════════════════════════════════ -->
+        <n:div class="repair-popup-titlebar">
+            <n:span style="font-size:14px;">⚠</n:span>
+            <n:strong style="font-size:12px;letter-spacing:.3px;">EDIT CHEQUE</n:strong>
+            <label id="rcb-repair-chq-pill" sclass="repair-popup-chq-pill" value="Cheque —"/>
+            <n:span style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+                           border-radius:100px;padding:2px 10px;font-size:10px;font-weight:700;
+                           letter-spacing:.5px;color:#fff;">RETURNED</n:span>
+            <n:span style="font-size:11px;opacity:0.8;">
+                Returned by Checker — correct and resubmit
+            </n:span>
+            <n:span style="flex:1;"/>
+            <button id="btn-back-to-queue" label="✕ Close" autodisable="false"
+                    sclass="mrw-btn-close"/>
+        </n:div>
+
+        <!-- ══ SCROLLABLE CONTENT ════════════════════════════════════════ -->
+        <div class="repair-content-area">
+
+            <!-- Hidden wire-only labels — DO NOT REMOVE -->
+            <label id="rcb-warn-title"      value="RETURNED BY CHECKER" visible="false"/>
+            <label id="rcb-warn-role-pill"  value="URGENT"              visible="false"/>
+            <label id="rcb-warn-detail"     value="—"                   visible="false"/>
+            <label id="rcb-warn-cbs-reason" value=""                    visible="false"/>
+            <div style="display:none;">
+                <label id="rcb-img-bank"     value="—"/>
+                <label id="rcb-img-date"     value="—"/>
+                <label id="rcb-img-payee"    value="—"/>
+                <label id="rcb-img-words"    value="—"/>
+                <label id="rcb-img-amt"      value="—"/>
+                <label id="rcb-img-back-acc" value="—"/>
+                <label id="rcb-img-micr1"    value="—"/>
+                <label id="rcb-img-micr2"    value="—"/>
+            </div>
+
+            <!-- Checker reason red strip -->
+            <div sclass="warn-strip-rcb repair-warn-wrap">
+                <n:span class="warn-strip-icon">⚠</n:span>
+                <label id="rcb-warn-reason-short" sclass="warn-strip-text"
+                       value="Checker Reason: —"/>
+            </div>
+
+            <chequeImagePanel/>
+
+            <div id="mrw-editable-zone">
+                <micrFieldGroup/>
+                <chequeDetailsGroup/>
+            </div>
+
+            <!-- CBS result area — @Wire in composer. DO NOT REMOVE -->
+            <div id="rcb-cbs-result-area" style="display:none;"/>
+            <!-- Audit trail — @Wire in composer. DO NOT REMOVE -->
+            <div id="rcb-audit-trail-rows" style="display:none;"/>
+
+            <!--
+            ══ ACTION BAR — last element inside content area ════════════════
+            Sits inside .repair-content-area so it renders INSIDE the page,
+            not below a thick border (which was the old bug).
+
+            Layout has two parts:
+              1. #mrw-remarks-wrap — ZK div, hidden on load, shown on Save
+                   Contains: small label, combobox, error msg (column layout)
+              2. .mrw-btn-group    — n:div, always visible, right-aligned
+                   Contains: Save, Edit, CBS buttons
+            ════════════════════════════════════════════════════════════════ -->
+            <n:div class="mrw-action-bar">
+
+                <!--
+                    PART 1: Correction Remarks section.
+                    ZK <div> — composer wires this as "remarksWrap" and calls
+                    setVisible(true) after first Save click.
+                    visible="false" → ZK writes inline display:none on wrapper.
+                    No display:!important in CSS for this class → ZK wins cleanly.
+                -->
+                <div id="mrw-remarks-wrap"
+                     visible="false"
+                     sclass="mrw-remarks-wrap">
+
+                    <!-- Small label above combobox -->
+                    <n:span class="mrw-remarks-label-text">
+                        CORRECTION REMARKS
+                        <n:span style="color:#DC2626;margin-left:1px;">*</n:span>
+                    </n:span>
+
+                    <!-- Combobox — full width of available space -->
+                    <combobox id="rcb-f-remarks-select"
+                              sclass="mrw-remarks-combo"
+                              placeholder="— Select correction reason —"
+                              autocomplete="false"
+                              autodrop="false">
+                        <comboitem label="MICR correction done — cheque no. updated"/>
+                        <comboitem label="MICR correction done — city code updated"/>
+                        <comboitem label="MICR correction done — bank code updated"/>
+                        <comboitem label="MICR correction done — branch code updated"/>
+                        <comboitem label="Account number corrected"/>
+                        <comboitem label="Cheque date corrected"/>
+                        <comboitem label="Amount corrected as per physical cheque"/>
+                        <comboitem label="Payee name corrected"/>
+                        <comboitem label="Transaction code corrected"/>
+                        <comboitem label="Multiple fields corrected — details below"/>
+                        <comboitem label="Other"/>
+                    </combobox>
+
+                    <!-- Error — below combobox when remark not selected -->
+                    <label id="err-rcb-f-remarks"
+                           sclass="field-err-msg mrw-err-below"
+                           visible="false"
+                           value="⚠ Correction remark is required"/>
+
+                </div>
+                <!-- /mrw-remarks-wrap -->
+
+                <!--
+                    PART 2: Action buttons — always visible, always right-aligned.
+                    n:div renders as pure HTML (no ZK z-div wrapper) so flex works.
+                    Buttons are wired by ID in the composer — IDs must not change.
+                -->
+                <n:div class="mrw-btn-group">
+                    <button id="btn-save-cbs"
+                            label="💾 Save"
+                            autodisable="false"
+                            sclass="mrw-btn-save"/>
+                    <button id="btn-edit-fields"
+                            label="✏ Edit"
+                            autodisable="false"
+                            visible="false"
+                            sclass="mrw-btn-edit"/>
+                    <button id="btn-cbs"
+                            label="🔁 Run CBS Validation"
+                            autodisable="false"
+                            disabled="true"
+                            sclass="mrw-btn-cbs"/>
+                </n:div>
+                <!-- /mrw-btn-group -->
+
+            </n:div>
+            <!-- /mrw-action-bar -->
+
+        </div>
+        <!-- /repair-content-area -->
+
+    </div>
+</zk>

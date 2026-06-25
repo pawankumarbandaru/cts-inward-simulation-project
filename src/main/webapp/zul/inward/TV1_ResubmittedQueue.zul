@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?page title="Resubmitted Cheques | CTS" contentType="text/html;charset=UTF-8"?>
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:n="native"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <style src="/css/inward/Inwardmakerstyles.css"/>
+    <style src="/css/inward/checkerStyles.css"/>
+    <style src="/css/inward/cts-breadcrumb-filter-theme.css"/>
+
+    <div apply="com.cts.inward.composer.TV1_ResubmittedQueueComposer"
+         sclass="rcb-page-wrap">
+
+        <!-- Scrollable content -->
+        <div sclass="rcb-scroll-area">
+
+            <!-- Breadcrumb -->
+            <div sclass="cts-breadcrumb">
+                <n:span class="cts-breadcrumb-item">Home</n:span>
+                <n:span class="cts-breadcrumb-sep">›</n:span>
+                <n:span class="cts-breadcrumb-active">Resubmitted Cheques</n:span>
+            </div>
+
+            <!-- Page header -->
+            <div sclass="page-hdr">
+                <div>
+                    <div sclass="page-title">
+                        <n:span class="chk-title-dot">🔄</n:span>
+                        Resubmitted Cheques
+                        <label id="chk-count-badge"
+                               sclass="chk-count-badge"
+                               value="—"/>
+                    </div>
+                    <div sclass="page-sub">
+                        Cheques resubmitted by Maker after correction — review and clear (≤ ₹1,00,000)
+                    </div>
+                </div>
+                <button id="chk-btn-refresh"
+                        sclass="chk-btn-refresh"
+                        autodisable="false">
+                    ↺ Refresh
+                </button>
+            </div>
+
+            <!-- Success banner -->
+            <!-- FIX: replaced ZK <html> (stub-based) with <n:div id="chk-success-text">
+                 Same fix as verifier2ResubmittedQueue.zul — ZK Html stub causes
+                 "Failed to mount: Unknown stub" error. -->
+            <div id="chk-success-banner" visible="false"
+                 sclass="chk-success-banner">
+                <n:span class="rcb-success-icon">✅</n:span>
+                <n:div id="chk-success-text"
+                       sclass="chk-success-text"></n:div>
+                <button id="chk-success-dismiss"
+                        sclass="chk-success-dismiss"
+                        autodisable="false">✕</button>
+            </div>
+
+            <!-- Alert banner -->
+            <div id="chk-alert-banner" sclass="chk-alert-banner" visible="false">
+                <n:span class="rcb-alert-icon">🔄</n:span>
+                <n:span>
+                    <n:strong>Pending Review</n:strong>
+                    — The following cheques were resubmitted by Maker.
+                    Click <n:strong>Review</n:strong> to open the review workspace.
+                </n:span>
+            </div>
+
+            <!--
+                FILTER BAR + TABLE — now one merged card (no gap between them)
+                Priority filter REMOVED — priority column deleted from DB.
+                Filters: Search, Edited by Maker, Batch Number, Clear.
+            -->
+            <div sclass="cts-merged-card">
+
+                <div sclass="cts-filter-card rcb-filter-bar cts-merged-filter">
+
+                    <!-- Search column -->
+                    <div sclass="rcb-filter-col rcb-filter-col-search">
+                        <n:span class="cts-filter-label">Search Cheque / Batch</n:span>
+                        <div sclass="cts-filter-input-row">
+                            <textbox id="chk-search"
+                                     sclass="cts-filter-input rcb-filter-input"
+                                     placeholder="Cheque no. or Batch ID..."/>
+                            <button id="chk-btn-search"
+                                    label="🔍 Search"
+                                    sclass="cts-btn-search rcb-filter-btn cts-btn-search-navy"
+                                    autodisable="false"/>
+                        </div>
+                    </div>
+
+                    <!-- Edited by Maker column -->
+                    <div style="display:flex;flex-direction:column;min-width:150px;">
+                        <n:span style="font-size:10.5px;font-weight:700;color:#8a9bb8;
+                                       text-transform:uppercase;letter-spacing:0.07em;
+                                       display:block;margin-bottom:5px;">
+                            Edited By Maker
+                        </n:span>
+                        <listbox id="chk-edited-filter"
+                                 mold="select"
+                                 sclass="cts-filter-select"
+                                 style="height:38px !important;min-height:38px !important;
+                                        max-height:38px !important;">
+                            <listitem label="All Cheques" value=""    selected="true"/>
+                            <listitem label="Edited Only" value="YES"/>
+                            <listitem label="Not Edited"  value="NO"/>
+                        </listbox>
+                    </div>
+
+                    <!-- Batch Number filter column -->
+                    <div style="display:flex;flex-direction:column;min-width:150px;">
+                        <n:span style="font-size:10.5px;font-weight:700;color:#8a9bb8;
+                                       text-transform:uppercase;letter-spacing:0.07em;
+                                       display:block;margin-bottom:5px;">
+                            Batch Number
+                        </n:span>
+                        <listbox id="chk-batch-filter"
+                                 mold="select"
+                                 sclass="cts-filter-select"
+                                 style="height:38px !important;min-height:38px !important;
+                                        max-height:38px !important;">
+                            <listitem label="All Batches" value="" selected="true"/>
+                        </listbox>
+                    </div>
+
+
+                    <!-- Clear button column -->
+                    <div sclass="rcb-filter-col">
+                        <n:div class="cts-filter-label-wrap"/>
+                        <button id="chk-btn-clear-filter"
+                                label="✕ Clear"
+                                sclass="cts-btn-clear rcb-filter-btn cts-btn-clear-navy"
+                                autodisable="false"/>
+                    </div>
+
+                </div>
+
+                <div sclass="cts-table-wrap cts-merged-table">
+                    <grid id="chk-grid" sclass="rcb-grid">
+                        <columns sizable="false" sclass="cts-grid-header-blue">
+                            <column label="#"              width="52px"  align="center"/>
+                            <column label="Cheque No."     width="130px" align="center"/>
+                            <column label="Batch ID"       width="120px" align="center"/>
+                            <column label="Amount (₹)"     width="110px" align="center"/>
+                            <column label="Checker Sendback Reason" hflex="1" align="center"/>
+                            <column label="Edited"         width="110px" align="center"/>
+                            <column label="Action"         width="140px" align="center"/>
+                        </columns>
+                        <rows id="chk-rows">
+                            <row id="chk-empty-row" visible="false">
+                                <cell colspan="7">
+                                    <n:div class="rcb-empty-state">
+                                        <n:div class="chk-empty-icon">✅</n:div>
+                                        <n:div class="chk-empty-title">
+                                            No Resubmitted Cheques
+                                        </n:div>
+                                        <n:div class="chk-empty-desc">
+                                            All resubmitted cheques have been reviewed.
+                                            Nothing pending for Verifier 1.
+                                        </n:div>
+                                    </n:div>
+                                </cell>
+                            </row>
+                        </rows>
+                    </grid>
+                </div>
+
+                <paging id="chk-paging" pageSize="10" totalSize="0"
+                        sclass="rcb-paging"/>
+
+            </div><!-- /cts-merged-card -->
+
+        </div>
+    </div>
+
+</zk>

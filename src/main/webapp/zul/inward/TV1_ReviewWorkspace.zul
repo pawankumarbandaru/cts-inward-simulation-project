@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Fragment  : TV1_ReviewWorkspace.zul
+    Role      : VERIFIER_1 / CHECKER — cheques below Rs.5,00,000
+    Composer  : TV1_ReviewWorkspaceComposer.java
+-->
+<?component name="chequeImagePanel"   macroURI="/component/chequeImagePanel.zul"         inline="true"?>
+<?component name="micrFieldGroup"     macroURI="/component/micrFieldGroup.zul"            inline="true"?>
+<?component name="chequeDetailsGroup" macroURI="/component/chequeDetailsFieldGroup.zul"   inline="true"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:n="native"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+
+    <style src="/css/inward/Inwardmakerstyles.css"/>
+    <style src="/css/inward/checkerStyles.css"/>
+
+    <!--
+        All JavaScript is in cts-workspace.js.
+        CTS_CHECKER_MODAL is called by CheckerReviewWorkspaceComposer
+        via Clients.evalJavaScript() to highlight edited fields and images.
+    -->
+    <script src="/js/inward/cts-workspace.js" defer="true"/>
+
+  
+    <!--
+        Root div — filled by the ZK Window created by RA_C_CheckerResubmittedQueueComposer.
+        apply= is on this root so @Wire finds all IDs from here downwards.
+    -->
+    
+    <div id="chk-modal-root"
+         apply="com.cts.inward.composer.TV1_ReviewWorkspaceComposer"
+         class="chk-popup-root">
+
+        <!-- ══ TITLE BAR (brand blue — matches makerRepairWorkspace) ═══ -->
+        <n:div class="chk-modal-titlebar">
+            <n:span style="font-size:14px;">🔍</n:span>
+            <n:strong style="font-size:12px;letter-spacing:.3px;">
+                CHECKER REVIEW MODE
+            </n:strong>
+            <label id="chk-review-chq-pill"
+                   sclass="chk-mode-pill"
+                   value="Cheque —"/>
+            <n:span style="background:rgba(255,255,255,.15);color:#fff;
+                           border:1px solid rgba(255,255,255,.3);
+                           border-radius:100px;padding:2px 9px;
+                           font-size:10px;font-weight:700;">RESUBMITTED</n:span>
+            <n:span style="font-size:11px;opacity:.8;">
+            <n:span style="font-size:14px;">🔒</n:span>Read-only</n:span>
+            <n:span style="flex:1;"/>
+            <button id="chk-btn-back-to-queue"
+                    sclass="chk-modal-close-btn"
+                    label="✕ Close"
+                    autodisable="false"/>
+        </n:div>
+
+        <!-- ══ SCROLLABLE CONTENT AREA ════════════════════════════════ -->
+        <div class="chk-content-area">
+
+            <!-- ── Correction Summary Panel ────────────────────────── -->
+            <!--
+                @Wire IDs:
+                  #chk-original-remark  → checker's original return remark
+                  #chk-maker-remark     → maker's correction remark
+                  #chk-resubmitted-by   → maker's username
+                  #chk-resubmitted-at   → resubmit timestamp
+            -->
+            <n:div class="cts-reason-summary">
+
+                <!-- Checker's original return reason — single line, light blue -->
+                <n:div class="cts-reason-line cts-reason-line-original">
+                    <n:span class="cts-reason-line-icon">⚠</n:span>
+                    <n:span class="cts-reason-line-label">Your Return Reason:</n:span>
+                    <label id="chk-original-remark"
+                           sclass="cts-reason-line-text"
+                           value="—"/>
+                </n:div>
+
+                <!-- Maker's correction reply — single line, white + blue border -->
+                <n:div class="cts-reason-line cts-reason-line-reply">
+                    <n:span class="cts-reason-line-icon">↩</n:span>
+                    <n:span class="cts-reason-line-label">Maker's Reply:</n:span>
+                    <label id="chk-maker-remark"
+                           sclass="cts-reason-line-text"
+                           value="—"/>
+                </n:div>
+
+            </n:div>
+
+            <!-- ── Edited Fields Banner (hidden until JS shows it) ─── -->
+            <!--
+                #chk-edited-fields-banner, #chk-edited-fields-list
+                Composer calls: CTS_CHECKER_MODAL.highlightEditedFields(csv)
+            -->
+            <n:div id="chk-edited-fields-banner"
+                   style="display:none;align-items:flex-start;gap:10px;
+                          background:#FEF9C3;border:1px solid #F59E0B;
+                          border-left:4px solid #F59E0B;border-radius:6px;
+                          padding:4px 1px;margin-bottom:10px;">
+                <n:span style="font-size:16px;">✏️</n:span>
+                <n:div>
+                    <n:div style="font-size:12px;font-weight:700;color:#92400E;">
+                        Maker edited fields in this cheque
+                    </n:div>
+                    <label id="chk-edited-fields-list"
+                           style="font-size:12px;color:#78350F;font-family:monospace;"
+                           value="—"/>
+                </n:div>
+            </n:div>
+
+            <!-- ── Cheque Image Panel ─────────────────────────────── -->
+            <chequeImagePanel/>
+
+            <!-- ── MICR Band Information ──────────────────────────── -->
+            <!--
+                Shared macro. Fields are rendered read-only for the checker
+                via readonly="true" on the textbox elements in micrFieldGroup.zul.
+                The ZK readonly attribute prevents input natively.
+            -->
+            <micrFieldGroup/>
+
+            <!-- ── Cheque Details ─────────────────────────────────── -->
+            <!--
+                Shared macro. Fields are read-only in this context:
+                  rcb-f-acc, rcb-f-date, rcb-f-amount, rcb-f-payee
+                have readonly="true" in chequeDetailsFieldGroup.zul.
+                The correction-remarks row is hidden via CSS above.
+            -->
+            <chequeDetailsGroup/>
+
+            <!-- ── Checker Action Section ─────────────────────────── -->
+            <!--
+                @Wire IDs:
+                  #chk-action-btn-row        → Div: Approve/Return/Reject buttons (default view)
+                  #chk-btn-approve           → onApprove() — runs immediately, no reason needed
+                  #chk-btn-return            → onReturnToMaker() — opens reason box (Return list only)
+                  #chk-btn-reject            → onReject()        — opens reason box (Reject list only)
+                  #chk-reason-box            → Div: hidden until Return/Reject clicked
+                  #chk-action-remarks        → Combobox: re-populated per action by the composer
+                                                (Return reasons OR Reject reasons — never both)
+                  #chk-action-remarks-other  → Textbox: free text when "Other" selected
+                  #chk-remarks-error         → shown if no reason chosen on Confirm
+                  #chk-btn-confirm-action    → onConfirmAction() — actually submits Return/Reject
+                  #chk-btn-cancel-action     → onCancelAction()  — back to the 3 buttons
+            -->
+            <n:div class="chk-action-step-bare">
+
+                <!-- Default view: just the 3 buttons. No reason box yet. -->
+                <div id="chk-action-btn-row" class="cts-action-btn-row">
+                    <button id="chk-btn-approve"
+                            sclass="btn-chk-approve"
+                            label="✅ Approve"
+                            autodisable="false"/>
+                    <button id="chk-btn-return"
+                            sclass="btn-chk-return"
+                            label="🔄 Return to Maker"
+                            autodisable="false"/>
+                    <button id="chk-btn-reject"
+                            sclass="btn-chk-reject"
+                            label="❌ Reject"
+                            autodisable="false"/>
+                </div>
+
+                <!--
+                    Reason box — starts hidden (visible="false"). The composer
+                    shows this ONLY after Return or Reject is clicked, and fills
+                    #chk-action-remarks with that one action's reason list only
+                    (populateReasonOptions() in the composer clears + re-adds
+                    items, so Return and Reject reasons are never mixed).
+                -->
+                <div id="chk-reason-box" class="cts-reason-box" visible="false">
+
+                    <!--
+                        Row: dropdown on the LEFT, Confirm/Cancel on the RIGHT.
+                        Replaces the old stacked layout (dropdown, then a
+                        separate button row below it).
+                    -->
+                    <n:div class="cts-reason-row">
+                        <combobox id="chk-action-remarks"
+                                  sclass="fi cts-reason-combo"
+                                  placeholder="— Select a reason —"
+                                  autocomplete="false"
+                                  autodrop="false"/>
+
+                        <n:div class="cts-reason-btn-row">
+                            <button id="chk-btn-confirm-action"
+                                    sclass="btn-cts-confirm"
+                                    label="Confirm"
+                                    autodisable="false"/>
+                            <button id="chk-btn-cancel-action"
+                                    sclass="btn-cts-cancel"
+                                    label="Cancel"
+                                    autodisable="false"/>
+                        </n:div>
+                    </n:div>
+
+                    <!-- "Other" free-text box — shown by JS when "Other" selected -->
+                    <n:div id="chk-remarks-other-wrap"
+                           class="cts-reason-other-wrap"
+                           style="display:none;">
+                        <textbox id="chk-action-remarks-other"
+                                 sclass="fi-ta"
+                                 multiline="true"
+                                 rows="3"
+                                 placeholder="Enter your detailed remarks..."
+                                 maxlength="500"/>
+                    </n:div>
+
+                    <label id="chk-remarks-error"
+                           sclass="field-err-msg"
+                           visible="false"
+                           value="⚠ Please select a reason before confirming"/>
+                </div>
+
+            </n:div>
+
+        </div>
+        <!-- end scrollable content -->
+        
+        <div id="chk-audit-trail-rows" style="display:none;"/>
+
+    </div>
+    <!-- end popup root -->
+</zk>

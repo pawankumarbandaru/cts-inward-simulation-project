@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="Batch Detail CTS"?>
+
+<?component name="batchSummary"
+            macroURI="/component/batchSummary.zul"
+            class="com.cts.component.BatchSummaryComponent"?>
+
+<?component name="chequeList"
+            macroURI="/component/chequeList.zul"
+            class="com.cts.component.ChequeListComponent"?>
+
+<zk>
+<div apply="com.cts.inward.composer.BatchDetailComposer"
+     sclass="maker-page-root">
+
+    <style src="/css/inward/common.css"/>
+    <style src="/css/inward/batchSummary.css"/>
+    <style src="/css/inward/chequeList.css"/>
+
+    <div sclass="maker-main-content">
+
+        <div sclass="top-nav">
+	    <label value="Home" style="color:#cdd6e8;"/>
+	    <label value=" › " style="color:#6b7fa8;"/>
+	    <label value="Batch Detail" style="color:#ffffff;font-weight:600;"/>
+		</div>
+
+        <div sclass="page-subtitle-bar">
+            <label id="lblPageSubtitle" sclass="page-subtitle-label"/>
+        </div>
+
+        <div sclass="two-panel-layout">
+
+            <div sclass="left-panel">
+                <batchSummary id="batchSummaryMacro" batchDbId="0"/>
+            </div>
+
+            <div sclass="right-panel">
+                <chequeList id="chequeListMacro" batchDbId="0"/>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</zk>

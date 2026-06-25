@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="CBS Validation"?>
+
+<?component name="batchSummary"
+            macroURI="/component/batchSummary.zul"
+            class="com.cts.component.BatchSummaryComponent"?>
+
+<?component name="cbsChequeList"
+            macroURI="/component/cbsChequeList.zul"
+            class="com.cts.component.CbsChequeListComponent"?>
+
+<zk>
+<div apply="com.cts.inward.composer.CbsValidationComposer"
+     sclass="maker-page-root cbs-page-root">
+
+    <style src="/css/inward/common.css"/>
+<style src="/css/inward/batchSummary.css"/>
+<style src="/css/inward/chequeList.css"/>
+<style src="/css/inward/cbsValidation.css"/>
+
+    <div sclass="maker-main-content">
+
+        <div sclass="top-nav">
+	    <label value="Home" style="color:#cdd6e8;"/>
+	    <label value=" › " style="color:#6b7fa8;"/>
+	    <label value="CBS Validation" style="color:#ffffff;font-weight:600;"/>
+		</div>
+
+        <!-- Page subtitle -->
+        <div sclass="page-subtitle-bar">
+            <label id="lblCbsPageSubtitle" sclass="page-subtitle-label"/>
+        </div>
+
+        <!-- Two-panel layout -->
+        <div sclass="two-panel-layout">
+
+            <!-- LEFT: Batch Summary macro -->
+            <div sclass="left-panel">
+                <batchSummary id="cbsBatchSummaryMacro" batchDbId="0"/>
+            </div>
+
+            <!-- RIGHT: CBS Cheque List + action buttons -->
+            <div sclass="right-panel cbs-right-panel">
+                <cbsChequeList id="cbsChequeListMacro" batchDbId="0"/>
+
+                <!--
+                    Action button area — two buttons side by side.
+
+                    btnReturnToRrf  → visible + enabled only when invalid cheques exist.
+                                      Marks all INVALID cheques as REJECTED in DB,
+                                      then removes them from the list.
+
+                    btnForwardTv1Tv2 → visible + enabled only when ALL cheques are VALID
+                                       (i.e. no invalid cheques remain after validation
+                                       OR after Return to RRF clears the invalid ones).
+                -->
+                <div sclass="cbs-action-area">
+
+                    <button id="btnReturnToRrf"
+                            label="Return to RRF"
+                            sclass="btn-return-rrf"
+                            visible="false"
+                            disabled="true"/>
+
+                    <button id="btnForwardTv1Tv2"
+                            label="Forward to Tv1 and Tv2"
+                            sclass="btn-forward-tv1tv2"
+                            visible="false"
+                            disabled="true"/>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</zk>

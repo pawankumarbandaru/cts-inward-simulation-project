@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?page title="Resubmitted Cheques | CTS" contentType="text/html;charset=UTF-8"?>
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:n="native"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <style src="/css/inward/Inwardmakerstyles.css"/>
+    <style src="/css/inward/checkerStyles.css"/>
+    <style src="/css/inward/cts-breadcrumb-filter-theme.css"/>
+
+    <!--
+        COLUMN CHANGES:
+        REMOVED filter : Priority dropdown (v2-prio-filter)
+          → priority column deleted from DB
+
+        TABLE COLUMN CHANGES:
+          REMOVED  "Priority"    (priority)       → column deleted from DB
+          REMOVED  "Resubmitted" (resubmitted_at) → column deleted from DB
+          REPLACED with "CBS Status" (cbsValidation) — more useful for V2 reviewer
+
+        Old colspan: 10  →  New colspan: 9  (one column removed)
+    -->
+
+    <div apply="com.cts.inward.composer.TV2_ResubmittedQueueComposer"
+         sclass="rcb-page-wrap">
+
+        <!-- Scrollable content -->
+        <div sclass="rcb-scroll-area">
+
+            <!-- Breadcrumb -->
+            <div sclass="cts-breadcrumb">
+                <n:span class="cts-breadcrumb-item">Home</n:span>
+                <n:span class="cts-breadcrumb-sep">›</n:span>
+                <n:span class="cts-breadcrumb-active">Resubmitted Cheques</n:span>
+            </div>
+
+            <!-- Page header -->
+            <div sclass="page-hdr">
+                <div>
+                    <div sclass="page-title">
+                        <n:span class="v2-title-dot">🔄</n:span>
+                        Resubmitted Cheques
+                        <label id="v2-count-badge"
+                               sclass="v2-count-badge"
+                               value="—"/>
+                    </div>
+                    <div sclass="page-sub">
+                        Cheques resubmitted by Maker after correction — review and clear (> ₹1,00,000)
+                    </div>
+                </div>
+                <button id="v2-btn-refresh"
+                        sclass="v2-btn-refresh"
+                        autodisable="false">
+                    ↺ Refresh
+                </button>
+            </div>
+
+            <!-- Success banner -->
+            <!-- FIX: replaced ZK <html> (stub-based) with <n:div id="v2-success-text">
+                 The ZK Html component creates a client-side stub that causes
+                 "Failed to mount: Unknown stub" when setVisible(true) is called in
+                 the same server response as populateBatchFilter() + renderTable().
+                 Native n:div has no stub — content is set via CtsUiBridge.setBannerText().
+                 FIX 2: added sclass="v2-success-banner" — was missing, so the banner
+                 had no flex layout (button wrapped below text) and no green styling. -->
+            <div id="v2-success-banner" visible="false"
+                 sclass="v2-success-banner">
+                <n:span class="rcb-success-icon">✅</n:span>
+                <n:div id="v2-success-text"
+                       sclass="v2-success-text"></n:div>
+                <button id="v2-success-dismiss"
+                        sclass="v2-success-dismiss"
+                        autodisable="false">✕</button>
+            </div>
+
+            <!-- Alert banner -->
+            <div id="v2-alert-banner" sclass="v2-alert-banner" visible="false">
+                <n:span class="rcb-alert-icon">🔄</n:span>
+                <n:span>
+                    <n:strong>Pending Review</n:strong>
+                    — The following cheques were resubmitted by Maker.
+                    Click <n:strong>👁 Review</n:strong> to open the review workspace.
+                </n:span>
+            </div>
+
+            <!--
+                FILTER BAR + TABLE — now one merged card (no gap between them)
+                Priority filter REMOVED — priority column deleted from DB.
+                Filters: Search, Edited by Maker, Batch Number, Clear.
+            -->
+            <div sclass="cts-merged-card">
+
+                <div sclass="cts-filter-card cts-merged-filter rcb-filter-bar">
+
+                    <!-- Search column -->
+                    <div sclass="rcb-filter-col rcb-filter-col-search">
+                        <n:span class="cts-filter-label">
+                            Search Cheque / Batch
+                        </n:span>
+                        <div sclass="cts-filter-input-row">
+                            <textbox id="v2-search"
+                                     sclass="cts-filter-input rcb-filter-input"
+                                     placeholder="Cheque no. or Batch ID..."/>
+                            <button id="v2-btn-search"
+                                    label="🔍 Search"
+                                    sclass="cts-btn-search rcb-filter-btn cts-btn-search-navy"
+                                    autodisable="false"/>
+                        </div>
+                    </div>
+
+                    <!-- Edited by Maker column -->
+                    <div sclass="rcb-filter-col">
+                        <n:span class="cts-filter-label">
+                            Edited By Maker
+                        </n:span>
+                        <listbox id="v2-edited-filter"
+                                 mold="select"
+                                 sclass="cts-filter-select"
+                                 style="height:38px !important;min-height:38px !important;
+                                        max-height:38px !important;">
+                            <listitem label="All Cheques" value=""    selected="true"/>
+                            <listitem label="Edited Only" value="YES"/>
+                            <listitem label="Not Edited"  value="NO"/>
+                        </listbox>
+                    </div>
+
+                    <!-- Batch Number filter column -->
+                    <div sclass="rcb-filter-col">
+                        <n:span class="cts-filter-label">
+                            Batch Number
+                        </n:span>
+                        <listbox id="v2-batch-filter"
+                                 mold="select"
+                                 sclass="cts-filter-select"
+                                 style="height:38px !important;min-height:38px !important;
+                                        max-height:38px !important;">
+                            <listitem label="All Batches" value="" selected="true"/>
+                        </listbox>
+                    </div>
+
+                    <!-- Clear button column -->
+                    <div sclass="rcb-filter-col">
+                        <n:div class="cts-filter-label-wrap"/>
+                        <button id="v2-btn-clear-filter"
+                                label="✕ Clear"
+                                sclass="cts-btn-clear cts-btn-clear-navy rcb-filter-btn"
+                                autodisable="false"/>
+                    </div>
+
+                </div>
+
+                <!--
+                    TABLE
+                -->
+                <div sclass="cts-table-wrap cts-merged-table">
+                    <grid id="v2-grid" sclass="rcb-grid">
+                        <columns sizable="false" sclass="cts-grid-header-blue">
+                            <column label="#"              width="52px"  align="center"/>
+                            <column label="Cheque No."     width="130px" align="center"/>
+                            <column label="Batch ID"       width="120px" align="center"/>
+                            <column label="Amount (₹)"     width="110px" align="center"/>
+                            <column label="Checker Remark" hflex="1"     align="center"/>
+                            <column label="Edited"         width="110px" align="center"/>
+                            <column label="Action"         width="140px" align="center"/>
+                        </columns>
+                        <rows id="v2-rows">
+                            <row id="v2-empty-row" visible="false">
+                                <cell colspan="7">
+                                    <n:div class="rcb-empty-state">
+                                        <n:div class="v2-empty-icon">✅</n:div>
+                                        <n:div class="v2-empty-title">
+                                            No Resubmitted Cheques
+                                        </n:div>
+                                        <n:div class="v2-empty-desc">
+                                            All resubmitted cheques have been reviewed.
+                                            Nothing pending for Branch Manager.
+                                        </n:div>
+                                    </n:div>
+                                </cell>
+                            </row>
+                        </rows>
+                    </grid>
+                </div>
+
+                <paging id="v2-paging" pageSize="3" totalSize="0"
+                        sclass="rcb-paging"/>
+
+            </div><!-- /cts-merged-card -->
+
+        </div>
+
+    </div>
+
+</zk>

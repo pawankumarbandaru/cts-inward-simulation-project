@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+    <session-factory>
+
+        <!-- ============================================================
+             CONNECTION POOL (HikariCP)
+             ============================================================
+             FIX for "LogicalConnectionManagedImpl is closed" error:
+
+             Supabase uses PgBouncer in TRANSACTION POOLING mode.
+             PgBouncer has its own server_idle_timeout (default: 600s).
+             If a pooled JDBC connection sits idle longer than that,
+             PgBouncer silently closes the backend connection.
+             HikariCP does not know the connection is dead until it
+             tries to use it — at that point Hibernate throws:
+               "LogicalConnectionManagedImpl@xxxx is closed"
+
+             Fix applied (three-part):
+               1. keepaliveTime = 60000 (60 s)
+                  HikariCP sends "SELECT 1" on idle connections every
+                  60 seconds, keeping them alive in PgBouncer's eyes.
+
+               2. maxLifetime = 300000 (5 min)
+                  Force-recycle connections before PgBouncer's own
+                  server_idle_timeout (600 s) closes them underneath us.
+                  maxLifetime must be LESS THAN PgBouncer's timeout.
+
+               3. idleTimeout = 120000 (2 min)
+                  Shrink the idle pool faster so fewer connections sit
+                  around long enough to go stale.
+        ============================================================ -->
+
+        <!-- Pool size -->
+        <property name="hibernate.hikari.maximumPoolSize">10</property>
+        <property name="hibernate.hikari.minimumIdle">2</property>
+
+        <!-- Timeout settings — tuned for Supabase PgBouncer -->
+        <property name="hibernate.hikari.connectionTimeout">30000</property>
+        <property name="hibernate.hikari.idleTimeout">120000</property>
+        <property name="hibernate.hikari.maxLifetime">300000</property>
+
+        <!-- KEEPALIVE — the main fix.
+             Pings idle connections every 60 s so PgBouncer never closes them.
+             Requires HikariCP 4.0.1+ (included in Hibernate 6 / Spring 3). -->
+        <property name="hibernate.hikari.keepaliveTime">60000</property>
+
+        <!-- Connection validation — test before handing to application -->
+        <property name="hibernate.hikari.connectionTestQuery">SELECT 1</property>
+
+        <property name="hibernate.connection.driver_class">
+            org.postgresql.Driver
+        </property>
+
+        <!--
+            prepareThreshold=0  — disables server-side prepared statements.
+            Required for Supabase PgBouncer (transaction pooling mode), which
+            does NOT support prepared statements across pooled connections.
+        -->
+        <property name="hibernate.connection.url">
+            jdbc:postgresql://aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres?prepareThreshold=0
+        </property>
+
+        <property name="hibernate.connection.username">
+            postgres.gzohttbjqvshdpvghapw
+        </property>
+
+        <property name="hibernate.connection.password">
+            %aDNQzn9!58nb2T
+        </property>
+
+        <property name="hibernate.dialect">
+            org.hibernate.dialect.PostgreSQLDialect
+        </property>
+
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <property name="hibernate.hbm2ddl.auto">none</property>
+
+        <!-- Entity mappings -->
+        <mapping class="com.cts.inward.entity.InwardBatch"/>
+        <mapping class="com.cts.inward.entity.InwardCheque"/>
+
+    </session-factory>
+
+</hibernate-configuration>

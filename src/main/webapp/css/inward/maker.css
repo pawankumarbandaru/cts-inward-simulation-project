@@ -1,0 +1,1625 @@
+/* =============================================
+   CTS - Maker Batch Detail Styles
+   File: maker.css
+   ============================================= */
+
+/* =============================================
+   ROOT VARIABLES
+   ============================================= */
+
+:root {
+    --primary        : #1E4D8C;
+    --primary-light  : #2D6BCF;
+    --bg             : #F7F9FC;
+    --surface        : #FFFFFF;
+    --alt            : #F3F6FB;
+    --border         : #D9E2EC;
+    --border-strong  : #B8C8DC;
+    --success        : #1A7A4A;
+    --success-bg     : #EAF5EF;
+    --success-b      : #81C995;
+    --warning        : #B86F00;
+    --warning-bg     : #FFF4E0;
+    --warning-b      : #F5C842;
+    --danger         : #C0392B;
+    --text-primary   : #1F2937;
+    --text-secondary : #4B5563;
+    --text-muted     : #6B7280;
+    --radius-sm      : 4px;
+    --radius-md      : 8px;
+    --font-mono      : 'Courier New', monospace;
+}
+
+/* =============================================
+   PAGE ROOT
+   ============================================= */
+
+.maker-page-root {
+    display        : flex;
+    flex-direction : column;
+    height         : 100%;
+    background     : var(--bg);
+    overflow       : hidden;
+}
+
+/* =============================================
+   MAIN CONTENT
+   ============================================= */
+
+.maker-main-content {
+    display        : flex;
+    flex-direction : column;
+    flex           : 1;
+    overflow       : hidden;
+}
+
+/* =============================================
+   BREADCRUMB
+   ============================================= */
+
+.breadcrumb-bar {
+    height        : 38px;
+    background    : var(--surface);
+    border-bottom : 1px solid var(--border);
+    display       : flex;
+    align-items   : center;
+    padding       : 0 20px;
+    gap           : 4px;
+    flex-shrink   : 0;
+}
+
+.bread-parent {
+    font-size : 12px;
+    color     : var(--text-muted);
+}
+
+.bread-sep {
+    font-size : 12px;
+    color     : var(--text-muted);
+}
+
+.bread-current {
+    font-size   : 12px;
+    font-weight : 600;
+    color       : var(--text-primary);
+}
+
+/* =============================================
+   PAGE SUBTITLE
+   ============================================= */
+
+.page-subtitle-bar {
+    padding       : 6px 20px;
+    background    : var(--surface);
+    border-bottom : 1px solid var(--border);
+    flex-shrink   : 0;
+}
+
+.page-subtitle-label {
+    font-size   : 13px;
+    color       : var(--text-secondary);
+    font-weight : 500;
+}
+
+/* =============================================
+   TWO PANEL LAYOUT
+   Left panel narrow — batch summary only
+   Right panel wide  — cheque list dominant
+   ============================================= */
+
+.two-panel-layout {
+    display  : flex;
+    flex     : 1;
+    overflow : hidden;
+    padding  : 16px;
+    gap      : 14px;
+}
+
+/* =============================================
+   LEFT PANEL — Compact Batch Summary
+   Reduced from 300px to 220px
+   Only takes space needed for summary info
+   ============================================= */
+
+.left-panel {
+    width         : 205px;
+    flex-shrink   : 0;
+    background    : var(--surface);
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-md);
+    box-shadow    : 0 2px 8px rgba(0, 0, 0, 0.06);
+    overflow-y    : auto;
+}
+
+/* =============================================
+   RIGHT PANEL — Dominant Cheque List Area
+   flex:1 gives it all remaining space
+   ============================================= */
+
+.right-panel {
+    flex           : 1;
+    background     : var(--surface);
+    border         : 1px solid var(--border);
+    border-radius  : var(--radius-md);
+    box-shadow     : 0 2px 8px rgba(0, 0, 0, 0.06);
+    overflow       : hidden;
+    display        : flex;
+    flex-direction : column;
+    min-width      : 0;
+}
+
+/* =============================================
+   BATCH SUMMARY STYLES
+   ============================================= */
+
+.batch-summary-wrapper {
+    padding : 14px;
+}
+
+.section-heading {
+    font-size      : 12px;
+    font-weight    : 700;
+    color          : var(--primary);
+    text-transform : uppercase;
+    letter-spacing : 0.5px;
+}
+
+.summary-group {
+    margin-top : 10px;
+}
+
+.summary-group-title {
+    font-size      : 10px;
+    font-weight    : 600;
+    color          : var(--text-muted);
+    text-transform : uppercase;
+    letter-spacing : 0.8px;
+}
+
+.summary-row {
+    display         : flex;
+    justify-content : space-between;
+    align-items     : center;
+    padding         : 6px 0;
+    border-bottom   : 1px solid var(--alt);
+}
+
+.summary-label {
+    font-size : 11px;
+    color     : var(--text-secondary);
+}
+
+.summary-value {
+    font-size : 12px;
+    color     : var(--text-primary);
+}
+
+.summary-value-bold {
+    font-size   : 12px;
+    font-weight : 700;
+    color       : var(--primary);
+}
+
+.summary-value-error {
+    font-size   : 12px;
+    font-weight : 700;
+    color       : var(--danger);
+}
+
+.summary-action-area {
+    margin-top : 16px;
+}
+
+.btn-cbs-action {
+    width         : 100%;
+    height        : 36px;
+    background    : var(--primary);
+    color         : #ffffff;
+    border        : none;
+    border-radius : var(--radius-sm);
+    font-size     : 12px;
+    font-weight   : 600;
+    cursor        : pointer;
+    transition    : background 0.15s;
+}
+
+.btn-cbs-action:hover {
+    background : var(--primary-light);
+}
+
+/* =============================================
+   CHEQUE LIST STYLES
+
+   Layout explanation:
+   cheque-list-wrapper  → flex column, full height
+     cheque-list-header → fixed height, shrink:0
+     cheque-listbox     → flex:1, grows to fill space
+     cheque-pagination  → fixed height, shrink:0
+
+   This guarantees pagination is ALWAYS visible
+   ============================================= */
+
+.cheque-list-wrapper {
+    display        : flex;
+    flex-direction : column;
+    height         : 100%;
+    overflow       : hidden;
+}
+
+/* Header: title on left, controls on right */
+.cheque-list-header {
+    display         : flex;
+    align-items     : center;
+    justify-content : space-between;
+    padding         : 10px 14px;
+    border-bottom   : 1px solid var(--border);
+    flex-shrink     : 0;
+    background      : var(--surface);
+}
+
+.cheque-list-title-area {
+    display     : flex;
+    align-items : center;
+    gap         : 6px;
+}
+
+.cheque-list-title {
+    font-size      : 13px;
+    font-weight    : 700;
+    color          : var(--text-primary);
+    text-transform : uppercase;
+    letter-spacing : 0.4px;
+}
+
+.cheque-list-subtitle {
+    font-size : 11px;
+    color     : var(--text-muted);
+}
+
+.cheque-list-controls {
+    display     : flex;
+    align-items : center;
+    gap         : 8px;
+}
+
+/* Search box */
+.cheque-search-box {
+    height        : 30px;
+    padding       : 0 10px;
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    font-size     : 12px;
+    width         : 220px;
+    background    : var(--surface);
+    color         : var(--text-primary);
+}
+
+.cheque-search-box:focus {
+    outline      : none;
+    border-color : var(--primary-light);
+    box-shadow   : 0 0 0 2px rgba(43, 91, 168, 0.1);
+}
+
+/* Status filter */
+.cheque-filter-select {
+    height        : 30px;
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    font-size     : 12px;
+    min-width     : 110px;
+    background    : var(--surface);
+    color         : var(--text-primary);
+}
+
+/*
+   Listbox — KEY CSS RULES:
+   flex: 1       → fills all space between header and pagination
+   min-height: 0 → REQUIRED for flex children to scroll properly
+   overflow-y    → shows scrollbar when rows exceed visible area
+   NO vflex="1"  → do not use vflex in zul, use CSS flex only
+*/
+.cheque-listbox {
+    flex       : 1;
+    border     : none;
+    width      : 100%;
+    overflow-y : auto;
+    min-height : 0;
+}
+
+/* Column headers */
+.cheque-list-head {
+    position : sticky;
+    top      : 0;
+    z-index  : 1;
+}
+
+.col-header {
+    font-size      : 11px;
+    font-weight    : 600;
+    color          : #ffffff;
+    text-transform : uppercase;
+    letter-spacing : 0.4px;
+    background     : #1c71d8;
+    border-bottom  : 2px solid var(--border-strong);
+    height         : 40px;
+    white-space    : nowrap;
+}
+
+/* Row hover */
+.z-listitem:hover {
+    background : #EEF4FF;
+    cursor     : pointer;
+}
+
+/* Remove ZK's default blue selected-row highlight.
+   Rows are opened via popup on click — no persistent selection needed. */
+.z-listitem-selected,
+.z-listitem-selected .z-listcell-cnt,
+.z-listitem.z-listitem-selected:hover {
+    background : #EEF4FF !important;
+    color      : var(--text-primary) !important;
+}
+
+/* Cheque number — styled as clickable */
+.cheque-no-link {
+    color            : var(--primary-light);
+    font-weight      : 600;
+    font-family      : var(--font-mono);
+    font-size        : 13px;
+    cursor           : pointer;
+    text-decoration  : none;
+}
+
+.cheque-no-link:hover {
+    text-decoration : underline;
+}
+
+/* Bank code */
+.bank-code-label {
+    color       : var(--primary);
+    font-weight : 600;
+    font-family : var(--font-mono);
+    font-size   : 12px;
+}
+
+/* MICR error — shown in red */
+.micr-error-label {
+    color       : var(--danger);
+    font-weight : 600;
+    font-family : var(--font-mono);
+    font-size   : 12px;
+}
+
+.cell-normal {
+    font-size : 13px;
+    color     : var(--text-primary);
+}
+
+.amount-label {
+    font-family : var(--font-mono);
+    font-size   : 12px;
+    color       : var(--text-primary);
+}
+
+/* NORMAL status — green badge */
+.badge-normal {
+    display        : inline-flex;
+    align-items    : center;
+    padding        : 2px 8px;
+    border-radius  : 100px;
+    font-size      : 10px;
+    font-weight    : 700;
+    text-transform : uppercase;
+    background     : var(--success-bg);
+    color          : var(--success);
+    border         : 1px solid var(--success-b);
+    white-space    : nowrap;
+}
+
+/* MICR_ERROR status — orange badge */
+.badge-micr-error {
+    display        : inline-flex;
+    align-items    : center;
+    padding        : 2px 8px;
+    border-radius  : 100px;
+    font-size      : 10px;
+    font-weight    : 700;
+    text-transform : uppercase;
+    background     : var(--warning-bg);
+    color          : var(--warning);
+    border         : 1px solid var(--warning-b);
+    white-space    : nowrap;
+}
+
+/*
+   Pagination area — ALWAYS pinned at bottom
+   flex-shrink: 0  → never shrinks
+   min-height: 46px → always has enough height to show
+*/
+.cheque-pagination-area {
+    padding       : 8px 14px;
+    border-top    : 1px solid var(--border);
+    flex-shrink   : 0;
+    background    : var(--surface);
+    display       : flex;
+    align-items   : center;
+    min-height    : 46px;
+}
+
+.cheque-paging {
+    font-size : 12px;
+    color     : var(--text-muted);
+}
+
+/* Old popup styles removed — see CHEQUE DETAIL POPUP STYLES section below */
+/* =============================================
+   CBS BUTTON STATES
+   ============================================= */
+
+/* Enabled state — full blue */
+.btn-cbs-enabled {
+    background  : var(--primary);
+    color       : #ffffff;
+    opacity     : 1;
+    cursor      : pointer;
+}
+
+.btn-cbs-enabled:hover {
+    background : var(--primary-light);
+}
+
+/* Disabled state — greyed out */
+.btn-cbs-disabled {
+    background  : #B0BEC5;
+    color       : #ffffff;
+    opacity     : 0.7;
+    cursor      : not-allowed;
+}
+
+/* =============================================
+   CHEQUE DETAIL POPUP STYLES
+   ============================================= */
+
+.cheque-detail-modal {
+    border-radius : var(--radius-md);
+    box-shadow    : 0 12px 48px rgba(0, 0, 0, 0.25);
+}
+
+/* Modal header bar — dark blue matching design */
+.modal-header-bar {
+    display         : flex;
+    align-items     : center;
+    justify-content : space-between;
+    padding         : 12px 20px;
+    background      : #1a3a6b;
+    border-radius   : var(--radius-md) var(--radius-md) 0 0;
+}
+
+.modal-header-left {
+    display     : flex;
+    align-items : center;
+    gap         : 10px;
+}
+
+.modal-header-title {
+    font-size   : 15px;
+    font-weight : 700;
+    color       : #ffffff;
+}
+
+/* Status badges in popup header */
+.modal-status-badge {
+    padding       : 3px 10px;
+    border-radius : 100px;
+    font-size     : 11px;
+    font-weight   : 700;
+    text-transform: uppercase;
+}
+
+.badge-micr-error-popup {
+    background : var(--warning-bg);
+    color      : var(--warning);
+    border     : 1px solid var(--warning-b);
+}
+
+.badge-normal-popup {
+    background : var(--success-bg);
+    color      : var(--success);
+    border     : 1px solid var(--success-b);
+}
+
+/* Modal body layout */
+.modal-body-layout {
+    display : flex;
+    height  : 520px;
+}
+
+/* =============================================
+   LEFT IMAGE PANEL
+   ============================================= */
+
+.modal-image-panel {
+    width          : 360px;
+    flex-shrink    : 0;
+    padding        : 16px;
+    background     : #f8fafc;
+    border-right   : 1px solid var(--border);
+    display        : flex;
+    flex-direction : column;
+    gap            : 8px;
+    overflow-y     : auto;
+}
+
+.modal-panel-heading {
+    font-size      : 13px;
+    font-weight    : 700;
+    color          : var(--text-primary);
+    padding-bottom : 6px;
+    border-bottom  : 1px solid var(--border);
+    display        : block;
+}
+
+.modal-image-block {
+    position : relative;
+}
+
+/* FRONT / BACK tag */
+.modal-image-tag {
+    display       : inline-flex;
+    align-items   : center;
+    padding       : 2px 10px;
+    border-radius : 4px;
+    font-size     : 11px;
+    font-weight   : 700;
+    margin-bottom : 6px;
+}
+
+.modal-image-tag-front {
+    background : #1a3a6b;
+    color      : #ffffff;
+}
+
+.modal-image-tag-back {
+    background : #546E7A;
+    color      : #ffffff;
+}
+
+/* Placeholder cheque front image */
+.modal-image-placeholder {
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    overflow      : hidden;
+    background    : #ffffff;
+}
+
+.placeholder-cheque-front {
+    padding    : 12px;
+    min-height : 140px;
+    display    : flex;
+    flex-direction: column;
+    gap        : 8px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.placeholder-bank-label {
+    font-size   : 13px;
+    font-weight : 700;
+    color       : #1a3a6b;
+}
+
+.placeholder-cheque-body {
+    flex       : 1;
+    display    : flex;
+    flex-direction: column;
+    gap        : 8px;
+    padding    : 8px 0;
+}
+
+.placeholder-line {
+    display     : flex;
+    gap         : 8px;
+    align-items : baseline;
+    font-size   : 12px;
+    color       : var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
+}
+
+.placeholder-payee {
+    font-weight : 600;
+    color       : var(--text-primary);
+    font-size   : 12px;
+}
+
+.placeholder-amount-box {
+    border        : 2px solid var(--text-primary);
+    padding       : 4px 10px;
+    border-radius : 3px;
+    display       : inline-block;
+    align-self    : flex-start;
+}
+
+.placeholder-amount-label {
+    font-size   : 14px;
+    font-weight : 700;
+    color       : var(--text-primary);
+}
+
+/* MICR line at bottom of cheque */
+.placeholder-micr-line {
+    border-top  : 2px solid var(--text-primary);
+    padding-top : 6px;
+    margin-top  : 4px;
+}
+
+.placeholder-micr-text {
+    font-family : var(--font-mono);
+    font-size   : 11px;
+    color       : var(--text-primary);
+    letter-spacing: 1px;
+}
+
+/* Cheque back placeholder */
+.modal-image-back {
+    background : #eceff1;
+}
+
+.placeholder-back-content {
+    padding        : 20px;
+    display        : flex;
+    flex-direction : column;
+    align-items    : center;
+    gap            : 6px;
+    min-height     : 100px;
+}
+
+.placeholder-back-title {
+    font-size   : 13px;
+    font-weight : 600;
+    color       : var(--text-secondary);
+}
+
+.placeholder-back-subtitle {
+    font-size : 11px;
+    color     : var(--text-muted);
+}
+
+/* =============================================
+   RIGHT DETAIL PANEL
+   ============================================= */
+
+.modal-detail-panel {
+    flex           : 1;
+    padding        : 16px 20px;
+    display        : flex;
+    flex-direction : column;
+    overflow-y     : auto;
+    min-width      : 0;
+}
+
+/* Section label — MICR FIELDS / CHEQUE DETAILS */
+.modal-section-label {
+    font-size      : 10px;
+    font-weight    : 700;
+    color          : var(--text-muted);
+    text-transform : uppercase;
+    letter-spacing : 1px;
+    padding        : 4px 0;
+    border-bottom  : 1px solid var(--border);
+    margin-bottom  : 8px;
+}
+
+/* Two column grid for fields */
+.modal-field-grid {
+    display               : grid;
+    grid-template-columns : 1fr 1fr;
+    gap                   : 10px 16px;
+    margin-bottom         : 4px;
+}
+
+.modal-field-group {
+    display        : flex;
+    flex-direction : column;
+    gap            : 3px;
+}
+
+.modal-field-label {
+    font-size      : 10px;
+    font-weight    : 700;
+    color          : var(--text-secondary);
+    text-transform : uppercase;
+    letter-spacing : 0.5px;
+}
+
+/* Red asterisk for required fields */
+.modal-field-label.req::after {
+    content : " *";
+    color   : var(--danger);
+}
+
+/* Field input — normal state */
+.modal-field-input {
+    height        : 32px;
+    padding       : 0 10px;
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    font-size     : 13px;
+    color         : var(--text-primary);
+    background    : var(--surface);
+    width         : 100%;
+    transition    : border-color 0.15s, background 0.15s;
+}
+
+.modal-field-input:focus {
+    outline      : none;
+    border-color : var(--primary-light);
+    box-shadow   : 0 0 0 2px rgba(43, 91, 168, 0.1);
+}
+
+/*
+   Edited field highlight — blue border + light blue background
+   Applied via Java: field.setSclass("modal-field-input field-edited")
+   Stays highlighted so user knows what was changed
+*/
+.field-edited {
+    border-color : #2D6BCF !important;
+    background   : #EBF3FF !important;
+    box-shadow   : 0 0 0 2px rgba(45, 107, 207, 0.2) !important;
+}
+
+/* Hint bar at bottom of detail panel */
+.modal-hint-bar {
+    background    : #FFF8E1;
+    border        : 1px solid #FFE082;
+    border-radius : var(--radius-sm);
+    padding       : 7px 12px;
+}
+
+.modal-hint-text {
+    font-size : 11px;
+    color     : #5D4037;
+}
+
+/* Modal action row */
+.modal-action-row {
+    display     : flex;
+    gap         : 8px;
+    margin-top  : auto;
+    padding-top : 12px;
+    border-top  : 1px solid var(--border);
+    justify-content: flex-end;
+}
+
+/* Save button */
+.btn-save {
+    height        : 34px;
+    padding       : 0 20px;
+    background    : var(--primary);
+    color         : #ffffff;
+    border        : none;
+    border-radius : var(--radius-sm);
+    font-size     : 13px;
+    font-weight   : 600;
+    cursor        : pointer;
+    transition    : background 0.15s;
+}
+
+.btn-save:hover {
+    background : var(--primary-light);
+}
+
+/* Cancel button */
+.btn-cancel {
+    height        : 34px;
+    padding       : 0 16px;
+    background    : transparent;
+    color         : var(--text-secondary);
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    font-size     : 13px;
+    font-weight   : 600;
+    cursor        : pointer;
+    transition    : background 0.15s;
+}
+
+.btn-cancel:hover {
+    background : var(--alt);
+}
+
+
+/* =============================================
+   MODAL CLOSE BUTTON (X in header)
+   ============================================= */
+
+.modal-close-btn {
+    background    : transparent;
+    border        : none;
+    color         : #ffffff;
+    font-size     : 16px;
+    font-weight   : 700;
+    cursor        : pointer;
+    padding       : 2px 8px;
+    border-radius : var(--radius-sm);
+    line-height   : 1;
+    opacity       : 0.8;
+    transition    : opacity 0.15s;
+}
+
+.modal-close-btn:hover {
+    opacity    : 1;
+    background : rgba(255,255,255,0.15);
+}
+
+/* =============================================
+   CHEQUE EDIT POPUP — chequeEditPopup.zul
+   All styles for the separate popup modal
+   ============================================= */
+
+/* Popup window shell */
+/* The popup window shell — border-radius, overflow and padding
+   were previously inline on the <window> tag. Moved here. */
+#chequeEditPopupWindow {
+    border-radius : 8px;
+    overflow      : hidden;
+    padding       : 0;
+}
+
+.popup-window {
+    font-family : 'Segoe UI', Arial, sans-serif;
+    background  : #ffffff;
+}
+
+/* Header bar */
+.popup-header {
+    display         : flex;
+    align-items     : center;
+    justify-content : space-between;
+    background      : #1a3a6b;
+    padding         : 0 20px;
+    height          : 48px;
+}
+
+.popup-header-left {
+    display     : flex;
+    align-items : center;
+    gap         : 10px;
+}
+
+.popup-title {
+    font-size   : 15px;
+    font-weight : 700;
+    color       : #ffffff;
+}
+
+.popup-badge {
+    padding       : 3px 10px;
+    border-radius : 20px;
+    font-size     : 11px;
+    font-weight   : 700;
+}
+
+.badge-popup-normal {
+    background : var(--success-bg);
+    color      : var(--success);
+    border     : 1px solid var(--success-b);
+}
+
+.badge-popup-micr-error {
+    background : var(--warning-bg);
+    color      : var(--warning);
+    border     : 1px solid var(--warning-b);
+}
+
+.popup-close-btn {
+    background  : transparent !important;
+    border      : none !important;
+    color       : #ffffff !important;
+    font-size   : 16px !important;
+    font-weight : 700 !important;
+    cursor      : pointer !important;
+    padding     : 2px 8px !important;
+    line-height : 1 !important;
+}
+
+/* Body — two column layout */
+.popup-body {
+    display : flex;
+    height  : 500px;
+}
+
+/* LEFT image panel */
+.popup-img-panel {
+    width          : 320px;
+    flex-shrink    : 0;
+    background     : #f8fafc;
+    border-right   : 1px solid var(--border);
+    padding        : 14px;
+    display        : flex;
+    flex-direction : column;
+    gap            : 10px;
+    overflow-y     : auto;
+}
+
+.popup-img-panel-title {
+    font-size      : 12px;
+    font-weight    : 700;
+    color          : var(--text-primary);
+    border-bottom  : 1px solid var(--border);
+    padding-bottom : 6px;
+    display        : block;
+}
+
+.popup-img-tag {
+    display       : inline-block;
+    padding       : 2px 10px;
+    border-radius : 4px;
+    font-size     : 10px;
+    font-weight   : 700;
+    margin-bottom : 5px;
+}
+
+.popup-img-tag-front {
+    background : #1a3a6b;
+    color      : #ffffff;
+}
+
+.popup-img-tag-back {
+    background : #546E7A;
+    color      : #ffffff;
+}
+
+/* Cheque front face card */
+.popup-cheque-card {
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    background    : #ffffff;
+    padding       : 12px;
+}
+
+.popup-cheque-bank {
+    font-size    : 13px;
+    font-weight  : 700;
+    color        : #1a3a6b;
+    display      : block;
+    margin-bottom: 2px;
+}
+
+.popup-cheque-sub {
+    font-size    : 10px;
+    color        : var(--text-muted);
+    display      : block;
+    margin-bottom: 8px;
+}
+
+.popup-cheque-payline {
+    font-size     : 11px;
+    color         : var(--text-secondary);
+    border-bottom : 1px solid var(--border);
+    padding-bottom: 5px;
+    margin-bottom : 6px;
+}
+
+.popup-cheque-amount-box {
+    /* Changed from inline-block (label) to inline-flex (div wrapper) so that
+       the inner <label id="lblCardAmount"> is properly contained and @Wire works */
+    display       : inline-flex;
+    align-items   : center;
+    border        : 2px solid var(--text-primary);
+    padding       : 4px 12px;
+    border-radius : 3px;
+    font-size     : 14px;
+    font-weight   : 700;
+    color         : var(--text-primary);
+    margin-bottom : 8px;
+}
+
+.popup-cheque-micr {
+    border-top    : 2px solid var(--text-primary);
+    padding-top   : 5px;
+    font-family   : var(--font-mono);
+    font-size     : 10px;
+    color         : var(--text-primary);
+    letter-spacing: 1px;
+    word-break    : break-all;
+}
+
+/* Cheque back card */
+.popup-back-card {
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    background    : #eceff1;
+    padding       : 20px 16px;
+    text-align    : center;
+}
+
+.popup-back-icon {
+    font-size    : 22px;
+    display      : block;
+    margin-bottom: 4px;
+}
+
+.popup-back-title {
+    font-size  : 12px;
+    font-weight: 600;
+    color      : #546E7A;
+    display    : block;
+}
+
+.popup-back-sub {
+    font-size : 10px;
+    color     : #78909C;
+    display   : block;
+    margin-top: 3px;
+}
+
+/* Hint bar */
+.popup-hint {
+    background    : #fffde7;
+    border        : 1px solid #fff176;
+    border-radius : var(--radius-sm);
+    padding       : 6px 10px;
+    margin-top    : auto;
+}
+
+.popup-hint-text {
+    font-size : 10px;
+    color     : #5d4037;
+}
+
+/* RIGHT detail panel */
+.popup-detail-panel {
+    flex           : 1;
+    padding        : 16px 20px;
+    display        : flex;
+    flex-direction : column;
+    overflow-y     : auto;
+}
+
+/* Section label — MICR FIELDS / CHEQUE DETAILS */
+.popup-section-label {
+    font-size      : 10px;
+    font-weight    : 700;
+    color          : var(--text-muted);
+    text-transform : uppercase;
+    letter-spacing : 1px;
+    padding-bottom : 5px;
+    border-bottom  : 1px solid var(--border);
+    margin-bottom  : 10px;
+    display        : block;
+}
+
+/* Two-column field grid */
+.popup-field-grid {
+    display               : grid;
+    grid-template-columns : 1fr 1fr;
+    gap                   : 10px 18px;
+    margin-bottom         : 14px;
+}
+
+.popup-field-group {
+    display        : flex;
+    flex-direction : column;
+    gap            : 3px;
+}
+
+.popup-field-label {
+    font-size      : 10px;
+    font-weight    : 700;
+    color          : var(--text-secondary);
+    text-transform : uppercase;
+    letter-spacing : 0.5px;
+}
+
+.popup-field-label-req::after {
+    content : " *";
+    color   : var(--danger);
+}
+
+/* Field textbox */
+.popup-field-input {
+    height        : 32px;
+    padding       : 0 10px;
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    font-size     : 13px;
+    color         : var(--text-primary);
+    background    : var(--surface);
+    width         : 100%;
+    transition    : border-color 0.15s;
+}
+
+.popup-field-input:focus {
+    outline      : none;
+    border-color : var(--primary-light);
+    box-shadow   : 0 0 0 2px rgba(43, 91, 168, 0.1);
+}
+
+/* Read-only field */
+.popup-field-readonly {
+    background : var(--alt) !important;
+    color      : var(--text-muted) !important;
+}
+
+/* Edited field — professional left border indicator
+   Applied via Java: field.setSclass("popup-field-input popup-field-edited")
+   Indicates that the current value differs from the originally loaded value.
+   The left border is the visual indicator — background is NOT changed so
+   the existing field color remains intact.
+   The highlight is automatically REMOVED if the user reverts the field
+   to its original value.
+*/
+.popup-field-edited {
+    border-left  : 3px solid #2D6BCF !important;
+    box-shadow   : -1px 0 0 0 rgba(45, 107, 207, 0.25) !important;
+    outline      : none;
+}
+
+/*
+   Read-only auto-generated edited field — softer indicator.
+   Applied via Java when a read-only field (e.g. tbAmountInWords, tbMicrNumber)
+   has been updated by the system and its value differs from what was
+   originally loaded. Uses a teal/green left border to distinguish from
+   user-editable field highlights.
+   Applied via Java: field.setSclass("popup-field-input popup-field-readonly popup-field-readonly-edited")
+*/
+.popup-field-readonly-edited {
+    border-left  : 3px solid #1A8A72 !important;
+    box-shadow   : -1px 0 0 0 rgba(26, 138, 114, 0.2) !important;
+}
+
+/* Action buttons row — directly below cheque details */
+.popup-action-row {
+    display         : flex;
+    justify-content : flex-end;
+    gap             : 10px;
+    padding-top     : 12px;
+    border-top      : 1px solid var(--border);
+    margin-top      : auto;
+}
+
+.btn-popup-cancel {
+    height        : 34px;
+    padding       : 0 20px;
+    background    : var(--surface);
+    color         : var(--text-secondary);
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    font-size     : 13px;
+    font-weight   : 600;
+    cursor        : pointer;
+    transition    : background 0.15s;
+}
+
+.btn-popup-cancel:hover {
+    background : var(--alt);
+}
+
+.btn-popup-save {
+    height        : 34px;
+    padding       : 0 22px;
+    background    : var(--primary);
+    color         : #ffffff;
+    border        : none;
+    border-radius : var(--radius-sm);
+    font-size     : 13px;
+    font-weight   : 600;
+    cursor        : pointer;
+    transition    : background 0.15s;
+}
+
+.btn-popup-save:hover {
+    background : var(--primary-light);
+}
+/* =============================================
+   POPUP VALIDATION STYLES
+   Added for MICR Repair Module enhancements:
+   1. Red field highlight for validation failures
+   2. Inline validation message label styles
+   ============================================= */
+
+/*
+   Error field highlight — red border + light red background
+   Applied via Java: field.setSclass("popup-field-input popup-field-error")
+   Shown when:
+     - MICR number does not match City + Bank + Branch
+     - Amount in Words does not match numeric Amount
+     - Required field is empty on save attempt
+*/
+.popup-field-error {
+    border-color : var(--danger) !important;
+    background   : #FFF0F0 !important;
+    box-shadow   : 0 0 0 2px rgba(192, 57, 43, 0.2) !important;
+}
+
+/*
+   Inline validation message — shown below a field group
+   when validation fails. Red text, small font.
+   Hidden by default using popup-validation-msg-hidden.
+*/
+.popup-validation-msg {
+    font-size    : 10px;
+    color        : var(--danger);
+    font-weight  : 600;
+    padding      : 3px 2px 6px 2px;
+    display      : block;
+    line-height  : 1.4;
+    word-break   : break-word;
+}
+
+/*
+   Hidden state — label is present in DOM but invisible.
+   Composer toggles between this and popup-validation-msg
+   to show/hide the message without layout shift.
+*/
+.popup-validation-msg-hidden {
+    font-size    : 10px;
+    color        : transparent;
+    padding      : 3px 2px 6px 2px;
+    display      : block;
+    line-height  : 1.4;
+    pointer-events: none;
+}
+/* =============================================
+   POPUP — NEW VERTICAL LAYOUT
+   Top: images side by side
+   Bottom: data entry fields
+   ============================================= */
+
+/* Outer body — vertical flex column */
+.popup-body-vertical {
+    display        : flex;
+    flex-direction : column;
+    background     : #ffffff;
+}
+
+/* TOP ROW — two images side by side */
+.popup-images-row {
+    display         : flex;
+    gap             : 16px;
+    padding         : 14px 20px 10px 20px;
+    background      : #f4f7fb;
+    border-bottom   : 1px solid var(--border);
+}
+
+/* Each image block takes equal width */
+.popup-image-block {
+    flex           : 1;
+    display        : flex;
+    flex-direction : column;
+    gap            : 6px;
+}
+
+/* FRONT / REAR label tag */
+.popup-side-tag {
+    font-size   : 11px;
+    font-weight : 700;
+    color       : var(--primary);
+    display     : block;
+}
+
+/* Container for the real image — fixed height */
+.popup-real-image-container {
+    width         : 100%;
+    height        : 160px;
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    background    : #ffffff;
+    overflow      : hidden;
+    display       : flex;
+    align-items   : center;
+    justify-content: center;
+}
+
+/* Real image — fills the container, object-fit keeps aspect ratio */
+.popup-real-image {
+    width      : 100%;
+    height     : 100%;
+    object-fit : contain;
+    display    : block;
+}
+
+/* Hint bar — inline between images and fields */
+.popup-hint-inline {
+    margin  : 0;
+    padding : 5px 20px;
+    background : #fffde7;
+    border-bottom : 1px solid #fff176;
+    border-top    : none;
+}
+
+/* DATA ENTRY area — all the editable fields */
+.popup-data-entry-area {
+    padding : 12px 20px 14px 20px;
+}
+
+/* "CHEQUE DATA ENTRY" big heading */
+.popup-data-entry-heading {
+    font-size      : 11px;
+    font-weight    : 700;
+    color          : var(--text-primary);
+    text-transform : uppercase;
+    letter-spacing : 0.5px;
+    display        : block;
+    margin-bottom  : 10px;
+    padding-bottom : 5px;
+    border-bottom  : 2px solid var(--primary);
+}
+
+/* Subsection label — MICR FIELDS / CHEQUE DETAILS */
+.popup-subsection-label {
+    font-size      : 9px;
+    font-weight    : 700;
+    color          : var(--text-muted);
+    text-transform : uppercase;
+    letter-spacing : 1px;
+    padding        : 4px 0 4px 0;
+    border-bottom  : 1px solid var(--border);
+    margin-bottom  : 8px;
+    margin-top     : 6px;
+    display        : block;
+}
+
+/* MICR grid — 6 fields in 2 rows of 3 */
+.popup-field-grid-micr {
+    grid-template-columns : repeat(6, 1fr) !important;
+    margin-bottom         : 4px !important;
+}
+
+/* Details grid — 5 fields in 1 row */
+.popup-field-grid-details {
+    grid-template-columns : repeat(5, 1fr) !important;
+    margin-bottom         : 8px !important;
+}
+
+/* AMT IN WORDS — spans full width below the grid */
+.popup-field-group-full {
+    display        : flex;
+    flex-direction : column;
+    gap            : 3px;
+    margin-bottom  : 8px;
+}
+
+/* =============================================
+
+/* =============================================
+   POPUP v5 — VERTICAL LAYOUT
+   ============================================= */
+
+.popup-body-v2 {
+    display        : flex;
+    flex-direction : column;
+    background     : #ffffff;
+    width          : 100%;
+    max-height     : 88vh;
+    overflow-y     : auto;
+}
+
+/* ── IMAGE SECTION ── */
+.popup-img-section {
+    padding       : 6px 16px 6px 16px;
+    background    : #f4f7fb;
+    border-bottom : 1px solid var(--border);
+}
+
+/* Top bar: ■ FRONT SIDE on left, [⇄ Show Back] on right — compact */
+.popup-img-topbar {
+    display         : flex;
+    align-items     : center;
+    justify-content : space-between;
+    margin-bottom   : 5px;
+}
+
+.popup-side-label {
+    font-size      : 11px;
+    font-weight    : 700;
+    color          : var(--primary);
+    text-transform : uppercase;
+    letter-spacing : 0.5px;
+}
+
+/* Switch button — small, sits top-right, NOT full width */
+.btn-switch-img {
+    height         : 24px !important;
+    padding        : 0 12px !important;
+    background     : var(--primary) !important;
+    color          : #ffffff !important;
+    border         : none !important;
+    border-radius  : var(--radius-sm) !important;
+    font-size      : 11px !important;
+    font-weight    : 600 !important;
+    cursor         : pointer !important;
+    white-space    : nowrap !important;
+    width          : auto !important;
+    min-width      : 0 !important;
+    display        : inline-block !important;
+    transition     : background 0.15s !important;
+}
+
+.btn-switch-img:hover {
+    background : var(--primary-light) !important;
+}
+
+/* Image frame — fixed height, no extra margin */
+.popup-img-frame {
+    width           : 92%;          /* narrower — leaves margin on both sides */
+    height          : 190px;        /* taller frame — full image visible */
+    margin          : 0 auto;       /* center the narrower frame */
+    border          : 1px solid var(--border);
+    border-radius   : var(--radius-sm);
+    background      : #ffffff;
+    overflow        : hidden;
+    display         : flex;
+    align-items     : center;
+    justify-content : center;
+    line-height     : 0;
+}
+
+.popup-real-img {
+    width      : 100%;
+    height     : 100%;
+    object-fit : contain;
+    display    : block;
+}
+
+/* ── HINT BAR ── */
+.popup-hint-bar {
+    padding       : 3px 16px;
+    background    : #fffde7;
+    border-bottom : 1px solid #fff176;
+}
+
+.popup-hint-text {
+    font-size : 10px;
+    color     : #5d4037;
+}
+
+/* ── FIELDS SECTION ── */
+.popup-fields-section {
+    padding : 6px 16px 8px 16px;
+}
+
+.popup-subsection-label {
+    display : none;
+}
+
+/* MICR — 6 cols */
+.popup-micr-row {
+    display               : grid;
+    grid-template-columns : repeat(6, 1fr);
+    gap                   : 4px 8px;
+    margin-bottom         : 8px;
+    padding-bottom        : 8px;
+    border-bottom         : 1px solid var(--border);
+}
+
+/* Cheque details — 5 cols */
+.popup-detail-row {
+    display               : grid;
+    grid-template-columns : repeat(5, 1fr);
+    gap                   : 4px 8px;
+    margin-bottom         : 5px;
+}
+
+/* AMT IN WORDS full width */
+.popup-amtwords-row {
+    display        : flex;
+    flex-direction : column;
+    gap            : 2px;
+    margin-bottom  : 6px;
+}
+
+.popup-field-group {
+    display        : flex;
+    flex-direction : column;
+    gap            : 2px;
+}
+
+.popup-field-label {
+    font-size      : 9px;
+    font-weight    : 700;
+    color          : var(--text-secondary);
+    text-transform : uppercase;
+    letter-spacing : 0.3px;
+    white-space    : nowrap;
+    overflow       : hidden;
+    text-overflow  : ellipsis;
+}
+
+.popup-field-label-req::after {
+    content : " *";
+    color   : var(--danger);
+}
+
+.popup-field-input {
+    height        : 27px;
+    padding       : 0 7px;
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    font-size     : 12px;
+    color         : var(--text-primary);
+    background    : var(--surface);
+    width         : 100%;
+    box-sizing    : border-box;
+    transition    : border-color 0.15s;
+}
+
+.popup-field-input:focus {
+    outline      : none;
+    border-color : var(--primary-light);
+    box-shadow   : 0 0 0 2px rgba(43, 91, 168, 0.1);
+}
+
+.popup-field-readonly {
+    background : var(--alt) !important;
+    color      : var(--text-muted) !important;
+}
+
+.popup-field-edited {
+    border-left : 3px solid #2D6BCF !important;
+    box-shadow  : -1px 0 0 0 rgba(45, 107, 207, 0.25) !important;
+}
+
+.popup-field-readonly-edited {
+    border-left : 3px solid #1A8A72 !important;
+    box-shadow  : -1px 0 0 0 rgba(26, 138, 114, 0.2) !important;
+}
+
+.popup-field-error {
+    border-color : var(--danger) !important;
+    background   : #FFF0F0 !important;
+    box-shadow   : 0 0 0 2px rgba(192, 57, 43, 0.2) !important;
+}
+
+.popup-validation-msg {
+    font-size   : 10px;
+    color       : var(--danger);
+    font-weight : 600;
+    padding     : 1px 0 2px 0;
+    display     : block;
+}
+
+.popup-validation-msg-hidden {
+    font-size      : 10px;
+    color          : transparent;
+    padding        : 1px 0 2px 0;
+    display        : block;
+    pointer-events : none;
+}
+
+/* Action buttons */
+.popup-action-row {
+    display         : flex;
+    justify-content : flex-end;
+    gap             : 10px;
+    padding-top     : 8px;
+    border-top      : 1px solid var(--border);
+    margin-top      : 4px;
+}
+
+.btn-popup-cancel {
+    height        : 30px;
+    padding       : 0 16px;
+    background    : var(--surface);
+    color         : var(--text-secondary);
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    font-size     : 12px;
+    font-weight   : 600;
+    cursor        : pointer;
+}
+
+.btn-popup-cancel:hover { background: var(--alt); }
+
+.btn-popup-save {
+    height        : 30px;
+    padding       : 0 18px;
+    background    : var(--primary);
+    color         : #ffffff;
+    border        : none;
+    border-radius : var(--radius-sm);
+    font-size     : 12px;
+    font-weight   : 600;
+    cursor        : pointer;
+}
+
+.btn-popup-save:hover { background: var(--primary-light); }

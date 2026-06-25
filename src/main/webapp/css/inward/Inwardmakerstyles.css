@@ -1,0 +1,3665 @@
+/* =================================================================
+   Inwardmakerstyles.css
+   ONE CSS FILE FOR ALL INWARD MAKER PAGES
+   Covers: returnedByChecker.zul + makerRepairWorkspace.zul
+   ================================================================= */
+@import
+	url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap')
+	;
+
+/* ── Design Tokens ── */
+:root {
+	--primary: #1E4D8C;
+	--primary-light: #2D6BCF;
+	--accent: #3BA8FF;
+	--bg: #F7F9FC;
+	--surface: #FFFFFF;
+	--alt: #F3F6FB;
+	--border: #D9E2EC;
+	--border-s: #B8C8DC;
+	--success: #1A7A4A;
+	--success-bg: #EAF5EF;
+	--success-b: #81C995;
+	--warning: #B86F00;
+	--warning-bg: #FFF4E0;
+	--warning-b: #F5C842;
+	--danger: #C0392B;
+	--danger-bg: #FDECEA;
+	--danger-b: #EF9A9A;
+	--info: #1E4D8C;
+	--info-bg: #E8F0FE;
+	--info-b: #90B4F5;
+	--t1: #1F2937;
+	--t2: #4B5563;
+	--tm: #6B7280;
+	--r4: 4px;
+	--r6: 8px;
+	--font: 'IBM Plex Sans', sans-serif;
+	--mono: 'IBM Plex Mono', monospace;
+}
+
+/* ── Base reset ── */
+body, .z-label, .z-textbox, .z-button, .z-row, .z-cell, .z-column, div,
+	span, button {
+	font-family: var(--font);
+	box-sizing: border-box;
+}
+
+button {
+	background: #1a3a6e;
+}
+/* ==================================================================
+   RETURNED BY CHECKER PAGE — returnedByChecker.zul
+   ================================================================== */
+.page-hdr {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 16px;
+}
+
+.page-title {
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--t1);
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-left: 25px;
+}
+
+.page-sub {
+	font-size: 13px;
+	color: var(--tm);
+	margin-top: 3px;
+	margin-left: 25px;
+	margin-right: 25px;
+}
+
+/* Pulsing badge */
+.rcb-badge {
+	background: #E53935;
+	color: #fff;
+	font-size: 10px;
+	font-weight: 700;
+	border-radius: 100px;
+	min-width: 18px;
+	height: 18px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 5px;
+	animation: rcb-pulse 2s infinite;
+}
+
+@keyframes rcb-pulse { 0%, 100% {
+	box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.5);
+}
+
+50% {
+	box-shadow: 0 0 0 5px rgba(229, 57, 53, 0);
+}
+}
+
+/* Action Required banner */
+.rcb-alert-banner {
+	background: #FFF3F3;
+	border: 1px solid #E53935;
+	color: #C62828;
+	border-radius: var(--r4);
+	padding: 9px 12px;
+	font-size: 12px;
+	margin-bottom: 12px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* ==================================================================
+   SHARED FILTER BAR — used by returnedByChecker.zul
+                       and checkerResubmittedQueue.zul
+
+   CRITICAL ZK RULE:
+   ZK components (textbox, button, listbox) must live inside ZK <div>
+   NOT inside <n:div>. ZK <div> renders as <div class="z-div [sclass]">.
+   CSS targets both the z-div wrapper and the sclass directly.
+   ================================================================== */
+
+/* Outer card — dark navy container */
+/* ==================================================================
+   FILTER BAR — used by returnedByChecker.zul + checkerResubmittedQueue.zul
+   All elements are 38px tall so they line up perfectly.
+   align-items: flex-end on the card + fixed 18px label height = perfect
+   bottom-alignment across all field types.
+   ================================================================== */
+
+/* ── Filter card container ─────────────────────────────────────── */
+.cts-filter-card, div.z-div.cts-filter-card {
+	background: #fafbfd !important;
+	border: 1px solid #e8edf4 !important;
+	border-radius: 8px !important;
+	padding: 14px 20px !important;
+	margin-bottom: 16px !important;
+	display: flex !important;
+	align-items: flex-end !important; /* bottom-align all columns */
+	gap: 16px !important;
+	flex-wrap: wrap !important;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ── Each filter column (normal fixed-width) ───────────────────── */
+.cts-filter-field, div.z-div.cts-filter-field {
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 0 !important;
+	min-width: 150px !important;
+	flex-shrink: 0 !important;
+}
+
+/* ── Search column (grows to fill space) ───────────────────────── */
+.cts-filter-field-grow, div.z-div.cts-filter-field-grow {
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 0 !important;
+	flex: 1 !important;
+	min-width: 220px !important;
+	max-width: 420px !important;
+}
+
+/* ── Label wrapper — FIXED height so all columns bottom-align ──── */
+/* Every column has a label area of exactly 22px before the input.  */
+.cts-filter-label-wrap, div.z-div.cts-filter-label-wrap {
+	height: 22px !important;
+	display: flex !important;
+	align-items: flex-end !important;
+	margin-bottom: 5px !important;
+}
+
+/* ── Label text ─────────────────────────────────────────────────── */
+.cts-filter-label {
+	font-size: 10.5px !important;
+	font-weight: 700 !important;
+	color: #8a9bb8 !important;
+	text-transform: uppercase !important;
+	letter-spacing: 0.07em !important;
+	display: block !important;
+	line-height: 2 !important;
+}
+
+/* ── Input + Search button row ──────────────────────────────────── */
+.cts-filter-input-row, div.z-div.cts-filter-input-row {
+	display: flex !important;
+	gap: 8px !important;
+	align-items: stretch !important;
+	/* both textbox and button same height */
+	height: 38px !important;
+}
+
+/* ── Clear button wrapper — needs same label spacer so it aligns ── */
+.cts-filter-action, div.z-div.cts-filter-action {
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 0 !important;
+	flex-shrink: 0 !important;
+}
+/* invisible spacer above Clear button = same 22px + 5px as label area */
+.cts-filter-action::before {
+	content: "" !important;
+	height: 27px !important;
+	display: block !important;
+}
+
+/* ── Textbox ────────────────────────────────────────────────────── */
+/* ZK renders <textbox sclass="cts-filter-input"> as:
+   <span class="z-textbox cts-filter-input">
+     <input class="z-textbox-inp"/>
+   </span>                                                          */
+.cts-filter-input.z-textbox {
+	height: 38px !important;
+	min-height: 38px !important;
+	max-height: 38px !important;
+	background: #ffffff !important;
+	border: 1.5px solid #d0d7e3 !important;
+	border-radius: 6px !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	flex: 1 !important;
+	min-width: 0 !important;
+	box-shadow: none !important;
+	box-sizing: border-box !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	line-height: 38px !important;
+}
+
+.cts-filter-input.z-textbox .z-textbox-inp {
+	background: transparent !important;
+	color: #374151 !important;
+	font-size: 13px !important;
+	font-family: var(--font) !important;
+	height: 38px !important;
+	line-height: 38px !important;
+	padding: 0 10px !important;
+	border: none !important;
+	outline: none !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
+	margin: 0 !important;
+}
+
+.cts-filter-input.z-textbox .z-textbox-inp::placeholder {
+	color: #adb5bd !important;
+	line-height: normal !important;
+}
+/* Hide the ZK built-in clear (×) icon that adds extra width */
+.cts-filter-input.z-textbox .z-textbox-btn-img {
+	display: none !important;
+}
+
+.cts-filter-input.z-textbox:focus-within {
+	border-color: #2563eb !important;
+	box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12) !important;
+}
+
+/* ── Listbox (select mold) ──────────────────────────────────────── */
+/* ZK renders <listbox mold="select" sclass="cts-filter-select"> as:
+   <select class="z-listbox cts-filter-select">...</select>        */
+.cts-filter-select.z-listbox {
+	height: 38px !important;
+	min-height: 38px !important;
+	max-height: 38px !important;
+	min-width: 140px !important;
+	background: #ffffff !important;
+	border: 1.5px solid #d0d7e3 !important;
+	border-radius: 6px !important;
+	color: #374151 !important;
+	font-size: 13px !important;
+	font-family: var(--font) !important;
+	width: 100% !important;
+	padding: 0 32px 0 10px !important;
+	cursor: pointer !important;
+	outline: none !important;
+	box-shadow: none !important;
+	box-sizing: border-box !important;
+	margin: 0 !important;
+	line-height: 38px !important;
+	vertical-align: middle !important;
+	-webkit-appearance: none !important;
+	appearance: none !important;
+	background-image:
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a9bb8' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")
+		!important;
+	background-repeat: no-repeat !important;
+	background-position: right 10px center !important;
+	background-size: 12px !important;
+}
+
+.cts-filter-select.z-listbox option {
+	background: #fff;
+	color: #374151;
+}
+
+.cts-filter-select.z-listbox:focus {
+	border-color: #2563eb !important;
+	box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12) !important;
+}
+
+/* ── Search button ──────────────────────────────────────────────── */
+/* ZK renders <button sclass="cts-btn-search"> as:
+   <button class="z-button cts-btn-search">...</button>            */
+.cts-btn-search.z-button {
+	height: 38px !important;
+	min-height: 38px !important;
+	max-height: 38px !important;
+	padding: 0 20px !important;
+	background: #1a3a6e !important;
+	background-image: none !important;
+	color: #ffffff !important;
+	border: none !important;
+	border-radius: 6px !important;
+	font-size: 13px !important;
+	font-weight: 600 !important;
+	font-family: var(--font) !important;
+	cursor: pointer !important;
+	white-space: nowrap !important;
+	box-shadow: none !important;
+	flex-shrink: 0 !important;
+	line-height: 38px !important;
+	box-sizing: border-box !important;
+	vertical-align: middle !important;
+}
+
+.cts-btn-search.z-button:hover {
+	background: #142d58 !important;
+	background-image: none !important;
+}
+
+/* ── Clear button ───────────────────────────────────────────────── */
+.cts-btn-clear.z-button {
+	height: 38px !important;
+	min-height: 38px !important;
+	max-height: 38px !important;
+	padding: 0 16px !important;
+	background: #ffffff !important;
+	background-image: none !important;
+	color: #374151 !important;
+	border: 1.5px solid #d0d7e3 !important;
+	border-radius: 6px !important;
+	font-size: 13px !important;
+	font-weight: 600 !important;
+	font-family: var(--font) !important;
+	cursor: pointer !important;
+	white-space: nowrap !important;
+	box-shadow: none !important;
+	line-height: 38px !important;
+	box-sizing: border-box !important;
+	vertical-align: middle !important;
+}
+
+.cts-btn-clear.z-button:hover {
+	background: #1a3a6e !important;
+	background-image: none !important;
+	color: #ffffff !important;
+	border-color: #1a3a6e !important;
+}
+
+/* ==================================================================
+   NOTE: .cts-table-wrap styling (header colors, row colors, action
+   button) used to be duplicated here AND further down in this file
+   under "TABLE OVERRIDES". Two blocks targeting the same selector
+   with !important caused a cascade conflict — whichever block came
+   LAST in the file silently won, which is why the header looked
+   washed out/grey instead of navy.
+   FIX: removed this duplicate. Single source of truth now lives in
+   the "TABLE OVERRIDES — white card style for checker queue pages"
+   block further down (search for that heading).
+   ================================================================== */
+
+/* Priority badges */
+.prio-high {
+	background: #FCE4EC;
+	color: #AD1457;
+	border: 1px solid #F48FB1;
+	padding: 2px 8px;
+	border-radius: 100px;
+	font-size: 10px;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.prio-med {
+	background: var(--warning-bg);
+	color: var(--warning);
+	border: 1px solid var(--warning-b);
+	padding: 2px 8px;
+	border-radius: 100px;
+	font-size: 10px;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.prio-low {
+	background: var(--info-bg);
+	color: var(--info);
+	border: 1px solid var(--info-b);
+	padding: 2px 8px;
+	border-radius: 100px;
+	font-size: 10px;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+/* Empty state */
+.empty-state {
+	padding: 56px;
+	text-align: center;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--r6);
+}
+
+/* ==================================================================
+   REPAIR WORKSPACE PAGE — makerRepairWorkspace.zul
+   ================================================================== */
+
+/* Page wrapper */
+.repair-workspace-wrap {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	overflow: hidden;
+}
+
+/* ── RE-CORRECTION MODE bar ── */
+.rec-mode-bar {
+	background: linear-gradient(135deg, #B71C1C, #C0392B);
+	padding: 7px 14px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 12px;
+	color: #fff;
+	flex-shrink: 0;
+	border-radius: var(--r6) var(--r6) 0 0;
+}
+
+.rec-chq-pill {
+	background: rgba(255, 255, 255, .2);
+	border: 1px solid rgba(255, 255, 255, .3);
+	border-radius: 3px;
+	padding: 1px 8px;
+	font-family: var(--mono);
+	font-size: 11px;
+	color: #fff;
+	font-weight: 600;
+}
+
+/* ── Split grid ── */
+.repair-split {
+	display: grid;
+	grid-template-columns: 55% 45%;
+	gap: 0;
+	border: 1px solid var(--border);
+	border-top: none;
+	border-radius: 0 0 var(--r6) var(--r6);
+	overflow: hidden;
+	background: #fff;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, .07);
+	flex: 1;
+	min-height: 0;
+}
+
+/* Left panel */
+.repair-left {
+	border-right: 2px solid var(--border);
+	background: #ECEFF1;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+/* Right panel */
+.repair-right {
+	display: flex;
+	flex-direction: column;
+	background: #fff;
+	overflow: hidden;
+}
+
+/* Panel headers */
+.repair-split-hdr {
+	padding: 9px 14px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-shrink: 0;
+}
+
+.repair-split-hdr.dk {
+	background: #0F2748;
+	color: #fff;
+}
+
+.repair-split-hdr.pri {
+	background: linear-gradient(135deg, var(--primary), var(--primary-light));
+	color: #fff;
+}
+
+/* Scrollable panel body */
+.repair-split-body {
+	flex: 1;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 12px;
+	min-height: 0;
+}
+
+.repair-split-body::-webkit-scrollbar {
+	width: 3px;
+}
+
+.repair-split-body::-webkit-scrollbar-thumb {
+	background: var(--border);
+	border-radius: 2px;
+}
+
+/* ── Checker warning panel ── */
+.warn-panel-rcb {
+	background: #FFF3F3;
+	border: 2px solid #E53935;
+	border-left: 4px solid #C0392B;
+	border-radius: var(--r6);
+	padding: 12px 14px;
+	margin-bottom: 10px;
+}
+
+.warn-panel-rcb-hdr {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+	padding-bottom: 7px;
+	border-bottom: 1px solid rgba(229, 57, 53, .2);
+}
+
+.warn-panel-rcb-icon {
+	font-size: 16px;
+	color: #C62828;
+}
+
+.warn-panel-rcb-title {
+	font-size: 10px;
+	font-weight: 700;
+	color: #C62828;
+	text-transform: uppercase;
+	letter-spacing: .5px;
+	flex: 1;
+}
+
+.warn-role-pill {
+	background: #C62828;
+	color: #fff;
+	font-size: 9px;
+	font-weight: 700;
+	border-radius: 3px;
+	padding: 2px 7px;
+	text-transform: uppercase;
+}
+
+.warn-panel-rcb-reason {
+	font-size: 12px;
+	color: #B71C1C;
+	font-weight: 600;
+	margin-bottom: 3px;
+	display: block;
+}
+
+.warn-panel-rcb-detail {
+	font-size: 11px;
+	color: #C62828;
+	line-height: 1.5;
+	display: block;
+}
+
+.warn-action-tag {
+	margin-top: 7px;
+	font-size: 10px;
+	font-weight: 700;
+	color: #E53935;
+	text-transform: uppercase;
+	letter-spacing: .4px;
+	background: #FFE0E0;
+	border-radius: 3px;
+	padding: 4px 10px;
+	display: inline-block;
+}
+
+/* ── Checker warning strip — compact single-line replacement ──────
+   The old .warn-panel-rcb (header row + reason + detail + action tag,
+   ~90-100px tall) duplicated the title bar's "RETURNED — correct and
+   resubmit" message. This single-line strip keeps only the WHY
+   (checker_refer_reason), so the maker doesn't scroll past a status
+   message they already saw a moment ago in the title bar.           */
+.warn-strip-rcb {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	background: #FFF3F3;
+	border: 1px solid #E53935;
+	border-left: 4px solid #C0392B;
+	border-radius: var(--r6);
+	padding: 7px 12px;
+	margin-bottom: 10px;
+	min-height: 20px;
+}
+
+.warn-strip-icon {
+	font-size: 14px;
+	color: #C62828;
+	flex-shrink: 0;
+}
+
+.warn-strip-text {
+	font-size: 12px;
+	font-weight: 600;
+	color: #B71C1C;
+	flex: 1;
+	min-width: 0;
+	line-height: 1.4;
+	/* Wraps (does not truncate) — the reason is the one thing the maker
+       must not miss, so we never hide part of it behind an ellipsis.
+       Stays effectively one line for short reasons, and the strip simply
+       grows by a line or two for unusually long ones. */
+}
+
+/* ── Cheque image Front/Back tabs ── */
+.chq-img-tabs {
+	display: flex;
+	gap: 4px;
+	margin-bottom: 8px;
+}
+
+.chq-img-tab {
+	padding: 4px 12px;
+	font-size: 11px;
+	font-weight: 600;
+	border-radius: 4px;
+	border: 1px solid var(--border);
+	cursor: pointer;
+	background: var(--alt);
+	color: var(--t2);
+	font-family: var(--font);
+}
+
+.chq-img-tab.active {
+	background: var(--primary);
+	color: #fff;
+	border-color: var(--primary);
+}
+
+/* ── Cheque mock card ── */
+.rcb-chq-mock {
+	background: #fff;
+	border: 1px solid #C0C8D4;
+	border-radius: 5px;
+	padding: 12px 14px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+	width: 100%;
+	margin-bottom: 8px;
+}
+
+/* ── MICR terminal strip (green on black) ── */
+.rcb-micr-strip {
+	display: block;
+	background: #111;
+	border-radius: 4px;
+	padding: 6px 10px;
+	font-family: var(--mono);
+	font-size: 10px;
+	color: #00FF41;
+	letter-spacing: 3px;
+	text-align: center;
+	margin-top: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+}
+
+/* ================================================================
+   FIX 3 — AUDIT TRAIL
+   The audit-trail-wrap and audit-trail-hdr classes were missing.
+   Added here so the Audit Trail section renders with proper styling.
+   ================================================================ */
+.audit-trail-wrap {
+	background: #fff;
+	border: 1px solid var(--border);
+	border-radius: var(--r6);
+	overflow: hidden;
+	margin-top: 12px;
+}
+
+.audit-trail-hdr {
+	background: linear-gradient(90deg, #EFF3FA, #F7F9FC);
+	padding: 8px 12px;
+	border-bottom: 1px solid var(--border);
+	font-size: 10px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .6px;
+	color: var(--primary);
+}
+
+/* Audit Trail row entries — created by composer */
+.audit-entry-rcb {
+	display: flex;
+	gap: 8px;
+	padding: 7px 0;
+	border-bottom: 1px solid var(--border);
+	align-items: flex-start;
+}
+
+.audit-entry-rcb:last-child {
+	border-bottom: none;
+}
+
+.audit-dot-rcb {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	margin-top: 4px;
+}
+
+.audit-time-rcb {
+	font-size: 10px;
+	color: var(--tm);
+	font-family: var(--mono);
+	min-width: 38px;
+	flex-shrink: 0;
+}
+
+.audit-text-rcb {
+	font-size: 11px;
+	color: var(--t2);
+	flex: 1;
+	line-height: 1.45;
+}
+
+/* Placeholder shown when audit trail is empty */
+.audit-empty-msg {
+	text-align: center;
+	padding: 16px;
+	font-size: 11px;
+	color: var(--tm);
+}
+
+/* ── Field groups (MICR Band / Cheque Details sections) ── */
+.field-grp-rcb {
+	border: 1px solid var(--border);
+	border-radius: var(--r6);
+	overflow: hidden;
+	margin-bottom: 8px;
+	background: #fff;
+}
+
+.field-grp-rcb-hdr {
+	background: linear-gradient(90deg, #EFF3FA, #F7F9FC);
+	padding: 6px 12px;
+	font-size: 10px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .7px;
+	color: var(--primary);
+	border-bottom: 1px solid var(--border);
+}
+
+.field-grp-rcb-body {
+	padding: 10px 12px;
+}
+
+/* ── Layout helpers ── */
+.fg {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+}
+
+.field-lbl {
+	display: block;
+	font-size: 10.5px;
+	font-weight: 600;
+	color: var(--t2);
+	text-transform: uppercase;
+	letter-spacing: .5px;
+}
+
+.field-label-req {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+}
+
+.req-star {
+	color: #C0392B;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.field-row-2col {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+	margin-bottom: 8px;
+}
+
+.field-row-full {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-bottom: 8px;
+}
+
+/*
+    .fi — Standard editable input field
+    ─────────────────────────────────────────────────────────────────
+    ZK renders <textbox> as:
+      <span class="z-textbox fi">
+        <input class="z-textbox-inp" .../>
+      </span>
+
+    Chrome: styling the outer span is enough.
+    Firefox: must ALSO target the inner input (.z-textbox-inp)
+             because Firefox does not inherit height/padding/bg
+             from a parent span onto an <input>.
+*/
+
+/* Outer span wrapper */
+.fi {
+	height: 32px;
+	padding: 0;
+	border: 1px solid var(--border);
+	border-radius: var(--r4);
+	font-size: 13px;
+	color: var(--t1);
+	background: #fff;
+	width: 100%;
+	box-sizing: border-box;
+	font-family: var(--font);
+	display: inline-flex;
+	align-items: center;
+}
+
+/* Inner <input> — Firefox needs this explicitly */
+.fi .z-textbox-inp {
+	width: 100%;
+	height: 100%;
+	padding: 0 10px;
+	border: none;
+	outline: none;
+	background: transparent;
+	font-size: 13px;
+	color: var(--t1);
+	font-family: var(--font);
+	box-sizing: border-box;
+	line-height: 32px;
+}
+
+.fi.mono .z-textbox-inp {
+	font-family: var(--mono);
+}
+
+/* Focus — both browsers */
+.fi:focus-within {
+	outline: none;
+	border-color: #9CA3AF;
+	box-shadow: 0 0 0 2px rgba(156, 163, 175, .18);
+}
+
+.fi .z-textbox-inp:focus {
+	outline: none;
+}
+
+/*
+    .fi-auto — MICR digits fields (City, Bank, Branch, TC, Base)
+    Same layout as .fi — mono font for MICR digits.
+*/
+
+/* Outer span wrapper */
+.fi-auto {
+	height: 32px;
+	padding: 0;
+	border: 1px solid var(--border);
+	border-radius: var(--r4);
+	font-size: 13px;
+	color: var(--t1);
+	background: #fff;
+	width: 100%;
+	box-sizing: border-box;
+	font-family: var(--mono);
+	display: inline-flex;
+	align-items: center;
+}
+
+/* Inner <input> — Firefox needs this explicitly */
+.fi-auto .z-textbox-inp {
+	width: 100%;
+	height: 100%;
+	padding: 0 10px;
+	border: none;
+	outline: none;
+	background: transparent;
+	font-size: 13px;
+	color: var(--t1);
+	font-family: var(--mono);
+	box-sizing: border-box;
+	line-height: 32px;
+}
+
+/* Focus — both browsers */
+.fi-auto:focus-within {
+	outline: none;
+	border-color: #9CA3AF;
+	box-shadow: 0 0 0 2px rgba(156, 163, 175, .18);
+}
+
+.fi-auto .z-textbox-inp:focus {
+	outline: none;
+}
+
+/* Textarea */
+.fi-ta {
+	padding: 8px 10px;
+	border: 1px solid var(--border);
+	border-radius: var(--r4);
+	font-size: 13px;
+	color: var(--t1);
+	background: #fff;
+	width: 100%;
+	box-sizing: border-box;
+	resize: vertical;
+	font-family: var(--font);
+}
+
+/* Amount in Words read-only (green tint) */
+.fi-words {
+	display: block;
+	min-height: 30px;
+	padding: 6px 10px;
+	border: 1px solid #D5E8D4;
+	border-radius: var(--r4);
+	font-size: 12px;
+	font-style: italic;
+	/* color: #1A5E35;
+    background: #F0FBF4;*/
+	width: 100%;
+	box-sizing: border-box;
+	font-family: var(--font);
+	line-height: 1.4;
+}
+
+/* ── ZK Datebox full-width fix ── */
+.fi-datebox {
+	/*  width: 100% !important; 
+    display: block !important;*/
+	
+}
+
+.fi-datebox .z-datebox-inp, .repair-right .z-datebox-inp {
+	width: calc(100% - 30px) !important;
+	height: 32px !important;
+	padding: 0 10px !important;
+	border: 1px solid var(--border) !important;
+	border-right: none !important;
+	border-radius: 4px 0 0 4px !important;
+	font-size: 13px !important;
+	font-family: var(--font) !important; /* matches .fi exactly */
+	color: var(--t1) !important; /* same dark text as all fields */
+	box-sizing: border-box !important;
+	background: #fff !important;
+	line-height: 32px !important; /* vertical centering fix */
+	vertical-align: middle !important;
+}
+
+.fi-datebox .z-datebox-btn, .repair-right .z-datebox-btn {
+	height: 32px !important;
+	width: 30px !important;
+	border: 1px solid var(--border) !important;
+	border-left: none !important;
+	border-radius: 0 4px 4px 0 !important;
+	background: var(--alt) !important;
+	cursor: pointer !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	vertical-align: top !important;
+}
+
+.fi-datebox .z-datebox-inp:focus, .repair-right .z-datebox-inp:focus {
+	outline: none !important;
+	border-color: var(--primary-light) !important;
+	box-shadow: 0 0 0 2px rgba(43, 91, 168, .1) !important;
+}
+
+/* ── Step boxes — were green (Step 1) / light grey (Step 2),
+       now both white background with brand-blue border, per request
+       to remove green from the UI ──────────────────────────────── */
+.step-box {
+	border-radius: var(--r6);
+	padding: 9px 14px;
+	margin-bottom: 8px;
+}
+
+.step-box-save {
+	background: #FFFFFF;
+	border: 2px solid #1A3A6E;
+}
+
+.step-box-cbs {
+	background: #FFFFFF;
+	border: 2px solid var(--border);
+}
+
+.step-box-title {
+	font-size: 10px;
+	font-weight: 700;
+	color: #1A3A6E;
+	text-transform: uppercase;
+	letter-spacing: .6px;
+	margin-bottom: 6px;
+}
+
+.step-box-title-grey {
+	color: var(--tm);
+}
+
+/* Field changed highlight */
+.field-changed {
+	background: #FFF3CD !important;
+	border-color: #F5C842 !important;
+	box-shadow: 0 0 0 2px rgba(245, 200, 66, .3) !important;
+}
+
+/* Routing destination box */
+.routing-dest-box {
+	background: linear-gradient(135deg, #E8F5E9, #F1F8F1);
+	border: 2px solid var(--success-b);
+	border-radius: var(--r6);
+	padding: 10px 14px;
+	margin: 8px 0;
+}
+
+.routing-dest-box .rd-title {
+	font-size: 10px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .5px;
+	color: var(--success);
+	margin-bottom: 3px;
+}
+
+.routing-dest-box .rd-name {
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--success);
+}
+
+.routing-dest-box .rd-reason {
+	font-size: 11px;
+	color: var(--t2);
+	margin-top: 3px;
+}
+
+/* Reference ID badge */
+.rcb-ref-id {
+	font-family: var(--mono);
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--primary);
+	background: var(--info-bg);
+	border: 1px solid var(--info-b);
+	border-radius: var(--r4);
+	padding: 6px 12px;
+	display: inline-block;
+	margin: 8px 0;
+}
+
+/* ==================================================================
+   ZK PROCESSING INDICATOR — HIDE THE DEFAULT SPINNER
+   ==================================================================
+   WHY THIS IS HERE:
+   When a ZK <button> fires an onClick server event, ZK automatically
+   shows a white "Processing..." overlay in the top-left corner of the
+   screen. This is ZK's built-in AJAX loading indicator.
+
+   For a banking application this looks unprofessional and alarming —
+   users think something is wrong when they see a random spinner appear.
+
+   The primary fix is autodisable="false" on every button (in the ZUL).
+   This CSS is a safety net — it hides the indicator even if autodisable
+   is accidentally left out on any button in the future.
+
+   .z-loading-indicator — the container div ZK injects into the page
+   .z-loading           — the inner spinner element
+   ================================================================== */
+.z-loading-indicator {
+	display: none !important;
+}
+
+/* If you ever want a custom branded loading indicator instead of hiding,
+   comment out the rule above and uncomment this block:
+
+.z-loading-indicator {
+    top: auto !important;
+    left: auto !important;
+    bottom: 32px !important;
+    right: 16px !important;
+    background: var(--primary) !important;
+    color: #fff !important;
+    border-radius: 4px !important;
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+    font-family: var(--font) !important;
+    opacity: 0.9 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,.2) !important;
+}
+.z-loading-indicator .z-loading {
+    border-color: rgba(255,255,255,.3) !important;
+    border-top-color: #fff !important;
+}
+*/
+
+/* ==================================================================
+   CBS LIVE VALIDATION PANEL — check rows shown inline in right panel
+   ================================================================== */
+
+/* Panel header — "CBS Validation — Live Results" */
+.cbs-live-header {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	margin-bottom: 8px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid #D1D5DB;
+}
+
+.cbs-live-title {
+	font-size: 13px;
+	font-weight: 700;
+	color: #1E4D8C;
+}
+
+.cbs-live-subtitle {
+	font-size: 11px;
+	color: #6B7280;
+}
+
+/* Wrapper for all check rows */
+.cbs-check-rows {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-bottom: 4px;
+}
+
+/* Individual check row — base */
+.cbs-check-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 7px 10px;
+	border-radius: 6px;
+	border: 1px solid transparent;
+	font-family: inherit;
+}
+
+/* PASS row */
+.cbs-check-pass {
+	background: #F0FDF4;
+	border-color: #86EFAC;
+}
+
+/* FAIL row */
+.cbs-check-fail {
+	background: #FFF1F2;
+	border-color: #FCA5A5;
+}
+
+/* SKIPPED row */
+.cbs-check-skipped {
+	background: #F9FAFB;
+	border-color: #E5E7EB;
+	opacity: 0.75;
+}
+
+/* Icon column */
+.cbs-check-icon {
+	font-size: 14px;
+	flex-shrink: 0;
+	width: 18px;
+	text-align: center;
+}
+
+/* Check name + detail column */
+.cbs-check-info {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	flex: 1;
+	min-width: 0;
+}
+
+.cbs-check-name {
+	font-size: 12px;
+	font-weight: 600;
+	color: #1F2937;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.cbs-check-detail {
+	font-size: 10px;
+	color: #6B7280;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Status badge — right side */
+.cbs-check-status-pass {
+	font-size: 10px;
+	font-weight: 700;
+	color: #15803D;
+	background: #DCFCE7;
+	border: 1px solid #86EFAC;
+	border-radius: 100px;
+	padding: 2px 8px;
+	flex-shrink: 0;
+	letter-spacing: 0.3px;
+}
+
+.cbs-check-status-fail {
+	font-size: 10px;
+	font-weight: 700;
+	color: #DC2626;
+	background: #FEE2E2;
+	border: 1px solid #FCA5A5;
+	border-radius: 100px;
+	padding: 2px 8px;
+	flex-shrink: 0;
+	letter-spacing: 0.3px;
+}
+
+.cbs-check-status-skipped {
+	font-size: 10px;
+	font-weight: 600;
+	color: #9CA3AF;
+	background: #F3F4F6;
+	border: 1px solid #D1D5DB;
+	border-radius: 100px;
+	padding: 2px 8px;
+	flex-shrink: 0;
+	letter-spacing: 0.3px;
+}
+
+/* Required action label above RRF button */
+.cbs-required-action-label {
+	font-size: 11px;
+	font-weight: 700;
+	color: #4B5563;
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+	margin: 8px 0 4px;
+}
+
+/* RRF Generate button — full width amber/brown */
+.btn-rrf .z-button, .btn-rrf {
+	width: 100%;
+	height: 40px;
+	border-radius: 6px;
+	border: none;
+	background: linear-gradient(135deg, #92400E, #D97706);
+	color: #fff;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+	font-family: inherit;
+	letter-spacing: 0.2px;
+}
+
+.btn-rrf .z-button:hover, .btn-rrf:hover {
+	background: linear-gradient(135deg, #78350F, #B45309);
+}
+
+/* RF Generate button */
+.btn-rf .z-button, .btn-rf {
+	width: 100%;
+	height: 36px;
+	border-radius: 6px;
+	border: none;
+	background: #DC2626;
+	color: #fff;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	font-family: inherit;
+	margin-bottom: 8px;
+}
+
+/* Submit to Checker/BM button */
+.btn-submit-checker .z-button, .btn-submit-checker {
+	width: 100%;
+	height: 40px;
+	border-radius: 7px;
+	border: none;
+	background: #1a3a6e;
+	color: #fff;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+	font-family: inherit;
+}
+/*
+.btn-submit-checker .z-button:hover,
+.btn-submit-checker:hover {
+    background: linear-gradient(135deg, #166534, #16A34A);
+}*/
+
+/* ==================================================================
+   CBS LOADING SPINNER — v4
+   Shown in #rcb-cbs-result-area while Firebase API calls run.
+   Triggered by showCbsLoadingSpinner() in the composer.
+
+   Layout:
+     .cbs-loading-wrap       — outer wrapper with subtle border
+     .cbs-loading-header     — row: spinner circle + text
+     .cbs-spinner            — the animated rotating ring
+     .cbs-loading-title      — "Running CBS Validation..."
+     .cbs-loading-subtitle   — "Connecting to Core Banking System"
+     .cbs-skeleton-rows      — 5 skeleton rows (one per check)
+     .cbs-skeleton-row       — one skeleton row
+     .cbs-skeleton-icon      — animated shimmer block (replaces ✅/❌)
+     .cbs-skeleton-info      — text + bar column
+     .cbs-skeleton-check-name— check label text
+     .cbs-skeleton-bar       — animated shimmer bar (replaces detail text)
+     .cbs-skeleton-badge     — animated shimmer badge (replaces PASS/FAIL)
+   ================================================================== */
+
+/* Shimmer keyframe — used by all skeleton pieces */
+@keyframes cbs-shimmer { 0% {
+	background-position: -400px 0;
+}
+
+100% {
+	background-position: 400px 0;
+}
+}
+
+/* Spinner rotation keyframe */
+@keyframes cbs-spin { 0% {
+	transform: rotate(0deg);
+}
+
+100% {
+	transform: rotate(360deg);
+}
+}
+
+/* Outer wrapper */
+.cbs-loading-wrap {
+	background: #F3F6FB;
+	border: 1.5px solid #C7D3E8;
+	border-radius: 8px;
+	padding: 14px;
+	margin-top: 6px;
+}
+
+/* Header row: spinner + title/subtitle */
+.cbs-loading-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 14px;
+	padding-bottom: 12px;
+	border-bottom: 1px solid #D9E2EC;
+}
+
+/* The spinning ring */
+.cbs-spinner {
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	border: 3px solid #C7D3E8;
+	border-top-color: #1E4D8C;
+	animation: cbs-spin 0.85s linear infinite;
+	flex-shrink: 0;
+}
+
+.cbs-loading-title {
+	font-size: 13px;
+	font-weight: 700;
+	color: #1E4D8C;
+	margin-bottom: 2px;
+}
+
+.cbs-loading-subtitle {
+	font-size: 11px;
+	color: #6B7280;
+}
+
+/* Container for the 5 skeleton rows */
+.cbs-skeleton-rows {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+/* One skeleton row — mirrors layout of a real .cbs-check-row */
+.cbs-skeleton-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	background: #fff;
+	border: 1px solid #E5EAF2;
+	border-radius: 6px;
+	padding: 8px 12px;
+}
+
+/* Shimmer gradient shared by all skeleton blocks */
+.cbs-skeleton-icon, .cbs-skeleton-bar, .cbs-skeleton-badge {
+	background: linear-gradient(90deg, #E5EAF2 25%, #F3F6FB 50%, #E5EAF2 75%);
+	background-size: 800px 100%;
+	animation: cbs-shimmer 1.4s infinite linear;
+	border-radius: 4px;
+}
+
+/* Icon placeholder (replaces ✅ / ❌) */
+.cbs-skeleton-icon {
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	flex-shrink: 0;
+}
+
+/* Info column */
+.cbs-skeleton-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+/* Check name text — kept visible so the user knows which check is running */
+.cbs-skeleton-check-name {
+	font-size: 11px;
+	font-weight: 600;
+	color: #374151;
+}
+
+/* Animated shimmer bar replacing the detail text */
+.cbs-skeleton-bar {
+	height: 10px;
+	width: 70%;
+	border-radius: 4px;
+}
+
+/* Badge placeholder (replaces PASSED / FAILED / SKIPPED) */
+.cbs-skeleton-badge {
+	width: 58px;
+	height: 22px;
+	border-radius: 4px;
+	flex-shrink: 0;
+}
+
+/* ==================================================================
+   SAVE ANIMATION — field highlight + button pulse
+   Added: v5 — no logic change, purely visual CSS layer
+   ==================================================================
+
+   HOW IT WORKS:
+   When Maker clicks "Save & CBS", the composer calls:
+     Clients.evalJavaScript("CTS.highlightSaving()");
+   This JS function adds .field-saving to all editable input wrappers,
+   and .btn-save-busy to the save button container.
+
+   After CBS result arrives (composer rebuilds the DOM),
+   the highlight fades out automatically via the CSS animation.
+   ================================================================== */
+
+/* ── Keyframes ──────────────────────────────────────────────────── */
+
+/* Ripple-pulse used on field wrappers when Save is clicked */
+@keyframes cts-field-save-pulse { 0% {
+	box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.0);
+	background: #FFF8E1;
+	border-color: #F5C842;
+}
+
+30% {
+	box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.35);
+	background: #FFF3CD;
+	border-color: #F5A623;
+}
+70% {
+	box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.15);
+	background: #FFF8E1;
+	border-color: #F5C842;
+}
+100% {
+	box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.0);
+	background: #FFFDE7;
+	border-color: #F5C842;
+}
+}
+
+/* Gentle amber glow that holds steady after the pulse */
+@keyframes cts-field-save-hold { 0%, 100% {
+	border-color: #F5C842;
+	background: #FFFDE7;
+	box-shadow: 0 0 0 2px rgba(245, 200, 66, 0.25);
+}
+
+50% {
+	border-color: #E6AC00;
+	background: #FFF3CD;
+	box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.40);
+}
+}
+
+/* Spinning ring for the Save button itself */
+@keyframes cts-btn-spin { 0% {
+	transform: rotate(0deg);
+}
+
+100% {
+	transform: rotate(360deg);
+}
+}
+
+/* Fade-out when animation is done */
+@keyframes cts-field-fade-normal { 0% {
+	background: #FFFDE7;
+	border-color: #F5C842;
+}
+
+100% {
+	background: #fff;
+	border-color: var(--border);
+}
+}
+
+/* ── Field saving state ─────────────────────────────────────────── */
+
+/*
+    Applied to the INPUT ELEMENT (.fi, .fi-auto, .fi-ta) inside
+    an editable field when Save is in progress.
+
+    Phase 1 (0→0.6s) : amber ripple outward
+    Phase 2 (0.6s→∞) : slow steady amber breathe
+*/
+.fi.field-saving .z-textbox-inp, .fi.field-saving input, .fi-auto.field-saving .z-textbox-inp,
+	.fi-auto.field-saving input, .fi-ta.field-saving {
+	animation: cts-field-save-pulse 0.6s ease-out, cts-field-save-hold 1.8s ease-in-out 0.6s infinite;
+	border-color: #F5C842 !important;
+	background: #FFFDE7 !important;
+}
+
+/* Amount-in-Words label (read-only) — same amber tint */
+.fi-words.field-saving {
+	border-color: #F5C842 !important;
+	background: #FFFDE7 !important;
+	color: #92400E !important;
+	animation: cts-field-save-hold 1.8s ease-in-out infinite;
+}
+
+/* Datebox input (ZK renders its own inner input) */
+.z-datebox-inp.field-saving, .fi-datebox.field-saving .z-datebox-inp {
+	background: #FFFDE7 !important;
+	border-color: #F5C842 !important;
+	animation: cts-field-save-hold 1.8s ease-in-out infinite;
+}
+
+/* When save is done — smooth fade back to white */
+.fi.field-save-done .z-textbox-inp, .fi.field-save-done input, .fi-auto.field-save-done .z-textbox-inp,
+	.fi-auto.field-save-done input, .fi-ta.field-save-done {
+	animation: cts-field-fade-normal 0.8s ease-out forwards;
+}
+
+/* ── Save button busy state ─────────────────────────────────────── */
+
+/*
+    .btn-save-busy is added to the <button> wrapper div by JS.
+    The actual ZK <button> element gets a spinning pseudo-element
+    and a muted "Saving…" label via CSS.
+*/
+.btn-save-busy .z-button, .btn-save.btn-save-busy {
+	opacity: 0.85;
+	cursor: not-allowed !important;
+	background: linear-gradient(135deg, #155D37, #1F8C4F) !important;
+	position: relative;
+	padding-left: 34px !important; /* room for spinner on the left */
+}
+
+/* Spinning ring prepended inside the button via ::before */
+.btn-save-busy .z-button::before, .btn-save.btn-save-busy::before {
+	content: '';
+	position: absolute;
+	left: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	border: 2px solid rgba(255, 255, 255, 0.35);
+	border-top-color: #fff;
+	animation: cts-btn-spin 0.7s linear infinite;
+}
+
+/* ── CBS validation loading state ───────────────────────────────── */
+
+/*
+    .cbs-area-loading is added to #rcb-cbs-result-area by JS
+    while the server is running CBS checks.
+    Shows a branded "Connecting to CBS..." bar at the top.
+*/
+.cbs-area-loading::before {
+	content: '';
+	display: block;
+	height: 3px;
+	background: linear-gradient(90deg, #1E4D8C 0%, #3BA8FF 40%, #1E4D8C 60%, #3BA8FF 100%);
+	background-size: 200% 100%;
+	animation: cts-cbs-bar 1.4s ease-in-out infinite;
+	border-radius: 2px;
+	margin-bottom: 10px;
+}
+
+@keyframes cts-cbs-bar { 0% {
+	background-position: 200% 0;
+}
+
+100% {
+	background-position: -200% 0;
+}
+}
+
+/*
+    Animated "CBS connecting" label shown inside the area
+    while server is processing.
+    This is injected by JS (not a ::before so it can hold text).
+*/
+.cbs-connecting-label {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 14px;
+	background: #EEF3FB;
+	border: 1px solid #C7D3E8;
+	border-radius: 6px;
+	margin-bottom: 8px;
+}
+
+.cbs-connecting-spinner {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	border: 2.5px solid #C7D3E8;
+	border-top-color: #1E4D8C;
+	animation: cts-btn-spin 0.8s linear infinite;
+	flex-shrink: 0;
+}
+
+.cbs-connecting-text {
+	font-size: 12px;
+	font-weight: 700;
+	color: #1E4D8C;
+}
+
+.cbs-connecting-sub {
+	font-size: 10px;
+	color: #6B7280;
+	margin-left: auto;
+	font-style: italic;
+	animation: cts-dots 1.5s infinite;
+}
+
+/* Animated ellipsis on the "please wait..." label */
+@keyframes cts-dots { 0%, 20% {
+	content: 'please wait.';
+}
+
+40%
+, 60% {
+	content: 'please wait..';
+}
+80%
+, 100% {
+	content: 'please wait...';
+}
+}
+
+/* ── Tooltip badge shown above modified fields ───────────────────── */
+
+/*
+    Small "Modified" badge that floats above a field during save.
+    Injected by JS as a sibling <span> next to the input.
+*/
+.cts-modified-badge {
+	display: inline-block;
+	font-size: 9px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: #92400E;
+	background: #FEF3C7;
+	border: 1px solid #F5C842;
+	border-radius: 3px;
+	padding: 1px 6px;
+	margin-bottom: 2px;
+	animation: cts-badge-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes cts-badge-pop { 0% {
+	opacity: 0;
+	transform: scale(0.7) translateY(4px);
+}
+
+100% {
+	opacity: 1;
+	transform: scale(1.0) translateY(0);
+}
+}
+
+/* ==================================================================
+   FIELD-LEVEL VALIDATION STYLES — v5
+   Added alongside the animation layer.
+   ==================================================================
+
+   .fi-error      — red border + red-tint bg on invalid input
+   .field-err-msg — the inline error label shown below the field
+   .fi-ok         — brief green flash when a field passes (optional)
+   ================================================================== */
+
+/* ── Error state on input ───────────────────────────────────────── */
+/*
+    Applied to .fi, .fi-auto when a validation rule fails.
+    Replaces the normal grey border with a clear red indicator.
+    Background is a very light red so it does not alarm — just notifies.
+*/
+.fi.fi-error .z-textbox-inp, .fi.fi-error input, .fi-auto.fi-error .z-textbox-inp,
+	.fi-auto.fi-error input, .fi-ta.fi-error {
+	border-color: #EF4444 !important;
+	background: #FFF5F5 !important;
+	color: var(--t1) !important;
+	box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.18) !important;
+	animation: none !important;
+}
+
+/* Datebox wrapper error state — ZK renders its own inner input */
+.fi-datebox.fi-error .z-datebox-inp {
+	border-color: #EF4444 !important;
+	background: #FFF5F5 !important;
+	box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.18) !important;
+}
+
+/* ── Inline error message label ─────────────────────────────────── */
+/*
+    Sits directly below the <textbox> or <datebox> in the ZUL.
+    Hidden by default (visible="false"), shown by composer on error.
+    Uses the ⚠ icon prepended in Java so it stays legible when small.
+*/
+.field-err-msg {
+	display: block;
+	font-size: 10.5px;
+	font-weight: 600;
+	color: #DC2626;
+	margin-top: 3px;
+	line-height: 1.4;
+	/* Slide-down entry */
+	animation: field-err-slide 0.2s ease-out;
+}
+
+/*
+ * Inline variant — used in the action bar flex row so the error
+ * sits beside the combobox instead of below it.
+ */
+.mrw-err-inline.field-err-msg, span.z-label.mrw-err-inline {
+	display: inline !important;
+	margin-top: 0 !important;
+	white-space: nowrap !important;
+	font-size: 10.5px !important;
+	font-weight: 600 !important;
+	color: #DC2626 !important;
+	flex-shrink: 0 !important;
+}
+
+@keyframes field-err-slide { 0% {
+	opacity: 0;
+	transform: translateY(-4px);
+}
+
+100% {
+	opacity: 1;
+	transform: translateY(0);
+}
+}
+
+/* ── OK (pass) flash — brief green outline when error is cleared ── */
+/*
+    Applied momentarily when a field transitions from error → valid.
+    CSS only — no JS needed, just remove fi-error and the transition
+    back to normal border handles the rest via the fade keyframe.
+*/
+.fi.fi-ok .z-textbox-inp, .fi.fi-ok input, .fi-auto.fi-ok .z-textbox-inp,
+	.fi-auto.fi-ok input {
+	border-color: #22C55E !important;
+	background: #F0FDF4 !important;
+	box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important;
+	animation: fi-ok-flash 0.8s ease-out forwards;
+}
+
+@keyframes fi-ok-flash { 0% {
+	border-color: #22C55E;
+	box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+}
+
+100% {
+	border-color: var(--border);
+	box-shadow: none;
+}
+}
+
+/* ── Required star (*) emphasis ────────────────────────────────── */
+/*
+    The .req-star elements inside fi-error field groups pulse once
+    to draw the maker's eye to the required marker.
+*/
+.fi.fi-error ~ .req-star, .fi-auto.fi-error ~ .req-star {
+	animation: req-star-pulse 0.4s ease-out;
+}
+
+@keyframes req-star-pulse { 0% {
+	color: #C0392B;
+}
+
+50% {
+	color: #FF1744;
+	transform: scale(1.3);
+}
+100% {
+	color: #C0392B;
+	transform: scale(1.0);
+}
+}
+
+/* ==================================================================
+   CBS POPUP OVERLAY — v6
+   Full-screen overlay with centered popup for CBS results.
+   Shown after Save & CBS button click.
+   ================================================================== */
+
+/* Dark backdrop */
+.cbs-popup-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(10, 25, 50, 0.55);
+	z-index: 9000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	animation: cbs-overlay-in .18s ease;
+}
+
+@keyframes cbs-overlay-in {from { opacity:0;
+	
+}
+
+to {
+	opacity: 1;
+}
+
+}
+
+/* Popup card */
+.cbs-popup-card {
+	background: #fff;
+	border-radius: 10px;
+	width: 400px;
+	max-width: calc(100vw - 32px);
+	max-height: 85vh;
+	overflow-y: auto;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+	animation: cbs-popup-in .22s cubic-bezier(.22, 1, .36, 1);
+}
+
+@keyframes cbs-popup-in {from { transform:translateY(20px)scale(.97);
+	opacity: 0;
+}
+
+to {
+	transform: translateY(0) scale(1);
+	opacity: 1;
+}
+
+}
+
+/* Popup header bar */
+.cbs-popup-hdr {
+	background: linear-gradient(135deg, #0F2748, #1E4D8C);
+	border-radius: 10px 10px 0 0;
+	padding: 10px 14px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.cbs-popup-hdr-title {
+	font-size: 12.5px;
+	font-weight: 700;
+	color: #fff;
+	letter-spacing: .3px;
+}
+
+.cbs-popup-hdr-sub {
+	font-size: 10px;
+	color: #9BBDE0;
+	margin-top: 2px;
+}
+
+/* Popup body */
+.cbs-popup-body {
+	padding: 12px 14px;
+}
+
+/* CBS check rows inside popup */
+.cbs-check-rows {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	margin-bottom: 8px;
+}
+
+.cbs-check-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 10px;
+	border-radius: 6px;
+	border: 1px solid transparent;
+}
+
+.cbs-check-pass {
+	background: #F0FDF4;
+	border-color: #BBF7D0;
+}
+
+.cbs-check-fail {
+	background: #FEF2F2;
+	border-color: #FECACA;
+}
+
+.cbs-check-skipped {
+	background: #F9FAFB;
+	border-color: #E5E7EB;
+	opacity: .7;
+}
+
+.cbs-check-icon {
+	font-size: 14px;
+	min-width: 18px;
+	text-align: center;
+}
+
+.cbs-check-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+}
+
+.cbs-check-name {
+	font-size: 11.5px;
+	font-weight: 600;
+	color: #1F2937;
+}
+
+.cbs-check-detail {
+	font-size: 10.5px;
+	color: #6B7280;
+}
+
+.cbs-check-status-pass {
+	font-size: 9.5px;
+	font-weight: 700;
+	color: #16A34A;
+	background: #DCFCE7;
+	border: 1px solid #BBF7D0;
+	border-radius: 100px;
+	padding: 2px 7px;
+	white-space: nowrap;
+}
+
+.cbs-check-status-fail {
+	font-size: 9.5px;
+	font-weight: 700;
+	color: #DC2626;
+	background: #FEE2E2;
+	border: 1px solid #FECACA;
+	border-radius: 100px;
+	padding: 2px 7px;
+	white-space: nowrap;
+}
+
+.cbs-check-status-skipped {
+	font-size: 9.5px;
+	font-weight: 700;
+	color: #9CA3AF;
+	background: #F3F4F6;
+	border: 1px solid #E5E7EB;
+	border-radius: 100px;
+	padding: 2px 7px;
+	white-space: nowrap;
+}
+
+/* CBS PASS result box inside popup */
+.cbs-pass-box {
+	background: linear-gradient(135deg, #F0FDF4, #ECFDF5);
+	border: 2px solid #86EFAC;
+	border-radius: 8px;
+	padding: 10px 12px;
+	margin-top: 8px;
+}
+
+.cbs-pass-title {
+	font-size: 12.5px;
+	font-weight: 700;
+	color: #166534;
+	margin-bottom: 3px;
+}
+
+.cbs-pass-note {
+	font-size: 10.5px;
+	color: #15803D;
+	margin-bottom: 6px;
+}
+
+.cbs-pass-dest {
+	font-size: 14px;
+	font-weight: 700;
+	color: #15803D;
+	margin-top: 3px;
+}
+
+/* CBS FAIL result box inside popup */
+.cbs-fail-box {
+	background: #FEF2F2;
+	border: 2px solid #FECACA;
+	border-radius: 8px;
+	padding: 10px 12px;
+	margin-top: 8px;
+}
+
+.cbs-fail-title {
+	font-size: 12.5px;
+	font-weight: 700;
+	color: #991B1B;
+	margin-bottom: 3px;
+}
+
+.cbs-fail-note {
+	font-size: 11px;
+	color: #B91C1C;
+}
+
+/* Popup footer buttons area */
+.cbs-popup-footer {
+	padding: 8px 14px 12px;
+	display: flex;
+	gap: 8px;
+}
+
+/* ==================================================================
+   CBS SUCCESS ACK POPUP — shown after resubmit confirmed
+   ================================================================== */
+.cbs-ack-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(10, 25, 50, 0.6);
+	z-index: 9100;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	animation: cbs-overlay-in .18s ease;
+}
+
+/* ── Card ──────────────────────────────────────────────────────── */
+.cbs-ack-card {
+	background: #fff;
+	border-radius: 12px;
+	width: 420px;
+	max-width: calc(100vw - 32px);
+	box-shadow: 0 24px 64px rgba(0, 0, 0, .30);
+	overflow: hidden;
+	animation: cbs-popup-in .22s cubic-bezier(.22, 1, .36, 1);
+}
+
+/* ── Green header strip ─────────────────────────────────────────── */
+.cbs-ack-top {
+	background: linear-gradient(135deg, #0F6B35, #1A9D4E);
+	padding: 22px 24px 18px;
+	text-align: center;
+	border-bottom: 3px solid rgba(255, 255, 255, .15);
+}
+
+/* Circular check icon */
+.cbs-ack-icon-wrap {
+	width: 52px;
+	height: 52px;
+	background: rgba(255, 255, 255, .2);
+	border: 2px solid rgba(255, 255, 255, .5);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto 12px;
+}
+
+.cbs-ack-check-icon {
+	font-size: 24px;
+	color: #fff;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.cbs-ack-title {
+	font-size: 17px;
+	font-weight: 700;
+	color: #fff;
+	letter-spacing: .2px;
+	margin-bottom: 5px;
+}
+
+.cbs-ack-sub {
+	font-size: 11px;
+	color: rgba(255, 255, 255, .80);
+	letter-spacing: .2px;
+}
+
+/* ── Body — detail table ─────────────────────────────────────────── */
+.cbs-ack-body {
+	padding: 6px 0 2px;
+}
+
+/*
+    Using <table> instead of flexbox divs.
+    This guarantees label column and value column are always
+    perfectly separated — no text collision regardless of content length.
+*/
+.cbs-ack-table {
+	width: 100%;
+	border-collapse: collapse;
+	padding: 0 24px;
+	display: table;
+}
+
+.cbs-ack-table tr {
+	border-bottom: 1px solid #F3F4F6;
+}
+
+.cbs-ack-table tr:last-child {
+	border-bottom: none;
+}
+
+.cbs-ack-lbl {
+	padding: 10px 24px 10px 24px;
+	font-size: 12px;
+	font-weight: 500;
+	color: #6B7280;
+	white-space: nowrap;
+	width: 38%;
+	vertical-align: middle;
+}
+
+.cbs-ack-val {
+	padding: 10px 24px 10px 8px;
+	font-size: 12px;
+	font-weight: 700;
+	color: #111827;
+	font-family: var(--mono);
+	text-align: right;
+	vertical-align: middle;
+}
+
+/* Amount — slightly larger, green */
+.cbs-ack-amt {
+	font-size: 14px;
+	color: #15803D;
+	letter-spacing: .3px;
+}
+
+/* Reference ID — monospace, muted blue */
+.cbs-ack-ref {
+	color: #1E4D8C;
+	font-size: 11px;
+	letter-spacing: .5px;
+}
+
+/* Forwarded To badge */
+.cbs-ack-dest-badge {
+	display: inline-block;
+	background: #EFF6FF;
+	color: #1E40AF;
+	border: 1px solid #BFDBFE;
+	border-radius: 100px;
+	padding: 2px 10px;
+	font-size: 11px;
+	font-weight: 700;
+	font-family: var(--font);
+	white-space: nowrap;
+}
+
+/* Status badge */
+.cbs-ack-status-badge {
+	display: inline-block;
+	background: #DCFCE7;
+	color: #15803D;
+	border: 1px solid #86EFAC;
+	border-radius: 100px;
+	padding: 2px 10px;
+	font-size: 11px;
+	font-weight: 700;
+	font-family: var(--font);
+	white-space: nowrap;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────── */
+.cbs-ack-footer {
+	padding: 14px 20px 18px;
+	background: #F9FAFB;
+	border-top: 1px solid #E5E7EB;
+}
+
+.cbs-ack-ok-btn .z-button, .cbs-ack-ok-btn {
+	width: 100%;
+	height: 40px;
+	border-radius: 7px;
+	border: none;
+	background: linear-gradient(135deg, #0F6B35, #16A34A);
+	color: #fff;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+	font-family: var(--font);
+	letter-spacing: .3px;
+}
+
+.cbs-ack-ok-btn .z-button:hover, .cbs-ack-ok-btn:hover {
+	background: linear-gradient(135deg, #0A5228, #15803D);
+}
+
+/* live-header and live-title inside popup */
+.cbs-live-header {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #E5E7EB;
+}
+
+.cbs-live-title {
+	font-size: 12px;
+	font-weight: 700;
+	color: #1F2937;
+	letter-spacing: .2px;
+}
+
+.cbs-live-subtitle {
+	font-size: 11px;
+	color: #6B7280;
+}
+
+/*
+    ── Universal Field Font Consistency Fix ─────────────────────────────
+    Ensures every input in the repair workspace uses identical
+    font-family, font-size, and color — Chrome, Firefox, Safari.
+
+    Problem: Firefox and some ZK versions let the browser's default
+    system font bleed into inputs, making some fields look different
+    from others (especially datebox vs textbox).
+
+    Solution: Force font on every possible input selector inside the
+    repair workspace.
+*/
+.repair-right input, .repair-right textarea, .repair-right .z-textbox-inp,
+	.repair-right .z-textbox-inp:focus, .repair-right .z-datebox-inp,
+	.repair-right .z-datebox-inp:focus, .repair-right .z-combobox-inp {
+	font-family: var(--font) !important;
+	font-size: 13px !important;
+	color: var(--t1) !important;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* MICR digit fields keep monospace */
+#rcb-f-chqno .z-textbox-inp, #rcb-f-city   .z-textbox-inp, #rcb-f-bank   .z-textbox-inp,
+	#rcb-f-branch .z-textbox-inp, #rcb-f-tc     .z-textbox-inp, #rcb-f-base   .z-textbox-inp,
+	#rcb-f-amount .z-textbox-inp, #rcb-f-acc    .z-textbox-inp {
+	font-family: var(--mono) !important;
+	font-size: 13px !important;
+	letter-spacing: 0.3px;
+}
+
+/* Digit-block shake — red border flash when letter/symbol is blocked */
+@keyframes fi-shake { 0% {
+	transform: translateX(0);
+	border-color: var(--border);
+}
+
+20% {
+	transform: translateX(-4px);
+	border-color: #EF4444;
+}
+40% {
+	transform: translateX(4px);
+	border-color: #EF4444;
+}
+60% {
+	transform: translateX(-3px);
+	border-color: #EF4444;
+}
+80% {
+	transform: translateX(2px);
+	border-color: #EF4444;
+}
+100% {
+	transform: translateX(0);
+	border-color: var(--border);
+}
+}
+.fi-digit-shake, .fi-auto.fi-digit-shake {
+	animation: fi-shake 0.28s ease;
+	border-color: #EF4444 !important;
+}
+
+/* ── Maker Repair Popup — Cheque pill in title bar ── */
+.repair-popup-chq-pill {
+	display: inline-block;
+	background: #E8F0FE;
+	/*color: #1E4D8C;*/
+	border: 1px solid #90B4F5;
+	border-radius: 100px;
+	padding: 3px 14px;
+	font-size: 13px;
+	font-weight: 700;
+	font-family: var(--mono);
+	letter-spacing: 0.04em;
+}
+
+/* ── Maker Repair Popup — Back to Queue button ── */
+.btn-popup-back.z-button, .btn-popup-back.z-button:visited {
+	background: #FFFFFF;
+	color: #1E4D8C;
+	border: 1.5px solid #1E4D8C;
+	border-radius: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	height: 34px;
+	min-width: 130px;
+	cursor: pointer;
+	box-shadow: none;
+}
+
+.btn-popup-back.z-button:hover {
+	background: #1E4D8C;
+	color: #FFFFFF;
+}
+
+/* ==================================================================
+   TABLE OVERRIDES — white card style for checker queue pages
+   ================================================================== */
+.cts-table-wrap, div.z-div.cts-table-wrap {
+	border-radius: 10px !important;
+	overflow: hidden !important;
+	border: 1px solid #e8edf4 !important;
+	box-shadow: 0 1px 6px rgba(0, 0, 0, 0.09) !important;
+	background: #fff !important;
+}
+
+/* Remove default ZK grid chrome */
+.cts-table-wrap .z-grid {
+	border: none !important;
+	box-shadow: none !important;
+}
+
+.cts-table-wrap .z-grid-body {
+	border: none !important;
+}
+
+/* Column header — navy background, white text */
+.cts-table-wrap .z-columns, .cts-table-wrap .z-column {
+	background: #1a3a6e !important;
+	border-bottom: 2px solid #14305c !important;
+}
+
+.cts-table-wrap .z-column-content, .cts-table-wrap .z-column {
+	color: #ffffff !important;
+	font-size: 13px !important;
+	font-weight: 700 !important;
+	text-transform: uppercase !important;
+	letter-spacing: 0.05em !important;
+	background: #1a3a6e !important;
+	text-align: center !important;
+	vertical-align: middle !important;
+	white-space: nowrap !important;
+	overflow: visible !important;
+}
+
+.cts-table-wrap .z-column:last-child {
+	border-right: none !important;
+}
+/* Hide ZK sort arrows in header */
+.cts-table-wrap .z-column-shadow {
+	display: none !important;
+}
+
+/* Data rows — white, clean
+   NOTE: font-size and color do NOT use !important here anymore.
+   FIX: they used to be !important, which silently overrode every
+   column-specific class (.chk-col-num, .chk-col-text, .chk-col-remark,
+   etc. in checkerStyles.css) on every queue page — those classes set
+   their own font-size/color, but could never win against !important.
+   Removing !important here lets those more specific column classes
+   apply as intended, while this rule still acts as the fallback
+   default (13px, #2d3a52) for any cell that has no column class. */
+.cts-table-wrap .z-row td, .cts-table-wrap .z-cell {
+	font-size: 14px;
+	font-weight: 500;
+	color: #1a2742;
+	border-bottom: 1px solid #edf0f7 !important;
+	vertical-align: middle !important;
+	background: #ffffff !important;
+	min-height: 56px !important;
+	height: 56px !important;
+	text-align: center !important;
+}
+
+/* Alternating rows */
+.cts-table-wrap .z-row:nth-child(even) td, .cts-table-wrap .z-row:nth-child(even) .z-cell
+	{
+	background: #fafbfd !important;
+}
+
+/* Row hover */
+.cts-table-wrap .z-row:hover td, .cts-table-wrap .z-row:hover .z-cell {
+	background: #f0f5ff !important;
+	cursor: pointer !important;
+}
+
+/* Maker-edited amber row */
+.cts-table-wrap .z-row.maker-edited td, .cts-table-wrap .z-row.maker-edited .z-cell
+	{
+	background: #fffbea !important;
+}
+
+/* ── Row action button — matches dashboard view button ── */
+.cts-btn-row-action {
+	background: #1a3a6e !important;
+	color: #ffffff !important;
+	border: none !important;
+	border-radius: 5px !important;
+	font-size: 12px !important;
+	font-weight: 600 !important;
+	padding: 5px 14px !important;
+	height: 30px !important;
+	cursor: pointer !important;
+	font-family: var(--font) !important;
+	white-space: nowrap !important;
+}
+
+.cts-btn-row-action:hover {
+	background: #142d58 !important;
+}
+
+/* ── Paging ── */
+.cts-table-wrap ~ .z-paging, .z-paging {
+	border-top: 1px solid #e8edf4 !important;
+	padding: 8px 16px !important;
+	background: #fafbfd !important;
+}
+
+/* ── Modal popup window — used by all three queue composers ── */
+.cts-modal-window.z-window {
+	position: fixed !important;
+	top: 50% !important;
+	left: 50% !important;
+	transform: translate(-50%, -50%) !important;
+	z-index: 1000 !important;
+	overflow: hidden !important;
+	border-radius: 10px !important;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
+	border: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Modal popup window — shared by all three queue popup openers
+   (ReturnedByCheckerComposer, CheckerResubmittedQueueComposer,
+    Verifier2ResubmittedQueueComposer)
+   ZK renders Window as .z-window-overlapped in the browser DOM.
+   These rules position it centred over the backdrop.
+   ═══════════════════════════════════════════════════════════════ */
+.cts-modal-window.z-window-overlapped {
+	position: fixed !important;
+	top: 50% !important;
+	left: 50% !important;
+	transform: translate(-50%, -50%) !important;
+	z-index: 1000 !important;
+	overflow: hidden !important;
+	border-radius: 10px !important;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
+	border: none !important;
+	margin: 0 !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FIX 7 — ADDITIONS TO Inwardmakerstyles.css
+   Append all of these to the end of the file.
+   ═════════════════════════════════════════════════════════════════ */
+
+/*
+   Shared modal Window positioning — used by ALL three queue composers.
+   Applied as a modifier class alongside the role-specific sclass:
+     Checker : win.setSclass("chk-review-modal-win cts-modal-window")
+     V2      : win.setSclass("v2-review-modal-win  cts-modal-window")
+     Maker   : win.setSclass("rcb-repair-modal-win cts-modal-window")
+   Replaces the win.setStyle() block that was in every queue composer.
+*/
+.cts-modal-window {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 1000;
+	overflow: hidden;
+	border-radius: 10px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Maker queue — status badge: already corrected by maker ──────── */
+.rcb-badge-corrected {
+	background: #FEF3C7;
+	color: #92400E;
+	border: 1px solid #F59E0B;
+	border-radius: 100px;
+	padding: 3px 10px;
+	font-size: 11px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+/* ── Maker queue — status badge: not yet corrected ───────────────── */
+.rcb-badge-needs-correction {
+	background: #FDECEA;
+	color: #C0392B;
+	border: 1px solid #EF9A9A;
+	border-radius: 100px;
+	padding: 3px 10px;
+	font-size: 11px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+/* ── Dash placeholder label in table cells ───────────────────────── */
+/* Shared across all three queue pages. */
+.chk-col-dash {
+	color: #D1D5DB;
+	font-size: 12px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ISSUE 5 FIX — returnedByChecker.zul inline style → CSS classes
+   Append this block to the end of Inwardmakerstyles.css
+   ═════════════════════════════════════════════════════════════════ */
+
+/* ── Page wrapper and scroll area ─────────────────────────────────── */
+/* Used by M_ReturnedByChecker.zul, TV1_ResubmittedQueue.zul and TV2_ResubmittedQueue.zul.
+   The padding here is what keeps the table card from sitting flush against
+   the page's scrollbar — without it the table's right edge touches/overlaps
+   the scrollbar track with no breathing room. */
+.rcb-page-wrap {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	overflow: hidden;
+}
+
+.rcb-scroll-area {
+	flex: 1;
+	overflow-y: auto;
+	box-sizing: border-box;
+}
+
+/* The breadcrumb bar should stay flush against the page header and span
+   full width — same look as the dashboard's breadcrumb. Since it lives
+   inside .rcb-scroll-area (which now has padding for the table/scrollbar
+   spacing below it), pull it back out to the edges with a matching
+   negative margin instead of leaving a gap above it. */
+.rcb-scroll-area>.cts-breadcrumb {
+	background: #1a2a4a;
+	color: #cdd6e8;
+	padding: 0 24px;
+	height: 46px;
+	display: flex;
+	align-items: center;
+	font-size: 13px;
+}
+
+/* ── Page title dot (colored emoji wrapper) ──────────────────────── */
+.rcb-title-dot {
+	color: #C0392B;
+}
+
+.chk-title-dot {
+	color: #D97706;
+}
+
+/* ── Count badge in page title ───────────────────────────────────── */
+.rcb-count-badge {
+	background: #FDECEA;
+	color: #C0392B;
+	border: 1px solid #EF9A9A;
+	border-radius: 100px;
+	padding: 3px 12px;
+	font-size: 13px;
+	font-weight: 700;
+}
+
+/* ── Refresh button in page header ──────────────────────────────── */
+.rcb-btn-refresh.z-button {
+	height: 34px;
+	padding: 0 16px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 600;
+	border: 1px solid #D9E2EC;
+	background: #fff;
+	color: #1F2937;
+	cursor: pointer;
+	font-family: inherit;
+	margin-right: 25px;
+}
+
+.rcb-btn-refresh.z-button:hover {
+	background: #F9FAFB;
+}
+
+/* ── Success banner ─────────────────────────────────────────────── */
+.rcb-success-banner {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	background: #EAF5EF;
+	border: 1px solid #81C995;
+	border-radius: 6px;
+	padding: 12px 16px;
+	margin-bottom: 14px;
+	box-shadow: 0 1px 4px rgba(26, 122, 74, .1);
+}
+
+.rcb-success-icon {
+	font-size: 20px;
+	line-height: 1.1;
+}
+
+.rcb-success-text {
+	flex: 1;
+	font-size: 13px;
+	color: #1A7A4A;
+	font-weight: 500;
+	line-height: 1.6;
+}
+
+.rcb-success-dismiss.z-button {
+	background: none;
+	border: none;
+	color: #1A7A4A;
+	font-size: 18px;
+	cursor: pointer;
+	padding: 0 4px;
+	line-height: 1;
+	opacity: 0.6;
+}
+
+/* ── Alert banner icon ──────────────────────────────────────────── */
+.rcb-alert-icon {
+	font-size: 14px;
+}
+
+/* ── Filter bar layout ──────────────────────────────────────────── */
+/* Adds flex layout to the cts-filter-card in these queue pages */
+.rcb-filter-bar {
+	display: flex;
+	align-items: flex-end;
+	gap: 16px;
+	flex-wrap: wrap;
+	padding: 14px 20px;
+	margin-bottom: 16px;
+}
+
+/* Individual filter column */
+.rcb-filter-col {
+	display: flex;
+	flex-direction: column;
+	min-width: 150px;
+}
+
+/* Search column is wider and grows to fill space */
+.rcb-filter-col-search {
+	flex: 1;
+	min-width: 220px;
+	max-width: 420px;
+}
+
+/* Height fix for filter inputs and buttons — ZK adds extra padding */
+.rcb-filter-input.z-textbox, .rcb-filter-btn.z-button,
+	.rcb-filter-select.z-listbox {
+	height: 38px !important;
+	min-height: 38px !important;
+	max-height: 38px !important;
+}
+
+/* The input inside search column also needs flex:1 to fill its row */
+.rcb-filter-col-search .rcb-filter-input.z-textbox {
+	flex: 1;
+}
+
+/* ── Table grid width ───────────────────────────────────────────── */
+.rcb-grid {
+	width: 100%;
+}
+
+/* ── Paging — now sits inside .cts-merged-card as a sibling of
+   .cts-table-wrap, so .cts-table-wrap ~ .z-paging (Inwardmakerstyles.css,
+   "Paging" section) supplies the border-top separator and padding that
+   visually attaches it to the card, the same way the filter bar attaches
+   above the table. No margin needed here. ── */
+
+/* ── Empty state inside table ───────────────────────────────────── */
+/* Used by returnedByChecker.zul  (chk- prefix already exists for checker) */
+.rcb-empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 52px 24px;
+	gap: 10px;
+}
+
+.rcb-empty-icon {
+	font-size: 40px;
+}
+
+.rcb-empty-title {
+	font-size: 15px;
+	font-weight: 700;
+	color: #1F2937;
+}
+
+.rcb-empty-desc {
+	font-size: 13px;
+	color: #6B7280;
+	text-align: center;
+	max-width: 340px;
+}
+
+/* ── Status bar at bottom — Maker queue (red theme) ─────────────── */
+.rcb-status-bar {
+	height: 26px;
+	background: #1E4D8C;
+	display: flex;
+	align-items: center;
+	padding: 0 16px;
+	gap: 20px;
+	flex-shrink: 0;
+}
+
+.rcb-status-text {
+	font-size: 11px;
+	color: rgba(255, 255, 255, .75);
+}
+
+.rcb-status-strong {
+	color: #fff;
+}
+
+.rcb-status-value {
+	color: #FF8A80;
+	font-weight: 700;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CHECKER QUEUE PAGE — SHARED UTILITY CLASSES
+   Append to end of Inwardmakerstyles.css
+   ═════════════════════════════════════════════════════════════════ */
+
+/* Count badge on page title */
+.chk-count-badge {
+	background: #FEF3C7;
+	color: #92400E;
+	border: 1px solid #F59E0B;
+	border-radius: 100px;
+	padding: 3px 12px;
+	font-size: 13px;
+	font-weight: 700;
+}
+
+/* Refresh button */
+.chk-btn-refresh {
+	height: 34px;
+	padding: 0 16px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 600;
+	border: 1px solid #D9E2EC;
+	background: #fff;
+	color: #1F2937;
+	cursor: pointer;
+	margin-right: 25px;
+}
+
+/* Success banner */
+.chk-success-banner {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	background: #EAF5EF;
+	border: 1px solid #81C995;
+	border-radius: 6px;
+	padding: 12px 16px;
+	margin-bottom: 14px;
+	box-shadow: 0 1px 4px rgba(26, 122, 74, .1);
+}
+
+.chk-success-text {
+	flex: 1;
+	font-size: 13px;
+	color: #1A7A4A;
+	font-weight: 500;
+	line-height: 1.6;
+}
+
+.chk-success-dismiss {
+	background: none;
+	border: none;
+	color: #1A7A4A;
+	font-size: 18px;
+	cursor: pointer;
+	padding: 0 4px;
+	line-height: 1;
+	opacity: 0.6;
+}
+
+/* Filter bar column label */
+.chk-filter-label {
+	font-size: 10.5px;
+	font-weight: 700;
+	color: #8a9bb8;
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+	display: block;
+	margin-bottom: 5px;
+}
+
+/* Empty state inside table */
+.chk-empty-icon {
+	font-size: 40px;
+}
+
+.chk-empty-title {
+	font-size: 15px;
+	font-weight: 700;
+	color: #1F2937;
+}
+
+.chk-empty-desc {
+	font-size: 13px;
+	color: #6B7280;
+	text-align: center;
+	max-width: 340px;
+}
+
+/* Status bar at bottom of queue page */
+.chk-status-bar-queue {
+	height: 26px;
+	background: #1E4D8C;
+	display: flex;
+	align-items: center;
+	padding: 0 16px;
+	gap: 20px;
+	flex-shrink: 0;
+}
+
+.chk-status-text {
+	font-size: 11px;
+	color: rgba(255, 255, 255, .75);
+}
+
+.chk-status-value {
+	color: #FCD34D;
+	font-weight: 700;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FIX 7 — ADDITIONS TO Inwardmakerstyles.css
+   Append all of these to the end of the file.
+   ═════════════════════════════════════════════════════════════════ */
+
+/*
+   Shared modal Window positioning — used by ALL three queue composers.
+   Applied as a modifier class alongside the role-specific sclass:
+     Checker : win.setSclass("chk-review-modal-win cts-modal-window")
+     V2      : win.setSclass("v2-review-modal-win  cts-modal-window")
+     Maker   : win.setSclass("rcb-repair-modal-win cts-modal-window")
+   Replaces the win.setStyle() block that was in every queue composer.
+*/
+.cts-modal-window {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 1000;
+	overflow: hidden;
+	border-radius: 10px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Maker queue — status badge: already corrected by maker ──────── */
+.rcb-badge-corrected {
+	background: #FEF3C7;
+	color: #92400E;
+	border: 1px solid #F59E0B;
+	border-radius: 100px;
+	padding: 3px 10px;
+	font-size: 11px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+/* ── Maker queue — status badge: not yet corrected ───────────────── */
+.rcb-badge-needs-correction {
+	background: #FDECEA;
+	color: #C0392B;
+	border: 1px solid #EF9A9A;
+	border-radius: 100px;
+	padding: 3px 10px;
+	font-size: 11px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+/* ── Dash placeholder label in table cells ───────────────────────── */
+/* Shared across all three queue pages. */
+.chk-col-dash {
+	color: #D1D5DB;
+	font-size: 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DATEBOX CALENDAR POPUP — width fix inside modal repair workspace
+   ─────────────────────────────────────────────────────────────────
+   PROBLEM: clicking the date field inside the Maker Repair Workspace
+   (rendered inside a modal Window, .cts-modal-window) opened a
+   calendar popup that visually stretched across the ENTIRE modal,
+   covering the field group, Save/Cancel buttons, and Step 2 panel
+   underneath it — see screenshot from Ramana, 17 Jun 2026.
+
+   CAUSE: ZK's Datebox popup calendar (.z-calendar-popup / .z-calendar)
+   is appended to <body>, not inside .repair-content-area, so none of
+   the scoped input-width rules above ever touched it. With no width
+   cap of its own it rendered at a default size wide enough to look
+   like it was covering the whole popup.
+
+   FIX: cap the popup's width so it sits naturally below the field
+   that opened it, instead of stretching edge-to-edge. Targets both
+   ZK10's calendar popup wrapper and the inner calendar widget; both
+   rules are harmless if only one of the two class names is actually
+   used by this ZK build.
+   ═══════════════════════════════════════════════════════════════════ */
+.z-calendar-popup {
+	width: auto !important;
+	max-width: 300px !important;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, .25) !important;
+	border-radius: 6px !important;
+}
+
+.z-calendar-popup .z-calendar, .z-calendar {
+	width: 280px !important;
+	max-width: 280px !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MAKER REPAIR WORKSPACE — M_RepairWorkspace.zul
+   Moved here from an embedded <style> block in the ZUL file so all
+   CSS lives in stylesheets, not markup. Original comments preserved.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Popup root: fills the ZK Window ───────────────────── */
+.repair-popup-root {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: hidden;
+	background: #F3F4F6;
+}
+
+/* ── Title bar — solid brand blue ─────────────────────── */
+.repair-popup-titlebar {
+	background: #1A3A6E;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 18px;
+	font-size: 12px;
+	flex-shrink: 0;
+	border-bottom: 2px solid rgba(255, 255, 255, .15);
+}
+
+.repair-popup-chq-pill {
+	background: rgba(255, 255, 255, .2);
+	border: 1px solid rgba(255, 255, 255, .35);
+	border-radius: 100px;
+	padding: 2px 12px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .4px;
+}
+
+.repair-title-icon {
+	font-size: 15px;
+}
+
+.repair-title-label {
+	font-size: 12px;
+	letter-spacing: .3px;
+}
+
+.repair-returned-pill {
+	background: rgba(255, 255, 255, .15);
+	border: 1px solid rgba(255, 255, 255, .3);
+	border-radius: 100px;
+	padding: 2px 10px;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: .5px;
+}
+
+.repair-title-hint {
+	font-size: 11px;
+	opacity: 0.8;
+}
+
+.repair-title-spacer {
+	flex: 1;
+}
+
+/* ── Close button in title bar ──────────────────────────── */
+.btn-popup-back.z-button {
+	display: inline-flex;
+	align-items: center;
+	height: 30px;
+	padding: 0 14px;
+	border-radius: 5px;
+	border: 1px solid rgba(255, 255, 255, .35);
+	background: rgba(0, 0, 0, .2);
+	color: #fff;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	font-family: inherit;
+}
+
+.btn-popup-back.z-button:hover {
+	background: rgba(0, 0, 0, .35);
+}
+
+/* ── Content area: single column, scrollable ─────────────── */
+.repair-content-area {
+	flex: 1;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 10px 16px;
+	background: #F3F4F6;
+}
+
+.repair-warn-wrap {
+	margin-bottom: 8px;
+}
+
+/* ── Save / Edit buttons — brand blue theme ──────── */
+.btn-save.z-button {
+	height: 36px;
+	padding: 0 20px;
+	border-radius: 6px;
+	border: none;
+	background: #1A3A6E;
+	color: #fff;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+	font-family: inherit;
+}
+
+.btn-save.z-button:hover {
+	background: #14305C;
+}
+
+.btn-save.z-button:disabled, .btn-save.z-button.z-button-disd {
+	background: #94A3B8;
+	cursor: not-allowed;
+}
+
+.btn-edit-sm.z-button {
+	height: 36px;
+	padding: 0 16px;
+	border-radius: 6px;
+	border: 1px solid #1A3A6E;
+	background: #fff;
+	color: #1A3A6E;
+	font-size: 12px;
+	font-weight: 700;
+	cursor: pointer;
+	font-family: inherit;
+}
+
+.btn-edit-sm.z-button:hover {
+	background: #EEF2FA;
+}
+
+.repair-btn-row {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+/* ── Input font consistency ───────────────────────────────── */
+.repair-content-area input, .repair-content-area textarea,
+	.repair-content-area .z-textbox-inp, .repair-content-area .z-textbox-inp:focus,
+	.repair-content-area .z-datebox-inp, .repair-content-area .z-datebox-inp:focus
+	{
+	font-family: var(--font) !important;
+	font-size: 13px !important;
+	color: var(--t1) !important;
+}
+
+/* ── Datebox fix ─────────────────────────────────────────── */
+.repair-content-area .z-datebox-inp {
+	width: calc(100% - 30px) !important;
+	height: 32px !important;
+	padding: 0 10px !important;
+	border: 1px solid var(--border) !important;
+	border-right: none !important;
+	border-radius: 4px 0 0 4px !important;
+	font-size: 13px !important;
+	box-sizing: border-box !important;
+	background: #fff !important;
+	line-height: 32px !important;
+}
+
+.repair-content-area .z-datebox-btn {
+	height: 32px !important;
+	width: 30px !important;
+	border: 1px solid var(--border) !important;
+	border-left: none !important;
+	border-radius: 0 4px 4px 0 !important;
+	background: var(--alt) !important;
+	cursor: pointer !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	vertical-align: top !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   M_REPAIR WORKSPACE — NEW LAYOUT CLASSES (Jun 2026 redesign)
+   chequeImagePanel, micrFieldGroup, chequeDetailsFieldGroup macros
+   now use these classes. All previously embedded <style> blocks in
+   M_RepairWorkspace.zul have been moved here.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Image section wrapper (background tint, padding, border) ── */
+.mrw-img-section {
+	padding: 8px 0 6px 0;
+	background: #f4f7fb;
+	border-bottom: 1px solid #D9E2EC;
+	margin-bottom: 8px;
+}
+
+/* ── Show Front / Show Back toggle bar ── */
+.mrw-side-label {
+	font-size: 11px;
+	font-weight: 700;
+	color: #1a3a6e;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+/* Active side button — dark navy */
+.mrw-btn-side {
+	height: 24px;
+	padding: 0 10px;
+	background: #1a3a6e;
+	color: #fff;
+	border: none;
+	border-radius: 4px;
+	font-size: 11px;
+	font-weight: 600;
+	cursor: pointer;
+	white-space: nowrap;
+	font-family: inherit;
+}
+
+.mrw-btn-side:hover {
+	background: #14305c;
+}
+
+/* Inactive side button — grey outline */
+.mrw-btn-side-inactive {
+	background: #E8EDF3 !important;
+	color: #4B5563 !important;
+	border: 1px solid #C0C8D4 !important;
+}
+
+/* ── ZK image width fix (prevents black bars on scan) ── */
+/* Targets both .chq-scan-wrapper (old macro class) and
+   any image frame used in this workspace. */
+.chq-scan-wrapper {
+	width: 100%;
+	text-align: center;
+}
+
+.chq-scan-wrapper .z-image, .chq-scan-wrapper .z-image-content {
+	display: block !important;
+	width: 100% !important;
+}
+
+.chq-scan-wrapper .z-image img, .chq-scan-wrapper img {
+	display: block !important;
+	width: 100% !important;
+	height: auto !important;
+	object-fit: contain !important;
+}
+
+/* ── Checker return reason bar — red strip above image ── */
+.mrw-checker-reason-bar {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	background: #FFF3F3;
+	border: 1px solid #E53935;
+	border-left: 4px solid #C0392B;
+	border-radius: 5px;
+	padding: 5px 12px;
+	margin-bottom: 8px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #B71C1C;
+}
+
+/* ── MICR NUMBER (AUTO) field — read-only, blue monospace tint ── */
+.fi-micr-auto {
+	background: #F0F4FA !important;
+	color: #1a3a6e !important;
+	letter-spacing: 1px !important;
+	font-weight: 700 !important;
+	cursor: default !important;
+}
+
+.fi-micr-auto .z-textbox-inp {
+	background: #F0F4FA !important;
+	color: #1a3a6e !important;
+	letter-spacing: 1px !important;
+	font-weight: 700 !important;
+	cursor: default !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   M_REPAIR WORKSPACE — ACTION BAR (final clean version)
+   
+   Layout:
+     On load:       [spacer→→→→→→→→→→→→] [💾 Save]
+     After Save 1:  [CORRECTION REMARKS * ▼combo] [💾 Save]
+     After Save 2:  [spacer→→] [✔ Saved] [✏ Edit] [🔁 CBS Validation]
+   
+   All buttons: navy blue #1a3a6e, white text.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Action bar — the bottom strip of the popup ────────────────────── */
+/*
+ * ACTION BAR — now TWO STACKED ROWS, not one row.
+ *
+ * WHY CHANGED: Correction Remarks now stays visible even after Save
+ * (previously it was hidden right when the buttons needed the space,
+ * so a single row "worked" by accident). With both visible together,
+ * the combobox (min-width 260px, default width 460px) plus three
+ * buttons no longer fit in one row inside an 880px popup — they
+ * overlapped.
+ *
+ * FIX: stack them — Correction Remarks on row 1 (top), buttons on
+ * row 2 (below). Each row uses the full width, so nothing competes
+ * for horizontal space anymore.
+ */
+.mrw-action-bar {
+	/*
+     * ACTION BAR — inside .repair-content-area (same pattern as TV1/TV2).
+     * flex-direction:row so remarks section and buttons sit side-by-side.
+     * When remarks are hidden, only buttons show (right-aligned naturally).
+     * When remarks are visible, combo grows (flex:1) and buttons stay right.
+     */
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: flex-start !important;
+	gap: 12px !important;
+	padding: 12px 0 6px 0 !important;
+	background: #F3F4F6 !important;
+	margin-top: 10px !important;
+	border-top: 1.5px solid #E5EAF2 !important;
+	box-sizing: border-box !important;
+	width: 100% !important;
+}
+
+/* REMOVED: mrw-bar-spacer — no longer used. Rows are stacked, not side by side. */
+
+/* ── Correction Remarks wrapper (now TOP row, full width) ──────────────
+ * IMPORTANT: "display" here has NO !important.
+ * This div's visibility is controlled by ZK's visible="true/false" attribute,
+ * which ZK implements by writing an inline style="display:none" on the
+ * element. If we put "display:flex !important" here (or even unguarded
+ * "display:flex" inline on the tag itself), it fights with ZK's own
+ * inline display:none and the box never actually hides.
+ * Keeping display plain (class-level, no !important, no inline style on
+ * the tag) means: hidden -> ZK's inline display:none wins (inline always
+ * beats a class). Visible -> ZK removes its inline style -> this class's
+ * display:flex applies normally. No conflict either way.
+ */
+.mrw-remarks-wrap {
+	/*
+     * Column layout: label on top, combobox below, error below that.
+     * No display:!important — ZK's visible="false" writes inline display:none
+     * which must win over this class. If we add !important, it won't hide.
+     */
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 4px;
+	flex: 1;
+	min-width: 0;
+}
+
+/* ── "CORRECTION REMARKS *" label text above combobox ─────────────── */
+.mrw-remarks-label-text {
+	font-size: 9.5px !important;
+	font-weight: 700 !important;
+	color: #1a3a6e !important;
+	text-transform: uppercase !important;
+	letter-spacing: 0.5px !important;
+	white-space: nowrap !important;
+	display: block !important;
+	margin-bottom: 2px !important;
+}
+
+/* ── Buttons group — always right, never wraps ─────────────────────── */
+.mrw-btn-group {
+	display: flex !important;
+	align-items: center !important;
+	gap: 8px !important;
+	flex-shrink: 0 !important;
+	margin-left: auto !important;
+	padding-top: 19px !important;
+}
+
+/* ── Error message BELOW combobox ───────────────────────────────────── */
+.mrw-err-below.field-err-msg, span.z-label.mrw-err-below {
+	display: block;
+	margin-top: 3px !important;
+	font-size: 11px !important;
+	font-weight: 600 !important;
+	color: #DC2626 !important;
+	white-space: nowrap !important;
+}
+
+/* ── "CORRECTION REMARKS *" label ──────────────────────────────────── */
+/* In new ZUL this is rendered as <n:span> (pure HTML), not a ZK label.
+   These rules kept for safety in case used elsewhere. */
+.mrw-remarks-label, span.z-label.mrw-remarks-label {
+	font-size: 10.5px !important;
+	font-weight: 700 !important;
+	color: #1a3a6e !important;
+	text-transform: uppercase !important;
+	letter-spacing: 0.5px !important;
+	white-space: nowrap !important;
+	flex-shrink: 0 !important;
+}
+
+/* ── Correction Remarks combobox ───────────────────────────────────── */
+/*
+ * FIX — display:inline-flex !important REMOVED from here.
+ *
+ * OLD bug: display:inline-flex !important was overriding ZK's
+ *          setVisible(false) which sets inline style="display:none".
+ *          !important in a stylesheet beats inline styles — so the
+ *          combobox stayed VISIBLE even when composer hid it.
+ *
+ * NEW approach: visibility is now controlled by the PARENT ZK <div>
+ *   (#mrw-remarks-wrap). The parent div has no display:!important CSS,
+ *   so ZK's setVisible(false) → display:none works cleanly on it.
+ *   The combobox itself is always rendered — only the parent hides/shows.
+ */
+.mrw-remarks-combo.z-combobox, span.z-combobox.mrw-remarks-combo {
+	width: 100% !important;
+	min-width: 220px !important;
+	border: 1.5px solid #B0C4DE !important;
+	border-radius: 5px !important;
+	background: #fff !important;
+	display: inline-flex;
+	align-items: center !important;
+	box-sizing: border-box !important;
+}
+
+.mrw-remarks-combo.z-combobox .z-combobox-inp, span.z-combobox.mrw-remarks-combo .z-combobox-inp
+	{
+	height: 44px !important;
+	line-height: 44px !important;
+	font-size: 13.5px !important;
+	padding: 0 12px !important;
+	color: #374151 !important;
+	background: transparent !important;
+	border: none !important;
+	outline: none !important;
+	width: 100% !important;
+	font-family: var(--font) !important;
+	box-sizing: border-box !important;
+}
+
+.mrw-remarks-combo.z-combobox .z-combobox-inp::placeholder, span.z-combobox.mrw-remarks-combo .z-combobox-inp::placeholder
+	{
+	color: #9CA3AF !important;
+	font-size: 12.5px !important;
+}
+
+/* ── Save button ───────────────────────────────────────────────────── */
+button.mrw-btn-save.z-button {
+	height: 32px !important;
+	padding: 0 20px !important;
+	background: #1a3a6e !important;
+	color: #fff !important;
+	border: none !important;
+	outline: none !important;
+	box-shadow: none !important;
+	border-radius: 5px !important;
+	font-size: 12px !important;
+	font-weight: 600 !important;
+	white-space: nowrap !important;
+	cursor: pointer !important;
+	flex-shrink: 0 !important;
+	font-family: inherit !important;
+}
+
+button.mrw-btn-save.z-button:hover:not(:disabled) {
+	background: #14305c !important;
+}
+
+button.mrw-btn-save.z-button:focus {
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+.mrw-btn-save.z-button:disabled, .mrw-btn-save.z-button.z-button-disd {
+	background: #94A3B8 !important;
+	cursor: not-allowed !important;
+}
+
+/* ── Edit button — navy blue same as Save ──────────────────────────── */
+/* BUG FIX: Added extra selectors (.mrw-btn-edit, .z-button.mrw-btn-edit)
+   to beat ZK's default light-blue button style in all rendering cases. */
+button.mrw-btn-edit.z-button, .z-button.mrw-btn-edit, .mrw-btn-edit {
+	height: 32px !important;
+	padding: 0 18px !important;
+	background: #1a3a6e !important;
+	background-color: #1a3a6e !important;
+	color: #fff !important;
+	border: none !important;
+	outline: none !important;
+	box-shadow: none !important;
+	border-radius: 5px !important;
+	font-size: 12px !important;
+	font-weight: 600 !important;
+	white-space: nowrap !important;
+	cursor: pointer !important;
+	flex-shrink: 0 !important;
+	font-family: inherit !important;
+}
+
+button.mrw-btn-edit.z-button:hover:not(:disabled), .z-button.mrw-btn-edit:hover:not(:disabled)
+	{
+	background: #14305c !important;
+	background-color: #14305c !important;
+}
+
+button.mrw-btn-edit.z-button:focus, .z-button.mrw-btn-edit:focus {
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+/* ── CBS Validation button — navy blue same as Save ────────────────── */
+button.mrw-btn-cbs.z-button {
+	height: 32px !important;
+	padding: 0 16px !important;
+	background: #1a3a6e !important;
+	color: #fff !important;
+	border: none !important;
+	outline: none !important;
+	box-shadow: none !important;
+	border-radius: 5px !important;
+	font-size: 12px !important;
+	font-weight: 600 !important;
+	white-space: nowrap !important;
+	cursor: pointer !important;
+	flex-shrink: 0 !important;
+	font-family: inherit !important;
+}
+
+button.mrw-btn-cbs.z-button:hover:not(:disabled) {
+	background: #14305c !important;
+}
+
+button.mrw-btn-cbs.z-button:focus {
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+.mrw-btn-cbs.z-button:disabled, .mrw-btn-cbs.z-button.z-button-disd {
+	background: #94A3B8 !important;
+	opacity: 0.6 !important;
+	cursor: not-allowed !important;
+}
+
+/* ── Close button in title bar ─────────────────────────────────────── */
+.mrw-btn-close.z-button {
+	height: 28px !important;
+	padding: 0 12px !important;
+	background: rgba(0, 0, 0, .2) !important;
+	color: #fff !important;
+	border: 1px solid rgba(255, 255, 255, .4) !important;
+	border-radius: 5px !important;
+	font-size: 12px !important;
+	font-weight: 600 !important;
+	cursor: pointer !important;
+	flex-shrink: 0 !important;
+	font-family: inherit !important;
+}
+
+.mrw-btn-close.z-button:hover {
+	background: rgba(0, 0, 0, .35) !important;
+}
+
+.cts-merged-card {
+	margin: 20px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   END ACTION BAR
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════════
+   QUEUE TABLE — FINAL ALIGNMENT FIX
+   Applies to: M_ReturnedByChecker, TV1_ResubmittedQueue, TV2_ResubmittedQueue
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Lock both ZK inner tables (header + body) to explicit pixel widths from ZUL */
+.rcb-grid.z-grid .z-grid-header table,
+.rcb-grid.z-grid .z-grid-body table {
+    table-layout: fixed !important;
+    width: 100% !important;
+}
+
+/* Prevent ZK grid-body internal scroll — page-level scroll only */
+.rcb-grid.z-grid .z-grid-body {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+}
+
+/* Safety net: horizontal scroll if screen is narrow */
+.cts-table-wrap,
+div.z-div.cts-table-wrap {
+    overflow-x: auto !important;
+}
+
+/* All table cell text → pure black */
+.cts-table-wrap .z-row td,
+.cts-table-wrap .z-cell,
+.cts-table-wrap .z-label,
+.cts-table-wrap .chk-col-num,
+.cts-table-wrap .chk-col-chqno,
+.cts-table-wrap .chk-col-amount,
+.cts-table-wrap .chk-col-text,
+.cts-table-wrap .chk-col-meta,
+.cts-table-wrap .chk-col-remark {
+    color: #000000 !important;
+}
+
+.cts-table-wrap .chk-col-amount {
+    font-family: monospace !important;
+    font-weight: 600 !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   RE-CORRECT BUTTON — Navy #1a3a6e
+   ══════════════════════════════════════════════════════════════════════ */
+
+.rcb-btn-correct,
+.rcb-btn-correct.z-button {
+    background: #1a3a6e !important;
+    background-color: #1a3a6e !important;
+    background-image: none !important;
+    -webkit-background-image: none !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 5px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 5px 14px !important;
+    height: 30px !important;
+    cursor: pointer !important;
+    font-family: inherit !important;
+    white-space: nowrap !important;
+    box-shadow: none !important;
+}
+
+.rcb-btn-correct.z-button .z-button-cm,
+.rcb-btn-correct .z-button-cm {
+    background: transparent !important;
+    color: #ffffff !important;
+}
+
+.rcb-btn-correct:hover,
+.rcb-btn-correct.z-button:hover {
+    background: #142d58 !important;
+    background-color: #142d58 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+}
+
+.rcb-btn-correct:focus,
+.rcb-btn-correct.z-button:focus,
+.rcb-btn-correct:active,
+.rcb-btn-correct.z-button:active {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(26, 58, 110, 0.4) !important;
+    background: #1a3a6e !important;
+    background-image: none !important;
+    color: #ffffff !important;
+}
+
+/* ══ END ══ */

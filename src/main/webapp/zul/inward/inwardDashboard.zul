@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="Inward Clearing Dashboard"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml">
+
+    <div id="dashboardWin"
+         apply="com.cts.inward.composer.Maker_InwardDashboardComposer"
+         width="100%">
+
+        <!-- External CSS -->
+        <style src="/css/inward/inwardDashboard.css"/>
+
+    <div sclass="page-bg">
+
+        <!-- ── Top Nav Breadcrumb ── -->
+        <div sclass="top-nav">
+            <h:span style="color:#cdd6e8;">Home</h:span>
+            <h:span style="margin:0 7px;color:#6b7fa8;">›</h:span>
+            <h:span style="color:#ffffff;font-weight:600;">Dashboard</h:span>
+        </div>
+
+        <!-- ── Page Header ── -->
+        <div sclass="page-header">
+            <div>
+                <div sclass="page-title">Dashboard</div>
+                <label id="lblPageMeta" sclass="page-meta"/>
+            </div>
+          
+        </div>
+
+        <!-- ── Stat Cards ── -->
+        <div sclass="cards-row">
+
+            <div sclass="stat-card stat-card-blue">
+                <div>
+                    <label id="lblTotalBatches" value="0" sclass="stat-number"/>
+                    <div sclass="stat-label-txt">Total Batches</div>
+                </div>
+                <div sclass="stat-icon-txt">📦</div>
+            </div>
+
+            <div sclass="stat-card stat-card-green">
+                <div>
+                    <label id="lblClearedBatches" value="0" sclass="stat-number"/>
+                    <div sclass="stat-label-txt">Cleared Batches</div>
+                </div>
+                <div sclass="stat-icon-txt">✅</div>
+            </div>
+
+            <div sclass="stat-card stat-card-orange">
+                <div>
+                    <label id="lblDraftBatches" value="0" sclass="stat-number"/>
+                    <div sclass="stat-label-txt">Draft Batches</div>
+                </div>
+                <div sclass="stat-icon-txt">⏳</div>
+            </div>
+
+        </div>
+
+        <!-- ── Batch List Card ── -->
+        <div sclass="batch-card">
+
+            <!-- Card Header -->
+            <div sclass="batch-card-header">
+                <div sclass="batch-card-title">Inward Batch List</div>
+               
+            </div>
+
+            <!-- ── Filter / Search Bar ── -->
+            <div sclass="search-bar">
+
+                <div sclass="srch-field-grow">
+                    <label value="SEARCH BATCH ID" sclass="srch-label"/>
+                    <textbox id="txtBatchId"
+                             placeholder="e.g. BATCH001"
+                             width="100%"/>
+                </div>
+
+                <div sclass="srch-field">
+                    <label value="STATUS" sclass="srch-label"/>
+                    <combobox id="cmbStatus"
+                              readonly="true"
+                              width="140px"
+                              value="All">
+                        <comboitem label="All"/>
+                        <comboitem label="DRAFT"/>
+                        <comboitem label="PENDING"/>
+                        <comboitem label="CLEARED"/>
+                    </combobox>
+                </div>
+
+                <div sclass="srch-field">
+                    <label value="DATE" sclass="srch-label"/>
+                    <datebox id="filterDate" width="150px" format="dd-MMM-yyyy"/>
+                </div>
+
+                <button id="btnSearch" sclass="btn-search-srch" label="🔍 Search"/>
+                <button id="btnClear"  sclass="btn-clear-srch"  label="✕ Clear"/>
+
+            </div>
+
+            <!-- ── Batch Table ── -->
+            <listbox id="batchListbox"
+                     mold="paging"
+                     pageSize="10"
+                     width="100%"
+                     emptyMessage="No inward batches found for this date.">
+
+                <listhead sizable="false">
+                    <listheader label="BATCH ID"        width="130px"/>
+                    <listheader label="UPLOAD DATE"     width="160px"/>
+                    <listheader label="TOTAL CHEQUES"   width="140px"/>
+                    <listheader label="VALID CHEQUES" width="130px"/>
+                    <listheader label="INVALID CHEQUES" width="140px"/>
+                    <listheader label="STATUS"          width="160px"/>
+                    <listheader label="ACTION"          width="100px"/>
+                </listhead>
+
+            </listbox>
+
+        </div>
+
+    </div>
+
+    </div>
+
+</zk>

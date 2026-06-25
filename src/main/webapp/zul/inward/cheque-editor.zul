@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window id="chequeEditorWindow"
+        title="Cheque Editor"
+        width="700px"
+        border="normal"
+        apply="com.cts.inward.composer.ChequeEditorComposer"
+        mode="modal">
+
+    <vlayout spacing="10px" style="padding:15px">
+
+        <label value="Cheque Images" style="font-weight:bold; font-size:14px"/>
+
+        <hlayout spacing="20px">
+
+            <vlayout>
+                <label value="Front Image"/>
+                <image id="frontImg" width="300px" height="150px"
+                       style="border:1px solid #ccc"/>
+            </vlayout>
+
+            <vlayout>
+                <label value="Back Image"/>
+                <image id="backImg" width="300px" height="150px"
+                       style="border:1px solid #ccc"/>
+            </vlayout>
+
+        </hlayout>
+
+        <separator/>
+
+        <label value="Cheque Details" style="font-weight:bold; font-size:14px"/>
+
+        <grid width="100%">
+            <columns>
+                <column width="200px"/>
+                <column/>
+            </columns>
+            <rows>
+                <row>
+                    <label value="Cheque Number"/>
+                    <textbox id="chequeNumberTxt" width="300px" readonly="true"
+                             style="background:#f0f0f0"/>
+                </row>
+                <row>
+                    <label value="Account Number"/>
+                    <textbox id="accountNumberTxt" width="300px"/>
+                </row>
+                <row>
+                    <label value="Amount"/>
+                    <textbox id="amountTxt" width="300px"/>
+                </row>
+                <row>
+                    <label value="Drawer Name"/>
+                    <textbox id="drawerNameTxt" width="300px"/>
+                </row>
+                <row>
+                    <label value="Payee Name"/>
+                    <textbox id="payeeNameTxt" width="300px"/>
+                </row>
+                <row>
+                    <label value="MICR Code"/>
+                    <textbox id="micrCodeTxt" width="300px"/>
+                </row>
+                <row>
+                    <label value="Cheque Status"/>
+                    <textbox id="chequeStatusTxt" width="300px"/>
+                </row>
+            </rows>
+        </grid>
+
+        <separator/>
+
+        <hlayout spacing="10px">
+            <button id="updateBtn"
+                    label="Update Cheque"
+                    style="background:#336699; color:white; font-weight:bold"/>
+            <button id="closeBtn"
+                    label="Close"/>
+        </hlayout>
+
+    </vlayout>
+
+</window>

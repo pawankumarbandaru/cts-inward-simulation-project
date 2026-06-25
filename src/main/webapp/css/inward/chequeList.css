@@ -1,0 +1,356 @@
+/* =============================================
+   CTS - Cheque List Styles
+   File: chequeList.css
+   Used by: component/chequeList.zul
+            component/cbsChequeList.zul (shared classes)
+   Requires: common.css (for :root variables)
+
+   Layout explanation:
+   cheque-list-wrapper  → flex column, full height
+     cheque-list-header → fixed height, shrink:0
+     cheque-listbox     → flex:1, grows to fill space
+     cheque-pagination  → fixed height, shrink:0
+
+   This guarantees pagination is ALWAYS visible
+   ============================================= */
+
+.cheque-list-wrapper {
+    display        : flex;
+    flex-direction : column;
+    height         : 100%;
+    overflow       : hidden;
+}
+
+/* Header: title on left, controls on right */
+.cheque-list-header {
+    display         : flex;
+    align-items     : center;
+    justify-content : space-between;
+    padding         : 10px 14px;
+    border-bottom   : 1px solid var(--border);
+    flex-shrink     : 0;
+    background      : var(--surface);
+}
+
+.cheque-list-title-area {
+    display     : flex;
+    align-items : center;
+    gap         : 6px;
+}
+
+.cheque-list-title {
+    font-size      : 13px;
+    font-weight    : 700;
+    color          : var(--text-primary);
+    text-transform : uppercase;
+    letter-spacing : 0.4px;
+}
+
+.cheque-list-subtitle {
+    font-size : 11px;
+    color     : var(--text-muted);
+}
+
+.cheque-list-controls {
+    display     : flex;
+    align-items : center;
+    gap         : 8px;
+}
+
+/* Search box */
+.cheque-search-box {
+    height        : 30px;
+    padding       : 0 10px;
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    font-size     : 12px;
+    width         : 180px;
+    background    : var(--surface);
+    color         : var(--text-primary);
+}
+
+.cheque-search-box:focus {
+    outline      : none;
+    border-color : var(--primary-light);
+    box-shadow   : 0 0 0 2px rgba(43, 91, 168, 0.1);
+}
+
+/* Status filter */
+.cheque-filter-select {
+    height        : 30px;
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    font-size     : 12px;
+    min-width     : 95px;
+    background    : var(--surface);
+    color         : var(--text-primary);
+}
+
+/*
+   Listbox — KEY CSS RULES:
+   flex: 1            → fills all space between header and pagination
+   min-height: 0      → REQUIRED for flex children to scroll properly
+   overflow-y: hidden → all 9 rows must fit without scrolling (row height tuned below)
+   overflow-x: hidden → columns use % widths in the ZUL; never show a horizontal scrollbar
+   NO vflex="1"       → do not use vflex in zul, use CSS flex only
+*/
+.cheque-listbox {
+    flex       : 1;
+    border     : none;
+    width      : 100%;
+    max-width  : 100%;
+    overflow-x : hidden;
+    overflow-y : hidden;
+    min-height : 0;
+    table-layout : fixed;
+}
+
+/* Column headers */
+.cheque-list-head {
+    position : sticky;
+    top      : 0;
+    z-index  : 1;
+}
+
+.col-header {
+    font-size      : 10px;
+    font-weight    : 300;
+    color          : #ffffff;
+    text-transform : uppercase;
+    letter-spacing : 0.3px;
+    background     : #1a3a6e !important;
+    border-bottom  : 2px solid var(--border-strong);
+    height         : 32px;
+    white-space    : normal;
+    overflow       : hidden;
+    text-overflow  : ellipsis;
+}
+
+
+/* Row hover */
+.z-listitem:hover {
+    background : #EEF4FF;
+    cursor     : pointer;
+}
+
+/*
+   Compact row sizing — scoped to this listbox only.
+   Default ZK cell padding makes 9 rows taller than the available
+   panel height, which triggers an unwanted vertical scrollbar.
+   Tightening padding/line-height here keeps all 9 rows + header
+   visible at once with no scroll.
+*/
+.cheque-listbox .z-listcell {
+    padding-top    : 6px;
+    padding-bottom : 6px;
+    font-size      : 12px;
+    overflow       : hidden;
+    text-overflow  : ellipsis;
+    white-space    : nowrap;
+}
+
+.cheque-listbox .z-listcell-content {
+    line-height : 1.2;
+}
+
+/* Remove ZK's default blue selected-row highlight.
+   Rows are opened via popup on click — no persistent selection needed. */
+.z-listitem-selected,
+.z-listitem-selected .z-listcell-cnt,
+.z-listitem.z-listitem-selected:hover {
+    background : #EEF4FF !important;
+    color      : var(--text-primary) !important;
+}
+
+/* Cheque number — styled as clickable */
+.cheque-no-link {
+    color            : var(--primary-light);
+    font-weight      : 600;
+    font-family      : var(--font-mono);
+    font-size        : 13px;
+    cursor           : pointer;
+    text-decoration  : none;
+}
+
+.cheque-no-link:hover {
+    text-decoration : underline;
+}
+
+/* Bank code */
+.bank-code-label {
+    color       : var(--primary);
+    font-weight : 600;
+    font-family : var(--font-mono);
+    font-size   : 12px;
+}
+
+/* MICR error — shown in red */
+.micr-error-label {
+    color       : var(--danger);
+    font-weight : 600;
+    font-family : var(--font-mono);
+    font-size   : 12px;
+}
+
+.cell-normal {
+    font-size : 13px;
+    color     : var(--text-primary);
+}
+
+.amount-label {
+    font-family : var(--font-mono);
+    font-size   : 12px;
+    color       : var(--text-primary);
+}
+
+/* NORMAL status — green badge */
+.badge-normal {
+    display        : inline-flex;
+    align-items    : center;
+    padding        : 2px 7px;
+    border-radius  : 100px;
+    font-size      : 10px;
+    font-weight    : 700;
+    text-transform : uppercase;
+    background     : var(--success-bg);
+    color          : var(--success);
+    border         : 1px solid var(--success-b);
+    white-space    : nowrap;
+    max-width      : 100%;
+    overflow       : hidden;
+    text-overflow  : ellipsis;
+}
+
+/* MICR_ERROR status — orange badge */
+.badge-micr-error {
+    display        : inline-flex;
+    align-items    : center;
+    padding        : 2px 7px;
+    border-radius  : 100px;
+    font-size      : 10px;
+    font-weight    : 700;
+    text-transform : uppercase;
+    background     : var(--warning-bg);
+    color          : var(--warning);
+    border         : 1px solid var(--warning-b);
+    white-space    : nowrap;
+    max-width      : 100%;
+    overflow       : hidden;
+    text-overflow  : ellipsis;
+}
+
+/*
+   Pagination area — ALWAYS pinned at bottom
+   flex-shrink: 0  → never shrinks
+   min-height: 46px → always has enough height to show
+*/
+.cheque-pagination-area {
+    padding       : 8px 14px;
+    border-top    : 1px solid var(--border);
+    flex-shrink   : 0;
+    background    : var(--surface);
+    display       : flex;
+    align-items   : center;
+    min-height    : 46px;
+}
+
+.cheque-paging {
+    font-size : 12px;
+    color     : var(--text-muted);
+}
+.row-maker-edited td.z-listcell {
+    background-color: #fff8e1 !important;
+}
+
+.row-maker-edited td.z-listcell:first-child {
+    border-left: 3px solid #f9a825 !important;
+}
+
+
+
+
+.z-listheader {
+    background: #1a3a6e !important;
+}
+
+.z-listheader-content {
+    color: white !important;
+}
+
+.z-listhead th {
+    background: #1a3a6e !important;
+}
+
+
+tr.cheque-list-head th.z-listheader,
+tr.cheque-list-head th.z-listheader .z-listheader-content {
+    background: #1a3a6e !important;
+    background-color: #1a3a6e !important;
+    color: #fff !important;
+}
+/* Header row */
+.cheque-listbox .z-listhead {
+    background-color: #1a3a6e !important;
+}
+
+/* Each header cell */
+.cheque-listbox .z-listheader {
+    background-color: #1a3a6e !important;
+    border-color: #1a3a6e !important;
+}
+
+/* Header text container */
+.cheque-listbox .z-listheader-content {
+   
+    font-weight: 200 !important;
+    font-size :12px
+}
+
+/* Sometimes ZK applies styles on TH */
+.cheque-listbox .z-listhead th {
+    background-color: #1a3a6e !important;
+}
+
+/* Force navy blue header */
+.cheque-listbox .z-listheader {
+    background: #1a3a6e !important;
+    border-left: 1px solid #1a3a6e !important;
+    border-bottom: 1px solid #1a3a6e !important;
+}
+
+
+.cheque-listbox .z-listhead th {
+    background: #1a3a6e !important;
+}
+
+/* Wraps each label + control vertically */
+.cheque-control-group {
+    display        : flex;
+    flex-direction : column;
+    gap            : 3px;
+}
+
+/* Small label above each control */
+.cheque-control-label {
+    font-size   : 11px;
+    font-weight : 600;
+    color       : var(--text-muted);
+}
+
+/* Datebox — matches existing search box and filter height/style */
+.cheque-date-filter .z-datebox-input {
+    height        : 30px;
+    font-size     : 12px;
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    padding       : 0 8px;
+    width         : 120px;
+    background    : var(--surface);
+    color         : var(--text-primary);
+}
+
+.cheque-date-filter .z-datebox-input:focus {
+    outline      : none;
+    border-color : var(--primary-light);
+    box-shadow   : 0 0 0 2px rgba(43, 91, 168, 0.1);
+}

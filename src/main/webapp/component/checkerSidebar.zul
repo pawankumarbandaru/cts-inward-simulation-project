@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<div id="checkerSidebarRoot"
+     apply="com.cts.composer.CheckerSidebarComposer"
+     sclass="cts-sidebar">
+
+    <!-- ── MAIN MENU ─────────────────────────── -->
+    <div sclass="cts-section-label">
+        <label value="MAIN MENU"/>
+    </div>
+
+    <div sclass="cts-menu-item active">
+        <custom-attributes perm="DASHBOARD_VIEW"
+            pagePath="/zul/inward/checkerDashboard_inward.zul"/>
+        <div sclass="cts-row">
+            <div sclass="cts-icon-badge cts-icon-home">
+                <label value="🏠"/>
+            </div>
+            <label sclass="cts-item-label" value="Dashboard"/>
+        </div>
+    </div>
+
+    <!-- ── CLEARING ──────────────────────────── -->
+    <div sclass="cts-section-label">
+        <label value="CLEARING"/>
+    </div>
+
+    <!-- CHECKER QUEUE — no pagePath, navigation disabled -->
+    <div sclass="cts-menu-item">
+			<custom-attributes perm=""
+				pagePath="/zul/inward/TV1_ResubmittedQueue.zul" />
+			<div sclass="cts-sub-row">
+				<label sclass="cts-sub-label" value="Return Cheques" />
+			</div>
+		</div>
+
+    <!-- ── REPORTS ───────────────────────────── -->
+    <div sclass="cts-section-label">
+        <label value="REPORTS"/>
+    </div>
+
+    <div id="checkerReportsHeader" sclass="cts-menu-header">
+        <div sclass="cts-row">
+            <div sclass="cts-icon-badge cts-icon-report-in">
+                <label value="📋"/>
+            </div>
+            <label sclass="cts-item-label" value="Inward Reports"/>
+            <label id="checkerReportsArrow" sclass="cts-arrow" value="▶"/>
+        </div>
+    </div>
+
+    <div id="checkerReportsMenu" sclass="cts-submenu" visible="false">
+        <div sclass="cts-menu-item">
+            <custom-attributes perm="" pagePath="/zul/inward/inwardReport.zul"/>
+            <div sclass="cts-sub-row">
+                <label sclass="cts-sub-label" value="Return Cheques"/>
+            </div>
+        </div>
+    </div>
+
+</div>

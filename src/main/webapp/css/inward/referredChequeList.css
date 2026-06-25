@@ -1,0 +1,187 @@
+/* =====================================================
+   ReferredChequeList.css
+   Styles for : ReferredChequesList.zul
+   Composer   : ReferredChequeListComposer.java
+   ===================================================== */
+
+/* ---------- Page wrapper ---------- */
+.maker-page-root {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #ffffff;
+}
+
+
+
+/* ---------- Breadcrumb ---------- */
+.breadcrumb-bar {
+    background: #1a2a4a;
+    color: #cdd6e8;
+    padding: 0 24px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+}
+.bread-current{
+	color:#ffff;
+}
+
+.bread-parent{
+	color: #cdd6e8;
+}
+/* ---------- Subtitle bar ---------- */
+.page-subtitle-bar {
+    margin-bottom: 14px;
+}
+
+.page-subtitle-label {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* ---------- Layout ---------- */
+.two-panel-layout {
+    width: 100%;
+}
+
+.right-panel {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+/* ---------- Listbox ---------- */
+.cheque-listbox {
+    width: 100%;
+    border: none;
+}
+
+/* Kill the horizontal scrollbar caused by the inner body
+   table being wider than the listbox container */
+.cheque-listbox .z-listbox-body {
+    overflow-x: hidden !important;
+}
+
+.cheque-listbox .z-listbox-bodytbl,
+.cheque-listbox .z-listbox-headtbl {
+    width: 100% !important;
+    table-layout: fixed !important;
+}
+
+.cheque-listbox .z-listcell-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Header row */
+.cheque-listbox .z-listhead,
+.cheque-listbox .z-listheader {
+    background: #1a3a6e;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 13px;
+    border: none;
+   
+}
+
+.cheque-listbox .z-listheader-content {
+    color: #ffffff;
+}
+
+/* Body rows */
+.cheque-listbox .z-listitem {
+    border-bottom: 1px solid #eef0f3;
+}
+
+.cheque-listbox .z-listcell {
+    padding: 12px;
+    font-size: 13px;
+    color: #1f2937;
+}
+
+/* Hover */
+.cheque-listbox .z-listitem:hover {
+    background: #f5f9ff;
+    cursor: pointer;
+}
+
+/* Selected row */
+.cheque-listbox .z-listitem-selected,
+.cheque-listbox .z-listitem-selected .z-listcell {
+    background: #bfe0ff !important;
+}
+
+/* ---------- Cheque No link ---------- */
+.cheque-no-link {
+    color: #1d6fd6;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.cheque-no-link:hover {
+    color: #114f9e;
+}
+
+/* ---------- Amount ---------- */
+.amount-label {
+    color: #1f2937;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Date ---------- */
+.date-label {
+    color: #374151;
+}
+
+/* ---------- Status badge ---------- */
+.badge-micr-error {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    background: #fdf3d3;
+    color: #92720d;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* ---------- Pagination (built-in listbox mold="paging" footer) ---------- */
+.z-paging,
+.z-listbox-paging {
+    font-size: 13px;
+    border-top: 1px solid #e5e7eb;
+    background: #fafafa;
+    padding: 8px 12px;
+}
+
+.z-paging-button {
+    border-radius: 4px;
+}
+
+/* Center content inside cells */
+.z-listcell-content {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.z-listcell-content {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100%;
+}
+
+/* Center header text */
+.cheque-list-head .z-listheader-content {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100%;
+    text-align: center !important;
+        border-left: 1px solid #0064ED
+}

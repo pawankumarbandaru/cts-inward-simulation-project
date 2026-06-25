@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?page title="Inward Reports — NavbharatCTS"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml">
+
+<div id="reportRoot"
+     apply="com.cts.inward.composer.InwardReportComposer"
+     width="100%">
+
+    <style src="/css/inward/inwardReport.css"/>
+
+    <!-- ══════════════════════════════════════════════════════════
+         VIEW 1 — Batch List (default visible)
+    ═══════════════════════════════════════════════════════════ -->
+    <div id="viewBatchList" sclass="rpt-page-bg">
+
+        <!-- Page Header -->
+        <div sclass="rpt-page-header">
+            <div sclass="rpt-page-title">Inward Reports</div>
+            <div sclass="rpt-page-sub">Download RES and RRF reports for inward clearing batches</div>
+        </div>
+
+        <!-- Filter Card -->
+        <div sclass="rpt-filter-card">
+            <div sclass="rpt-filter-row">
+
+                <div sclass="rpt-filter-field">
+                    <label sclass="rpt-filter-label" value="FROM DATE"/>
+                    <datebox id="filterDate"
+                             width="160px"
+                             format="dd-MMM-yyyy"
+                             constraint="no future"/>
+                </div>
+
+                <div sclass="rpt-filter-field">
+                    <label sclass="rpt-filter-label" value="TO DATE"/>
+                    <datebox id="filterDateTo"
+                             width="160px"
+                             format="dd-MMM-yyyy"
+                             constraint="no future"/>
+                </div>
+
+                <div sclass="rpt-filter-field rpt-filter-grow">
+                    <label sclass="rpt-filter-label" value="BATCH NO"/>
+                    <textbox id="txtBatchNo"
+                             placeholder="Search batch..."
+                             width="100%"/>
+                </div>
+
+                <button id="btnSearch" sclass="rpt-btn-search" label="Search"/>
+                <button id="btnClear"  sclass="rpt-btn-clear"  label="Clear"/>
+
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <div sclass="rpt-table-card">
+
+            <div sclass="rpt-table-header">
+                <div sclass="rpt-batch-count-wrap">
+                    <h:span class="rpt-dot"/>
+                    <label id="lblBatchCount" sclass="rpt-batch-count" value="0 Batches"/>
+                </div>
+                <button id="btnSmartDownload"
+                        sclass="rpt-btn-download-all"
+                        label="⬇ Download All Reports"/>
+            </div>
+
+            <listbox id="batchListbox"
+                     mold="paging"
+                     pageSize="10"
+                     width="100%"
+                     sclass="rpt-listbox"
+                     emptyMessage="No batches found for the selected date.">
+				               <listhead sizable="false">
+				    <listheader width="45px">
+				        <checkbox id="chkSelectAll" tooltiptext="Select / deselect all"/>
+				    </listheader>
+				
+				    <listheader label="SNO" width="60px"/>
+				    <listheader label="BATCH NO" width="110px"/>
+				    <listheader label="DATE" width="120px"/>
+				    <listheader label="CHEQUES" width="90px"/>
+				    <listheader label="AMOUNT" width="140px"/>
+				    <listheader label="ACCEPTED" width="100px"/>
+				    <listheader label="REJECTED" width="100px"/>
+				    <listheader label="PENDING" width="90px"/>
+				    <listheader label="ACTION" width="170px"/>
+				</listhead>
+            </listbox>
+
+        </div>
+    </div><!-- /viewBatchList -->
+
+
+    <!-- ══════════════════════════════════════════════════════════
+         VIEW 2 — Batch Detail (hidden until row clicked)
+    ═══════════════════════════════════════════════════════════ -->
+    <div id="viewBatchDetail" sclass="rpt-page-bg" visible="false">
+
+        <!-- ── Breadcrumb bar ── -->
+        <div sclass="rpt-breadcrumb-bar">
+            <label id="lblDetailBreadcrumb"
+                   sclass="rpt-breadcrumb-label"
+                   value="Inward - Batch Detail"/>
+        </div>
+
+        <!-- ── Subtitle bar ── -->
+        <div sclass="rpt-subtitle-bar">
+            <label id="lblDetailSubtitle"
+                   sclass="rpt-subtitle-label"
+                   value=""/>
+        </div>
+
+        <!-- ── Two-panel layout ── -->
+        <div sclass="rpt-detail-layout">
+
+            <!-- LEFT PANEL — Batch Summary -->
+            <div sclass="rpt-left-panel">
+
+                <div sclass="rpt-left-section-title">BATCH SUMMARY</div>
+
+                <div sclass="rpt-info-block">
+                    <div sclass="rpt-info-section-hd">BATCH INFO</div>
+                    <div sclass="rpt-info-row">
+                        <span sclass="rpt-info-key">Batch ID</span>
+                        <label id="lblDetailBatchId" sclass="rpt-info-val-blue" value=""/>
+                    </div>
+                    <div sclass="rpt-info-row">
+                        <span sclass="rpt-info-key">Upload Time</span>
+                        <label id="lblDetailUploadTime" sclass="rpt-info-val" value="--:-- --"/>
+                    </div>
+                </div>
+
+                <div sclass="rpt-info-block">
+                    <div sclass="rpt-info-section-hd">CHEQUE COUNTS</div>
+                    <div sclass="rpt-info-row">
+                        <span sclass="rpt-info-key">Total</span>
+                        <label id="lblDetailTotal" sclass="rpt-info-val-num" value="0"/>
+                    </div>
+                    <div sclass="rpt-info-row">
+                        <span sclass="rpt-info-key">Accepted</span>
+                        <label id="lblDetailAccepted" sclass="rpt-info-val-green" value="0"/>
+                    </div>
+                    <div sclass="rpt-info-row">
+                        <span sclass="rpt-info-key">Rejected</span>
+                        <label id="lblDetailRejected" sclass="rpt-info-val-red" value="0"/>
+                    </div>
+                    <div sclass="rpt-info-row">
+                        <span sclass="rpt-info-key">Pending</span>
+                        <label id="lblDetailPending" sclass="rpt-info-val-orange" value="0"/>
+                    </div>
+                </div>
+
+                <!-- Download Report button -->
+                <button id="btnDetailDownload"
+                        sclass="rpt-btn-detail-download"
+                        label="⬇ Download Report"/>
+
+                <!-- Back button -->
+                <button id="btnBackToList"
+                        sclass="rpt-btn-back"
+                        label="← Back to List"/>
+
+            </div><!-- /left panel -->
+
+            <!-- RIGHT PANEL — Cheque Grid -->
+            <div sclass="rpt-right-panel">
+
+                <!-- header row: title + search + status filter -->
+                <div sclass="rpt-cheque-header">
+                    <div sclass="rpt-cheque-header-left">
+                        <span sclass="rpt-cheque-title">ALL CHEQUES</span>
+                        <span sclass="rpt-cheque-hint">(click a row to view)</span>
+                    </div>
+                    <div sclass="rpt-cheque-header-right">
+                        <textbox id="txtDetailSearch"
+                                 sclass="rpt-detail-search"
+                                 placeholder="Search cheque / account / payee / amount..."
+                                 width="260px"/>
+                        <!-- Status filter dropdown -->
+                        <combobox id="cmbStatusFilter"
+                                  sclass="rpt-status-filter"
+                                  width="130px"
+                                  value="All"
+                                  readonly="true">
+                            <comboitem label="All"/>
+                            <comboitem label="ACCEPTED"/>
+                            <comboitem label="REJECTED"/>
+                            <comboitem label="PENDING"/>
+                        </combobox>
+                    </div>
+                </div>
+
+                <!-- Cheque listbox -->
+                <listbox id="chequeListbox"
+                         mold="paging"
+                         pageSize="5"
+                         width="100%"
+                         sclass="rpt-listbox rpt-cheque-listbox"
+                         emptyMessage="No cheques found.">
+                    <listhead sizable="false">
+                        <listheader label="#"           width="50px"/>
+                        <listheader label="CHEQUE NO"   width="140px"/>
+                        <listheader label="ACCOUNT NO"  width="140px"/>
+                        <listheader label="PAYEE NAME"  width="200px"/>
+                        <listheader label="AMOUNT"      width="140px"/>
+                        <listheader label="STATUS"      width="120px"/>
+                        <listheader label="REASON"/>
+                    </listhead>
+                </listbox>
+
+            </div><!-- /right panel -->
+
+        </div><!-- /two-panel layout -->
+
+    </div><!-- /viewBatchDetail -->
+
+</div>
+</zk>

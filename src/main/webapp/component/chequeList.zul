@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Macro Component : Cheque List
+    Component Class : com.cts.component.ChequeListComponent
+    Composer        : com.cts.inward.composer.ChequeListComposer
+
+    FIX: Status filter listitem values now match ChequeStatus enum names exactly:
+         "Normal" and "Micr_error"  (NOT "NORMAL" / "MICR_ERROR")
+
+    FIX: Column widths use PERCENTAGES (not fixed px) so all 6 columns
+         always fit inside the right panel with no horizontal scrollbar,
+         regardless of panel/screen width. Percentages must sum to 100%.
+
+    KEY RULES:
+    - NO vflex on listbox — pagination must stay visible
+    - instant="true" + onChange fires on every keystroke
+    - pageSize set in composer not here
+-->
+
+<div apply="com.cts.inward.composer.ChequeListComposer"
+     sclass="cheque-list-wrapper">
+
+    <!-- Header: Title + Search + Filter -->
+    <div sclass="cheque-list-header">
+
+        <div sclass="cheque-list-title-area">
+            <label value="ALL CHEQUES"
+                   sclass="cheque-list-title"/>
+            <label value="(click a row to edit)"
+                   sclass="cheque-list-subtitle"/>
+        </div>
+
+        <div sclass="cheque-list-controls">
+
+            <!--
+                instant="true"  → fires onChange on every keystroke
+                onChange        → value is already updated when fired
+                DO NOT use onChanging → value not yet updated when fired
+            -->
+            
+    <label value="Date:" sclass="cheque-search-label"/>
+    <datebox id="dpChequeDate"
+             format="dd-MM-yyyy"
+             placeholder="dd-MM-yyyy"
+             sclass="cheque-date-box"/>
+            
+            <label value="Search:" sclass="cheque-search-label"/>
+            <textbox id="tbSearch"
+                     placeholder="Search cheque / bank / amount..."
+                     sclass="cheque-search-box"
+                     instant="true"/>
+
+            <!-- Status Filter
+                 FIX: value must match ChequeStatus enum name exactly.
+                 ChequeStatus.Normal.name()     == "Normal"
+                 ChequeStatus.Micr_error.name() == "Repair"
+            -->
+            <listbox id="lbStatusFilter"
+                     mold="select"
+                     sclass="cheque-filter-select">
+                <listitem label="All"          value="ALL" selected="true"/>
+                <listitem label="Normal"       value="Normal"/>
+                <listitem label="Repair"       value="Repair"/>
+                <listitem label="Pending"      value="Pending"/>
+                <listitem label="Resubmitted"  value="Resubmitted"/>
+                <listitem label="Ready"        value="Ready"/>
+                <listitem label="Reject"       value="Reject"/>
+                <listitem label="Processed"    value="Processed"/>
+            </listbox>
+
+        </div>
+
+    </div>
+
+    <!--
+        Cheque Listbox
+        NO vflex="1" here — that pushes pagination out of view
+        Height is controlled by CSS flex layout
+
+        Column widths are PERCENTAGES, summing to exactly 100%,
+        so the table always fits the panel width — no horizontal scroll,
+        no matter how narrow/wide the right panel is.
+    -->
+    <listbox id="lbChequeList"
+             sclass="cheque-listbox">
+
+        <listhead sclass="cheque-list-head">
+            <listheader label="SNO"
+                        width="6%"
+                        sclass="col-header02"/>
+            <listheader label="CHEQUE NO"
+                        width="18%"
+                        sclass="col-header02"/>
+            <listheader label="CHEQUE DATE"
+                        width="18%"
+                        sclass="col-header02"/>
+            <listheader label="ACCOUNT NO"
+                        width="18%"
+                        sclass="col-header02"/>
+            <listheader label="AMOUNT"
+                        width="20%"
+                        sclass="col-header02"/>
+            <listheader label="STATUS"
+                        width="20%"
+                        sclass="col-header02"/>
+        </listhead>
+
+    </listbox>
+
+    <!--
+        Pagination Area
+        flex-shrink:0 in CSS keeps this always visible
+        at the bottom of the right panel
+    -->
+    <div sclass="cheque-pagination-area">
+        <paging id="pgChequeList"
+                pageSize="8"
+                totalSize="0"
+                sclass="cheque-paging"/>
+    </div>
+
+</div>

@@ -1,0 +1,226 @@
+/* =============================================
+   cbsValidation.css
+   Scoped overrides for the CBS Validation page.
+
+   Rule: only add/override — never modify maker.css
+   All layout classes (.two-panel-layout, .left-panel, etc.)
+   come from maker.css and are reused without change.
+   ============================================= */
+
+/* ── Hide "Send to CBS Validation" button on THIS page only ──────────────
+   The .cbs-page-root class is applied to the root <div> of cbsValidation.zul.
+   batchSummary.zul and BatchSummaryComposer are NOT modified.
+   The button continues to appear normally on makerBatchDetail.zul.         */
+   
+   .top-nav {
+   background: #1a2a4a;
+    color: #cdd6e8;
+    padding: 0 24px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+ 
+    gap:5px;
+}
+
+.cbs-page-root #btnSendToCbs,
+.cbs-page-root .btn-cbs-action {
+    display : none !important;
+}
+
+/* ── CBS Cheque List wrapper ─────────────────────────────────────────────*/
+.cbs-cheque-list-wrapper {
+    display        : flex;
+    flex-direction : column;
+    height         : 100%;
+    padding        : 0;
+}
+
+/* ── Right panel column layout (cheque list + status bar + button) ───────*/
+.cbs-right-panel {
+    display        : flex;
+    flex-direction : column;
+}
+
+/* ── CBS Cheque Listbox ──────────────────────────────────────────────────
+   Mirrors .cheque-listbox from chequeList.css (MICR page) so both lists
+   look and behave the same way: fixed table layout, % column widths,
+   no horizontal/vertical scrollbar, rows always fit the panel. */
+.cbs-cheque-listbox {
+    flex         : 1;
+    border       : none;
+    width        : 100%;
+    max-width    : 100%;
+    overflow-x   : hidden;
+    overflow-y   : hidden;
+    min-height   : 0;
+    table-layout : fixed;
+}
+
+/* ── Validation Progress Status Bar ─────────────────────────────────────*/
+.cbs-status-bar {
+    padding       : 8px 16px;
+    background    : #f0f4ff;
+    border-top    : 1px solid #d0dbf0;
+    flex-shrink   : 0;
+}
+
+.cbs-validation-status-label {
+    font-size   : 12px;
+    font-weight : 500;
+    color       : #1E4D8C;
+    font-style  : italic;
+}
+
+/* ── Forward Button Area ─────────────────────────────────────────────────
+   Positioned at the bottom-right corner of the right panel.              */
+.cbs-forward-action-area {
+    display         : flex;
+    justify-content : flex-end;
+    align-items     : center;
+    padding         : 10px 16px;
+    background      : #ffffff;
+    border-top      : 1px solid #D9E2EC;
+    flex-shrink     : 0;
+}
+
+.btn-forward-tv1tv2 {
+    background    : #1a2a4a;
+    color         : #ffffff;
+    border        : none;
+    border-radius : 6px;
+    padding       : 8px 22px;
+    font-size     : 13px;
+    font-weight   : 600;
+    letter-spacing: 0.3px;
+    cursor        : pointer;
+    transition    : background 0.2s ease;
+}
+
+
+.btn-forward-tv1tv2:hover {
+    background : #2D6BCF;
+}
+
+/* ── Status Badges ───────────────────────────────────────────────────────*/
+.cbs-status-badge {
+    display       : inline-block;
+    padding       : 2px 10px;
+    border-radius : 10px;
+    font-size     : 11px;
+    font-weight   : 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.cbs-badge-valid {
+    background : #EAF5EF;
+    color      : #1A7A4A;
+    border     : 1px solid #81C995;
+}
+
+.cbs-badge-invalid {
+    background : #FFF0EE;
+    color      : #C0392B;
+    border     : 1px solid #EFA9A3;
+}
+
+/* ── Reason label ────────────────────────────────────────────────────────*/
+.cbs-reason-label {
+    font-size  : 12px;
+    color      : #4B5563;
+    font-style : italic;
+}
+
+/* ── Filter Bar (status dropdown + search box) ───────────────────────────*/
+.cbs-filter-bar {
+    display        : flex;
+    align-items    : center;
+    gap            : 10px;
+    padding        : 8px 12px;
+    background     : #f8faff;
+    border-bottom  : 1px solid #dde6f5;
+    flex-shrink    : 0;
+}
+
+.cbs-filter-combo {
+    width      : 160px;
+    font-size  : 13px;
+    border     : 1px solid #C0CCDD;
+    border-radius : 4px;
+}
+
+.cbs-search-box {
+    flex       : 1;
+    font-size  : 13px;
+    border     : 1px solid #C0CCDD;
+    border-radius : 4px;
+    padding    : 4px 8px;
+}
+
+/* ── Pagination ──────────────────────────────────────────────────────────*/
+.cbs-paging {
+    padding     : 6px 12px;
+    border-top  : 1px solid #dde6f5;
+    background  : #f8faff;
+    flex-shrink : 0;
+}
+
+/* ── Action button area ──────────────────────────────────────────────────*/
+.cbs-action-area {
+    display         : flex;
+    justify-content : flex-end;
+    align-items     : center;
+    gap             : 12px;
+    padding         : 14px 16px;
+    border-top      : 1px solid #dde6f5;
+    background      : #f8faff;
+}
+
+/* Return to RRF button — orange/warning tone */
+.btn-return-rrf {
+    background    : #e65c00;
+    color         : #ffffff;
+    border        : none;
+    border-radius : 6px;
+    padding       : 8px 20px;
+    font-size     : 13px;
+    font-weight   : 600;
+    cursor        : pointer;
+}
+
+.btn-return-rrf[disabled] {
+    background : #cccccc;
+    color      : #888888;
+    cursor     : not-allowed;
+}
+
+/* Forward to Tv1 Tv2 button — kept as existing dark-blue style */
+.btn-forward-tv1tv2 {
+    background    : #1a237e;
+    color         : #ffffff;
+    border        : none;
+    border-radius : 6px;
+    padding       : 8px 20px;
+    font-size     : 13px;
+    font-weight   : 600;
+    cursor        : pointer;
+}
+
+.btn-forward-tv1tv2[disabled] {
+    background : #cccccc;
+    color      : #888888;
+    cursor     : not-allowed;
+}
+
+/* Processing badge — shown while CBS validation is pending for a cheque */
+.cbs-badge-processing {
+    background    : #f0f0f0;
+    color         : #888888;
+    border        : 1px solid #cccccc;
+    border-radius : 4px;
+    padding       : 2px 8px;
+    font-size     : 11px;
+    font-weight   : 500;
+    font-style    : italic;
+}

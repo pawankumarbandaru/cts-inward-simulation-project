@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Macro Component : micrFieldGroup.zul
+    Purpose         : MICR Band — 6-column grid.
+                      Cheque No | City | Bank | Branch | TC | MICR NUMBER (AUTO)
+
+    CRITICAL ZK RULE: ZK components (<textbox>, <label>) MUST live inside
+    ZK containers (<div>, <hlayout>), NOT inside <n:div>.
+    <n:div> is for pure HTML wrappers with NO ZK children.
+    Grid layout is achieved via style="display:grid" on ZK <div>.
+
+    MICR NUMBER (AUTO): read-only textbox updated live by
+    M_RepairWorkspaceComposer ON_CHANGING listeners on City/Bank/Branch.
+    Same pattern as Amount → Amount in Words.
+
+    @Wire IDs (all unchanged):
+        rcb-f-chqno, rcb-f-city, rcb-f-bank, rcb-f-branch, rcb-f-tc
+        rcb-f-micr-auto  (new — MICR auto display)
+        rcb-micr-strip-live  (hidden, kept for @Wire compat)
+        err-rcb-f-chqno .. err-rcb-f-tc
+-->
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:n="native">
+
+    <!-- Hidden @Wire-only label — DO NOT REMOVE -->
+    <div style="display:none;">
+        <label id="rcb-micr-strip-live" value=""/>
+    </div>
+
+    <!-- 6-column MICR grid using ZK <div> (not n:div — ZK components inside) -->
+    <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr 0.8fr 1.4fr;
+                gap:8px;margin-bottom:8px;align-items:start;">
+
+        <!-- Cheque No. -->
+        <div class="fg">
+            <div class="field-label-req">
+                <n:span class="field-lbl">Cheque No.</n:span>
+                <n:span class="req-star">*</n:span>
+            </div>
+            <textbox id="rcb-f-chqno" sclass="fi mono" placeholder="e.g. 000501"
+                     maxlength="12" constraint="/^[0-9]*$/: Digits only"/>
+            <label id="err-rcb-f-chqno" sclass="field-err-msg" visible="false" value=""/>
+        </div>
+
+        <!-- City -->
+        <div class="fg">
+            <div class="field-label-req">
+                <n:span class="field-lbl">City</n:span>
+                <n:span class="req-star">*</n:span>
+            </div>
+            <textbox id="rcb-f-city" sclass="fi mono" placeholder="3 dig."
+                     maxlength="3" constraint="/^[0-9]*$/: Digits only"/>
+            <label id="err-rcb-f-city" sclass="field-err-msg" visible="false" value=""/>
+        </div>
+
+        <!-- Bank -->
+        <div class="fg">
+            <div class="field-label-req">
+                <n:span class="field-lbl">Bank</n:span>
+                <n:span class="req-star">*</n:span>
+            </div>
+            <textbox id="rcb-f-bank" sclass="fi mono" placeholder="3 dig."
+                     maxlength="3" constraint="/^[0-9]*$/: Digits only"/>
+            <label id="err-rcb-f-bank" sclass="field-err-msg" visible="false" value=""/>
+        </div>
+
+        <!-- Branch -->
+        <div class="fg">
+            <div class="field-label-req">
+                <n:span class="field-lbl">Branch</n:span>
+                <n:span class="req-star">*</n:span>
+            </div>
+            <textbox id="rcb-f-branch" sclass="fi mono" placeholder="3 dig."
+                     maxlength="3" constraint="/^[0-9]*$/: Digits only"/>
+            <label id="err-rcb-f-branch" sclass="field-err-msg" visible="false" value=""/>
+        </div>
+
+        <!-- TC -->
+        <div class="fg">
+            <div class="field-label-req">
+                <n:span class="field-lbl">TC</n:span>
+                <n:span class="req-star">*</n:span>
+            </div>
+            <textbox id="rcb-f-tc" sclass="fi mono" placeholder="e.g. 10"
+                     maxlength="4" constraint="/^[0-9]*$/: Digits only"/>
+            <label id="err-rcb-f-tc" sclass="field-err-msg" visible="false" value=""/>
+        </div>
+
+        <!-- MICR NUMBER (AUTO) — read-only, auto-computed City+Bank+Branch -->
+        <div class="fg">
+            <n:span class="field-lbl" style="display:block;margin-bottom:2px;">
+                MICR No. (Auto)
+            </n:span>
+            <textbox id="rcb-f-micr-auto"
+                     sclass="fi mono fi-micr-auto"
+                     readonly="true"
+                     placeholder="———"/>
+        </div>
+
+    </div>
+
+</zk>

@@ -1,0 +1,1134 @@
+/*
+ * File     : checkerStyles.css
+ * Location : src/main/webapp/style/inwardStyles/checkerStyles/checkerStyles.css
+ *
+ * IMPORTANT — Correct ZUL reference path:
+ *   <style src="/style/inwardStyles/checkerStyles/checkerStyles.css"/>
+ *   NOT /style/checkerStyles/checkerStyles.css  ← this was the wrong path
+ *
+ * Purpose  : Checker-specific styles for:
+ *              - checkerResubmittedQueue.zul
+ *              - checkerReviewWorkspace.zul
+ *
+ * This file EXTENDS Inwardmakerstyles.css.
+ * All shared design tokens (--primary, --font, etc.) come from that file.
+ * Do NOT duplicate classes already in Inwardmakerstyles.css.
+ * This file only adds what is unique to the checker role.
+ */
+
+/* ══════════════════════════════════════════════════════════
+   CHECKER REVIEW MODE BAR
+   Green instead of red (red = Maker re-correction mode)
+   ════════════════════════════════════════════════════════ */
+
+.chk-mode-bar {
+    background: linear-gradient(90deg, #065F46, #059669);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    font-size: 12px;
+    flex-shrink: 0;
+    border-bottom: 2px solid rgba(255,255,255,.15);
+}
+
+.chk-mode-pill {
+    background: rgba(255,255,255,.2);
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 100px;
+    padding: 2px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    color: #fff;
+}
+
+/* ══════════════════════════════════════════════════════════
+   QUEUE PAGE — INFO ALERT BANNER
+   Same structure as rcb-alert-banner but amber color
+   ════════════════════════════════════════════════════════ */
+
+.chk-alert-banner {
+    background: #FFFBEB;
+    border: 1px solid #F59E0B;
+    color: #92400E;
+    border-radius: 4px;
+    padding: 9px 12px;
+    font-size: 12px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left:25px;
+    margin-right:25px;
+}
+
+/* FIX: .v2-alert-banner was never defined — TV2's "Pending Review"
+   banner rendered with no background/border at all (plain text on
+   white), unlike TV1's chk-alert-banner. Same styling, just the
+   matching class name TV2's ZUL actually uses. */
+.v2-alert-banner {
+    background: #FFFBEB;
+    border: 1px solid #F59E0B;
+    color: #92400E;
+    border-radius: 4px;
+    padding: 9px 12px;
+    font-size: 12px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   CORRECTION SUMMARY PANEL — single-line reason strips
+   Shared by checkerReviewWorkspace.zul AND verifier2ReviewWorkspace.zul.
+   Replaces the old amber (checker) / green (maker) multi-line blocks —
+   now blue/white only, single line per item, same pattern as the
+   "Checker Reason" warning strip in makerRepairWorkspace.zul.
+   ════════════════════════════════════════════════════════ */
+
+.cts-reason-summary {
+    background: #F8FAFC;
+    border: 1px solid #D9E2EC;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+/* One strip = one line. Wraps instead of truncating for long text,
+   same rule as .warn-strip-text in Inwardmakerstyles.css. */
+.cts-reason-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    min-height: 20px;
+}
+
+/* Original return reason (Checker's or V2's) — light blue fill */
+.cts-reason-line-original {
+    background: #EAF1FB;
+    border-left: 4px solid #1A3A6E;
+}
+
+/* Maker's correction reply — white fill, blue border (visually distinct
+   from the strip above without leaving the blue/white palette) */
+.cts-reason-line-reply {
+    background: #FFFFFF;
+    border: 1px solid #1A3A6E;
+    border-left: 4px solid #1A3A6E;
+    margin-bottom: 0;
+}
+
+.cts-reason-line-icon {
+    font-size: 13px;
+    color: #1A3A6E;
+    flex-shrink: 0;
+    line-height: 1.4;
+}
+
+.cts-reason-line-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #1A3A6E;
+    flex-shrink: 0;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    line-height: 1.4;
+}
+
+.cts-reason-line-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: #14305C;
+    flex: 1;
+    min-width: 0;
+    line-height: 1.4;
+}
+
+/* Meta row: Corrected By, Resubmitted At (Checker page only) */
+.chk-meta-row {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #E5E7EB;
+    flex-wrap: wrap;
+}
+
+.chk-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.chk-meta-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ══════════════════════════════════════════════════════════
+   MAKER-EDITED FIELD HIGHLIGHT
+   Applied by cts-workspace.js (highlightEditedFields) directly
+   to the field wrapper (#rcb-f-*), which is the ZK-rendered
+   span for the textbox/datebox itself (e.g. .z-textbox, .z-datebox).
+   Same orange theme as the cheque-image highlight above so the
+   checker/V2 reviewer's eye is drawn consistently to anything
+   the maker touched.
+   ════════════════════════════════════════════════════════ */
+
+.chk-field-edited {
+    position: relative;
+}
+
+.fi.chk-field-edited .z-textbox-inp,
+.chk-field-edited input,
+.fi-auto.chk-field-edited .z-textbox-inp {
+    border-color: #F59E0B !important;
+    background: #FFFBEB !important;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25) !important;
+}
+
+.fi-datebox.chk-field-edited .z-datebox-inp {
+    border-color: #F59E0B !important;
+    background: #FFFBEB !important;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25) !important;
+}
+
+/* Small "✏ Edited" chip floating above the top-right corner of the field.
+   Pure CSS — no JS insertion needed. The composer adds "chk-field-edited"
+   directly to the component's sclass server-side; this pseudo-element
+   renders the badge automatically wherever that class appears. */
+.chk-field-edited::after {
+    content: "✏ Edited";
+    position: absolute;
+    top: -9px;
+    right: -4px;
+    background: #F59E0B;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 5px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 5;
+    pointer-events: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   CHEQUE IMAGE HIGHLIGHT
+   Applied to image wrapper when maker has edited fields.
+   Orange glowing border draws checker's attention.
+   ════════════════════════════════════════════════════════ */
+
+.chq-image-edited-highlight {
+    border: 2px solid #F59E0B !important;
+    border-radius: 5px;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25),
+                0 0 12px rgba(245, 158, 11, 0.3) !important;
+    animation: chq-edit-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes chq-edit-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25),
+                    0 0 12px rgba(245, 158, 11, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.35),
+                    0 0 20px rgba(245, 158, 11, 0.5);
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   READ-ONLY NOTICE BANNER (top of right panel)
+   ════════════════════════════════════════════════════════ */
+
+.chk-readonly-notice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: #1D4ED8;
+}
+
+/* ══════════════════════════════════════════════════════════
+   ACTION STEP — now BARE (no card, no border, no title)
+   per user request: "remove CHECKER ACTION... and remove the box also"
+   Used by both TV1 (.chk-action-step-bare) and TV2 (.v2-action-step-bare).
+   ════════════════════════════════════════════════════════ */
+
+.chk-action-step-bare,
+.v2-action-step-bare {
+    margin-top: 10px;
+    padding:    0;
+    background: transparent;
+    border:     none;
+}
+
+/* ══════════════════════════════════════════════════════════
+   CHECKER ACTION BUTTONS
+   ════════════════════════════════════════════════════════ */
+
+/* Approve — solid brand blue (primary action) */
+.btn-chk-approve .z-button,
+.btn-chk-approve {
+    height: 36px;
+    padding: 0 18px;
+    border-radius: 6px;
+    border: none;
+    background: #1A3A6E;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+.btn-chk-approve .z-button:hover,
+.btn-chk-approve:hover { background: #14305C; }
+
+/* Return to Maker — blue outline (no amber, per UI palette request) */
+.btn-chk-return .z-button,
+.btn-chk-return {
+    height: 36px;
+    padding: 0 18px;
+    border-radius: 6px;
+    border: none;
+    background: #1A3A6E;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+.btn-chk-return .z-button:hover,
+.btn-chk-return:hover { background: #14305C; }
+
+/* Reject — blue outline (no red, per UI palette request) */
+.btn-chk-reject .z-button,
+.btn-chk-reject {
+    height: 36px;
+    padding: 0 18px;
+    border-radius: 6px;
+    border: none;
+    background: #1A3A6E;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+.btn-chk-reject .z-button:hover,
+.btn-chk-reject:hover { background: #14305C; }
+
+
+/* Confirm / Cancel — used inside the reason box (shown after Return/Reject click) */
+.btn-cts-confirm .z-button,
+.btn-cts-confirm {
+    height: 36px;
+    padding: 0 18px;
+    border-radius: 6px;
+    border: none;
+    background: #1A3A6E;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+}
+.btn-cts-confirm .z-button:hover,
+.btn-cts-confirm:hover { background: #14305C; }
+
+.btn-cts-cancel .z-button,
+.btn-cts-cancel {
+    height: 36px;
+    padding: 0 18px;
+    border-radius: 6px;
+    border: none;
+    background: #1A3A6E;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-cts-cancel .z-button:hover,
+.btn-cts-cancel:hover { background: #14305C; }
+
+
+/* ══════════════════════════════════════════════════════════
+   REASON BOX — shared by Checker + V2 review pages
+   Hidden by default. Composer shows it only after Reject or
+   Return-to-Maker is clicked, with ONLY that action's reason
+   list in the dropdown (never mixed with the other action's
+   list). The action-buttons row hides while this is open.
+   ════════════════════════════════════════════════════════ */
+
+.cts-action-btn-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.cts-reason-box {
+    margin-top: 4px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    /* Spans the FULL popup width now, so Confirm/Cancel can sit at
+       the far right edge while the dropdown stays compact on the left */
+    width: 100%;
+}
+
+/*
+ * Row inside the reason box: dropdown stays COMPACT on the LEFT,
+ * Confirm/Cancel pushed all the way to the RIGHT edge of the popup
+ * (space-between), with empty space in the middle.
+ */
+.cts-reason-row {
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    gap:             8px;
+}
+
+.cts-reason-combo.z-combobox {
+    width:     280px;
+    flex:      0 0 auto;
+    min-width: 220px;
+}
+
+/* Confirm/Cancel sit beside the dropdown now, not below it */
+.cts-reason-row .cts-reason-btn-row {
+    margin-top: 0;
+    flex-shrink: 0;
+}
+
+/* .cts-reason-box-title / .cts-reason-box-hint — REMOVED.
+   The "SEND-BACK-TO-MAKER REASON (required)" title line was deleted
+   from the markup entirely per user request — only the dropdown +
+   Confirm/Cancel row remains now. */
+
+.cts-reason-other-wrap { margin-top: 6px; }
+
+.cts-reason-btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   QUEUE TABLE — MAKER-EDITED ROW HIGHLIGHT
+   Reuses .maker-edited class already in Inwardmakerstyles.css.
+   No duplicate needed — same yellow highlight rule applies.
+   This comment is here for developer awareness only.
+   ════════════════════════════════════════════════════════ */
+
+/*
+ * .rcb-table-wrap .z-row.maker-edited td,
+ * .rcb-table-wrap .z-row.maker-edited .z-cell {
+ *     background: #FFFBEA !important;
+ *     border-left: 3px solid #F59E0B !important;
+ * }
+ * — already defined in Inwardmakerstyles.css, no need to repeat.
+ */
+
+/* ══════════════════════════════════════════════════════════
+   CHECKER TABLE — Review button
+   ════════════════════════════════════════════════════════ */
+
+.chk-btn-review,
+.chk-btn-review.z-button {
+    height: 30px;
+    padding: 0 14px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    border: none !important;
+    background: #1a3a6e !important;
+    background-color: #1a3a6e !important;
+    background-image: none !important;
+    color: #fff !important;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: none !important;
+}
+.chk-btn-review.z-button .z-button-cm {
+    background: transparent !important;
+    color: #fff !important;
+}
+.chk-btn-review:hover,
+.chk-btn-review.z-button:hover { 
+    background: #142d58 !important;
+    background-image: none !important;
+    color: #fff !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   CBS RESULT DISPLAY (right panel, review workspace)
+   Read-only version of the CBS result box
+
+   CHANGED (this revision): box is now small + neutral grey,
+   not green/red. Only the TEXT keeps green (pass) / red (fail)
+   so the color signal is subtle, not a big colored block.
+   Used by BOTH TV1 (.chk-cbs-pass/.chk-cbs-fail) and
+   TV2 (.v2-cbs-pass/.v2-cbs-fail) — same look, just two class
+   names because each composer sets its own sclass.
+   ════════════════════════════════════════════════════════ */
+
+.chk-cbs-pass,
+.chk-cbs-fail,
+.v2-cbs-pass,
+.v2-cbs-fail {
+    background:    #F9FAFB;
+    border:        1px solid #E2E5EA;
+    border-radius: 5px;
+    padding:       6px 10px;
+    font-size:     12px;
+    max-width:     280px;
+}
+
+.v2-cbs-pass-title,
+.v2-cbs-fail-title { font-size: 12px; font-weight: 700; }
+
+.v2-cbs-pass-title,
+.chk-cbs-pass-title { color: #15803D; }
+
+.v2-cbs-fail-title,
+.chk-cbs-fail-title { color: #DC2626; }
+
+.chk-cbs-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 6px;
+}
+
+.chk-cbs-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #374151;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(0,0,0,.04);
+}
+
+.chk-cbs-row:last-child { border-bottom: none; }
+
+
+/* ══════════════════════════════════════════════════════════
+   CHECKER REVIEW MODAL POPUP
+   The ZK Window that holds checkerReviewModal.zul.
+   Overrides ZK's default Window chrome with a clean borderless popup.
+   ════════════════════════════════════════════════════════ */
+
+/*
+    V2 REVIEW WORKSPACE MODAL WINDOW
+    Applied in Java composer: win.setSclass("v2-review-modal-win cts-modal-window")
+    Removes default ZK Window chrome (title bar, border) for TV2 Branch Manager popup.
+    Size set in Java: win.setWidth("880px"); win.setHeight("95vh");
+*/
+.v2-review-modal-win.z-window,
+.v2-review-modal-win {
+    border: none !important;
+    border-radius: 6px !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28),
+                0 4px 12px rgba(0, 0, 0, 0.14) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    background: #F3F4F6 !important;
+}
+.v2-review-modal-win .z-window-header,
+.v2-review-modal-win .z-window-title {
+    display: none !important;
+}
+.v2-review-modal-win .z-window-content {
+    padding: 0 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/*
+    MAKER REPAIR WORKSPACE MODAL WINDOW
+    Applied in Java composer: win.setSclass("rcb-repair-modal-win cts-modal-window")
+    Removes default ZK Window chrome for Maker Re-correction popup.
+    Size set in Java: win.setWidth("880px"); win.setHeight("95vh");
+*/
+.rcb-repair-modal-win.z-window,
+.rcb-repair-modal-win {
+    border: none !important;
+    border-radius: 6px !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28),
+                0 4px 12px rgba(0, 0, 0, 0.14) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    background: #F3F4F6 !important;
+}
+.rcb-repair-modal-win .z-window-header,
+.rcb-repair-modal-win .z-window-title {
+    display: none !important;
+}
+.rcb-repair-modal-win .z-window-content {
+    padding: 0 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/*
+    ZK Window wrapper for CHECKER review popup.
+    Size (width/height) is set in Java composer via:
+        win.setWidth("900px");
+        win.setHeight("92vh");   ← increase these for bigger popup
+    CSS below controls border, shadow, and corners only.
+    border-radius reduced to 6px (was 10px) for a sharper, professional look.
+*/
+.chk-review-modal-win.z-window,
+.chk-review-modal-win {
+    border: none !important;
+    border-radius: 6px !important;           /* reduced from 10px — thinner corners */
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28),
+                0 4px 12px rgba(0, 0, 0, 0.14) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    background: #F3F4F6 !important;
+}
+
+/* Remove ZK's default Window title bar — our ZUL has its own green bar */
+.chk-review-modal-win .z-window-header,
+.chk-review-modal-win .z-window-title {
+    display: none !important;
+}
+
+/* Window content area — fill full height, no extra padding */
+.chk-review-modal-win .z-window-content {
+    padding: 0 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* ── MODAL TITLE BAR — solid brand blue, matches makerRepairWorkspace ── */
+.chk-modal-titlebar {
+    background: #1A3A6E;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    font-size: 12px;
+    flex-shrink: 0;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Close (✕) button in the modal title bar */
+.chk-modal-close-btn.z-button,
+.chk-modal-close-btn .z-button {
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+}
+.chk-modal-close-btn.z-button:hover,
+.chk-modal-close-btn .z-button:hover {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+/* ── ZK MODAL OVERLAY (dims the queue behind the popup) ───── */
+.z-modal-mask {
+    background: rgba(0, 0, 0, 0.50) !important;
+    backdrop-filter: blur(2px) !important;
+}
+
+/* ==============================================================
+   MAKER REPAIR POPUP WINDOW — repair-modal-win
+   Applied in Java composer: win.setSclass("repair-modal-win")
+   Controls border, shadow, corners of the Maker Repair popup.
+   Size set in Java: win.setWidth("860px"); win.setHeight("88vh");
+   ============================================================== */
+.repair-modal-win.z-window,
+.repair-modal-win {
+    border: none !important;
+    border-radius: 6px !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28),
+                0 4px 12px rgba(0, 0, 0, 0.14) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    background: #F3F4F6 !important;
+}
+.repair-modal-win .z-window-header,
+.repair-modal-win .z-window-title {
+    display: none !important;
+}
+.repair-modal-win .z-window-content {
+    padding: 0 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+/* ── Merged from checkerStyles_additions.css (was not loaded) ── */
+/* ══════════════════════════════════════════════════════════
+   QUEUE TABLE — COLUMN LABEL STYLES
+   Replace all setStyle() inline calls in the composer.
+   ════════════════════════════════════════════════════════ */
+
+.chk-col-num {
+    color: #9CA3AF;
+    font-size: 13px;
+}
+
+.chk-col-chqno {
+    font-family: monospace;
+    font-weight: 700;
+    color: #1E3A5F;
+    font-size: 14px;
+}
+
+.chk-col-amount {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1A5E35;
+    font-family: monospace;
+}
+
+.chk-col-text {
+    font-size: 14px;
+    color: #4B5563;
+}
+
+.chk-col-meta {
+    font-size: 13px;
+    color: #6B7280;
+}
+
+.chk-col-remark {
+    font-size: 13px;
+    color: #4B5563;
+    white-space: normal;
+    line-height: 1.4;
+}
+
+/* ══════════════════════════════════════════════════════════
+   EDITED BADGE
+   Replaces the inline Html badge for maker-edited cheques.
+   ════════════════════════════════════════════════════════ */
+
+.chk-badge-edited {
+    background: #FEF3C7;
+    color: #92400E;
+    border: 1px solid #F59E0B;
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: help;
+    display: inline-block;
+}
+
+
+/* Pass/Fail title size/color now defined once, near the top of the
+   "CBS RESULT DISPLAY" section above — no duplicate rule here anymore. */
+
+/* Routing destination label (shown under pass title) */
+.chk-cbs-dest {
+    font-size:   12px;
+    color:       #374151;
+    margin-top:  4px;
+    display:     block;
+}
+
+/* Shown when CBS has not yet been run */
+.chk-cbs-not-run {
+    font-size: 12px;
+    color:     #6B7280;
+    padding:   8px;
+}
+
+
+/*
+   V2 amount column — high-value cheques shown in dark red
+   to visually distinguish them from Verifier 1 queue (green amounts).
+   Applied as a modifier class alongside chk-col-amount.
+*/
+.v2-col-amount-hv {
+    color: #7C2D12 !important;
+}
+
+/*
+   V2 success banner — displayed after approve / reject / return.
+   Uses display:flex when visible=true (ZK removes display:none automatically).
+*/
+.v2-success-banner {
+    display:       flex;
+    align-items:   flex-start;
+    gap:           10px;
+    background:    #EAF5EF;
+    border:        1px solid #81C995;
+    border-radius: 6px;
+    padding:       12px 16px;
+    margin-bottom: 14px;
+    box-shadow:    0 1px 4px rgba(26,122,74,.1);
+}
+.v2-success-text {
+    flex:        1;
+    font-size:   13px;
+    color:       #1A7A4A;
+    font-weight: 500;
+    line-height: 1.6;
+}
+.v2-success-dismiss {
+    background:  none;
+    border:      none;
+    color:       #1A7A4A;
+    font-size:   18px;
+    cursor:      pointer;
+    padding:     0 4px;
+    line-height: 1;
+    opacity:     0.6;
+}
+
+/* Page header — mirrors .chk-title-dot / .chk-count-badge / .chk-btn-refresh */
+.v2-title-dot { color: #D97706; }
+
+.v2-count-badge {
+    background:    #FEF3C7;
+    color:         #92400E;
+    border:        1px solid #F59E0B;
+    border-radius: 100px;
+    padding:       3px 12px;
+    font-size:     13px;
+    font-weight:   700;
+}
+
+.v2-btn-refresh {
+    height:        34px;
+    padding:       0 16px;
+    border-radius: 4px;
+    font-size:     12px;
+    font-weight:   600;
+    border:        1px solid #D9E2EC;
+    background:    #fff;
+    color:         #1F2937;
+    cursor:        pointer;
+    margin-right: 25px;
+}
+
+
+/* Empty state — mirrors .chk-empty-icon / .chk-empty-title / .chk-empty-desc.
+   Outer wrapper reuses the shared .rcb-empty-state class. */
+.v2-empty-icon  { font-size: 40px; }
+.v2-empty-title { font-size: 15px; font-weight: 700; color: #1F2937; }
+.v2-empty-desc  {
+    font-size:   13px;
+    color:       #6B7280;
+    text-align:  center;
+    max-width:   340px;
+}
+
+
+
+
+
+/* ══════════════════════════════════════════════════════════════════
+   TV1 (CHECKER) REVIEW WORKSPACE — TV1_ReviewWorkspace.zul
+   Moved here from an embedded <style> block in the ZUL file so all
+   CSS lives in stylesheets, not markup.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Hide the maker's "Correction Remarks" dropdown from cheque details —
+   checker already sees the maker's remark in the Correction Summary panel. */
+.chk-content-area #rcb-correction-remarks-row {
+    display: none !important;
+}
+
+/* Popup root */
+.chk-popup-root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    background: #F3F4F6;
+}
+
+/* Content area: single column, scrollable */
+.chk-content-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 14px 16px;
+    background: #F3F4F6;
+}
+
+/* Font consistency for shared macro fields */
+.chk-content-area input,
+.chk-content-area textarea,
+.chk-content-area .z-textbox-inp,
+.chk-content-area .z-datebox-inp {
+    font-family: var(--font) !important;
+    font-size: 13px !important;
+    color: var(--t1) !important;
+}
+.chk-content-area .z-datebox-inp {
+    width: calc(100% - 30px) !important;
+    height: 32px !important;
+    padding: 0 10px !important;
+    border: 1px solid var(--border) !important;
+    border-right: none !important;
+    border-radius: 4px 0 0 4px !important;
+    box-sizing: border-box !important;
+    background: #F8FAFC !important;
+    line-height: 32px !important;
+}
+.chk-content-area .z-datebox-btn {
+    height: 32px !important;
+    width: 30px !important;
+    border: 1px solid var(--border) !important;
+    border-left: none !important;
+    border-radius: 0 4px 4px 0 !important;
+    background: var(--alt) !important;
+}
+
+.chk-remarks-other-wrap { margin-top: 6px; }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   TV2 (BRANCH MANAGER) REVIEW WORKSPACE — TV2_ReviewWorkspace.zul
+   Moved here from an embedded <style> block in the ZUL file so all
+   CSS lives in stylesheets, not markup.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Hide maker's correction remarks row — V2 sees it in summary panel */
+.v2-content-area #rcb-correction-remarks-row {
+    display: none !important;
+}
+
+/* Titlebar — solid brand blue, matches M_RepairWorkspace */
+.v2-modal-titlebar {
+    background: #1A3A6E;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    flex-shrink: 0;
+    border-bottom: 2px solid rgba(255,255,255,.15);
+}
+.v2-mode-pill {
+    background: rgba(255,255,255,.2);
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 100px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+}
+.v2-modal-close-btn.z-button,
+.v2-modal-close-btn .z-button {
+    background: rgba(255,255,255,.15) !important;
+    border: 1px solid rgba(255,255,255,.35) !important;
+    color: #fff !important;
+    border-radius: 4px !important;
+    padding: 3px 10px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+}
+.v2-modal-close-btn.z-button:hover,
+.v2-modal-close-btn .z-button:hover {
+    background: rgba(255,255,255,.28) !important;
+}
+
+/* Popup root */
+.v2-popup-root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    background: #F3F4F6;
+}
+
+/* Content area: scrollable, compact padding */
+.v2-content-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px 14px;
+    background: #F3F4F6;
+}
+
+/* Font/input consistency for shared macro fields */
+.v2-content-area input,
+.v2-content-area textarea,
+.v2-content-area .z-textbox-inp,
+.v2-content-area .z-datebox-inp {
+    font-family: var(--font) !important;
+    font-size: 13px !important;
+    color: var(--t1) !important;
+}
+.v2-content-area .z-datebox-inp {
+    width: calc(100% - 30px) !important;
+    height: 32px !important;
+    padding: 0 10px !important;
+    border: 1px solid var(--border) !important;
+    border-right: none !important;
+    border-radius: 4px 0 0 4px !important;
+    box-sizing: border-box !important;
+    background: #F8FAFC !important;
+    line-height: 32px !important;
+}
+.v2-content-area .z-datebox-btn {
+    height: 32px !important;
+    width: 30px !important;
+    border: 1px solid var(--border) !important;
+    border-left: none !important;
+    border-radius: 0 4px 4px 0 !important;
+    background: var(--alt) !important;
+}
+
+/* Edited fields banner — shows comma-joined list of maker-changed fields */
+.chk-edited-fields-banner {
+    /* No display:none here — ZK's visible="false" writes its own inline
+       display:none when hidden; this class's display:flex applies once
+       the composer calls setVisible(true). */
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #FEF9C3;
+    border: 1px solid #F59E0B;
+    border-left: 4px solid #F59E0B;
+    border-radius: 6px;
+    padding: 4px 10px;
+    margin-bottom: 10px;
+}
+
+.v2-edited-fields-banner {
+    /* No display:none here — ZK's visible="false" writes its own inline
+       display:none when hidden. This class's display:flex applies once
+       the composer calls setVisible(true). Same pattern as
+       .mrw-remarks-wrap in Inwardmakerstyles.css. */
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: #FEF9C3;
+    border: 1px solid #F59E0B;
+    border-left: 4px solid #F59E0B;
+    border-radius: 5px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+}
+
+/* Action buttons — blue/white only, matches M_RepairWorkspace */
+.btn-v2-approve.z-button,
+.btn-v2-approve { background: #1A3A6E !important; border-color: #1A3A6E !important; color: #fff !important; border-radius: 4px !important; padding: 5px 14px !important; font-size: 12px !important; font-weight: 600 !important; cursor: pointer !important; }
+.btn-v2-approve.z-button:hover,
+.btn-v2-approve:hover { background: #14305C !important; }
+
+.btn-v2-return.z-button,
+.btn-v2-return  { background: #1A3A6E !important; border: 1px solid #1A3A6E !important; color: #ffff !important; border-radius: 4px !important; padding: 5px 14px !important; font-size: 12px !important; font-weight: 600 !important; cursor: pointer !important; }
+.btn-v2-return.z-button:hover,
+.btn-v2-return:hover   { background: #14305C !important; }
+
+.btn-v2-reject.z-button,
+.btn-v2-reject  { background:  #1A3A6E !important; border: 1px solid #1A3A6E !important; color: #ffff !important; border-radius: 4px !important; padding: 5px 14px !important; font-size: 12px !important; font-weight: 600 !important; cursor: pointer !important; }
+.btn-v2-reject.z-button:hover,
+.btn-v2-reject:hover   { background: #14305C !important; }
+
+.v2-action-btn-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.v2-remarks-other-wrap { margin-top: 5px; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   TV2 REVIEW BUTTON — Navy #1a3a6e
+   Class v2-btn-review set in TV2_ResubmittedQueueComposer.java
+   but was never defined in CSS → ZK default skin was showing.
+   ══════════════════════════════════════════════════════════════════════ */
+
+.v2-btn-review,
+.v2-btn-review.z-button {
+    height: 30px;
+    padding: 0 14px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    border: none !important;
+    background: #1a3a6e !important;
+    background-color: #1a3a6e !important;
+    background-image: none !important;
+    -webkit-background-image: none !important;
+    color: #ffffff !important;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: none !important;
+}
+
+.v2-btn-review.z-button .z-button-cm {
+    background: transparent !important;
+    color: #ffffff !important;
+}
+
+.v2-btn-review:hover,
+.v2-btn-review.z-button:hover {
+    background: #142d58 !important;
+    background-color: #142d58 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+}
+
+.v2-btn-review:focus,
+.v2-btn-review.z-button:focus,
+.v2-btn-review:active,
+.v2-btn-review.z-button:active {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(26, 58, 110, 0.4) !important;
+    background: #1a3a6e !important;
+    background-image: none !important;
+    color: #ffffff !important;
+}
+
+/* ══ END TV2 REVIEW BUTTON ══ */

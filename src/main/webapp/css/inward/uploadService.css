@@ -1,0 +1,205 @@
+/* =============================================
+   uploadService.css — CTS Inward Upload Page
+   ============================================= */
+.top-nav {
+    background: #1a2a4a;
+    color: #cdd6e8;
+    padding: 0 24px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+}
+.upload-page-wrap {
+   
+    font-family: Arial, sans-serif;
+}
+
+.upload-breadcrumb {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 6px;
+}
+
+.upload-page-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a2e;
+    display: block;
+    margin-bottom: 2px;
+    margin-left:30px;
+    margin-top: 20px
+}
+
+.upload-page-subtitle {
+    font-size: 13px;
+    color: #888;
+    display: block;
+    margin-bottom: 20px;
+    margin-left: 30px
+}
+
+/* Main card */
+.upload-main-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 28px;
+    margin-bottom: 16px;
+    margin:20px;
+}
+
+/* Two upload boxes side by side */
+.upload-boxes-row {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.upload-box-left {
+    flex: 1;
+    border: 2px dashed #7ab3f5;
+    border-radius: 10px;
+    padding: 36px 20px;
+    text-align: center;
+    background: #f0f7ff;
+}
+
+.upload-box-right {
+    flex: 1;
+    border: 2px dashed #c0c0c0;
+    border-radius: 10px;
+    padding: 36px 20px;
+    text-align: center;
+    background: #fafafa;
+}
+
+.upload-box-icon {
+    font-size: 38px;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.upload-box-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a2e;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.upload-box-format {
+    font-size: 11px;
+    color: #aaa;
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+}
+
+.upload-file-name {
+    font-size: 12px;
+    color: #22c55e;
+    font-weight: 600;
+    display: block;
+    margin-top: 8px;
+    min-height: 18px;
+}
+
+/* Select button override */
+.upload-select-btn .z-button {
+    border: 1.5px solid #1a2a4a !important;
+    border-radius: 6px !important;
+    background: #1a2a4a !important;
+    color: #fff !important;
+    font-size: 13px !important;
+    padding: 6px 16px !important;
+}
+
+/* Validation box */
+.validation-box {
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    background: #fafafa;
+}
+
+.validation-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #aaa;
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.validation-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #555;
+}
+
+.v-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #d0d0d0;
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+.v-dot-success { background: #22c55e !important; }
+.v-dot-error   { background: #ef4444 !important; }
+
+/* Proceed button */
+.proceed-btn-wrap {
+    text-align: center;
+}
+
+.proceed-btn .z-button {
+    background: #1a2a4a !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    padding: 10px 48px !important;
+    min-width: 180px !important;
+}
+
+/* Batch result card */
+.result-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px 28px;
+    margin-top: 16px;
+}
+
+.result-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a2e;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.upload-select-btn {
+    border: 1.5px solid #1a2a4a !important;
+    background: #1a2a4a !important;
+    color: #fff !important;
+    border-radius: 6px !important;
+}
+
+.proceed-btn {
+    background: #1a2a4a !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+}

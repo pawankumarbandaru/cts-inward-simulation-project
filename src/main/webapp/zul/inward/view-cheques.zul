@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zk>
+
+    <window id="viewChequeWin"
+            title="View Cheques"
+            width="100%"
+            apply="com.cts.inward.composer.ViewChequeComposer">
+
+        <vlayout width="100%" spacing="10px" style="padding:15px">
+
+            <label value="View Inward Cheques"
+                   style="font-size:18px; font-weight:bold; color:#336699"/>
+
+            <separator/>
+
+            <hlayout spacing="10px">
+                <label value="Select Batch :"/>
+                <combobox id="batchCombo"
+                          placeholder="Select Batch ID"
+                          width="250px"
+                          readonly="true"/>
+                <button id="searchBtn" label="Search Cheques"/>
+            </hlayout>
+
+            <separator/>
+
+            <listbox id="chequeListbox"
+                     mold="paging"
+                     pageSize="15"
+                     width="100%">
+
+                <listhead>
+                    <listheader label="Cheque Number"    width="150px"/>
+                    <listheader label="Account Number"   width="150px"/>
+                    <listheader label="Amount"           width="100px"/>
+                    <listheader label="Drawer Name"      width="150px"/>
+                    <listheader label="Payee Name"       width="150px"/>
+                    <listheader label="MICR Code"        width="120px"/>
+                    <listheader label="Cheque Status"    width="120px"/>
+                    <listheader label="Validation"       width="120px"/>
+                </listhead>
+
+            </listbox>
+
+        </vlayout>
+
+    </window>
+
+</zk>

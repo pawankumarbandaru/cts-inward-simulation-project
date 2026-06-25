@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="Batch Detail CTS"?>
+
+<?component name="batchSummary"
+            macroURI="/component/batchSummary.zul"
+            class="com.cts.component.BatchSummaryComponent"?>
+
+<?component name="chequeList"
+            macroURI="/component/chequeList.zul"
+            class="com.cts.component.ChequeListComponent"?>
+
+<zk>
+<div apply="com.cts.inward.composer.TV_II_CheckerBatchDetailComposer"
+     sclass="maker-page-root">
+
+    <style src="/css/inward/common.css"/>
+	<style src="/css/inward/batchSummary.css"/>
+	<style src="/css/inward/chequeList.css"/>
+
+    <div sclass="maker-main-content">
+
+            <div sclass="breadcrumb-bar">
+                <label value="Inward"       sclass="bread-parent"/>
+                <label value=" - "          sclass="bread-sep"/>
+                <label value="Batch Detail" sclass="bread-current"/>
+            </div>
+
+            <div sclass="page-subtitle-bar">
+                <label id="lblPageSubtitle" sclass="page-subtitle-label"/>
+            </div>
+
+            <div sclass="two-panel-layout">
+
+                <!-- batchDbId attribute is read by BatchSummaryComposer
+                     and ChequeListComposer in their doAfterCompose via
+                     self.getSpaceOwner().getAttribute("batchDbId")
+                     This avoids the EventQueue publish/subscribe race. -->
+
+                <div sclass="left-panel">
+                    <batchSummary id="batchSummaryMacro" batchDbId="0"/>
+                </div>
+
+                <div sclass="right-panel">
+                    <chequeList id="chequeListMacro" batchDbId="0"/>
+                </div>
+
+            </div>
+
+        </div>
+
+</div>
+</zk>

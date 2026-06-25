@@ -1,0 +1,436 @@
+/* =============================================
+   CTS - Cheque Edit Popup Styles
+   File: chequeEditPopup.css
+   Used by: component/chequeEditPopup.zul
+   Requires: common.css (for :root variables)
+   ============================================= */
+
+/* Popup window shell — border-radius, overflow and padding
+   previously inline on the <window> tag */
+#chequeEditPopupWindow {
+    border-radius : 8px;
+    overflow      : hidden;
+    padding       : 0;
+}
+
+.popup-window {
+    font-family : 'Segoe UI', Arial, sans-serif;
+    background  : #ffffff;
+}
+
+/* =============================================
+   HEADER
+   ============================================= */
+
+.popup-header {
+    display         : flex;
+    align-items     : center;
+    justify-content : space-between;
+    background      : #1a3a6b;
+    padding         : 0 20px;
+    height          : 48px;
+}
+
+.popup-header-left {
+    display     : flex;
+    align-items : center;
+    gap         : 10px;
+}
+
+.popup-title {
+    font-size   : 15px;
+    font-weight : 700;
+    color       : #ffffff;
+}
+
+.popup-badge {
+    padding       : 3px 10px;
+    border-radius : 20px;
+    font-size     : 11px;
+    font-weight   : 700;
+}
+
+.badge-popup-normal {
+    background : var(--success-bg);
+    color      : var(--success);
+    border     : 1px solid var(--success-b);
+}
+
+.badge-popup-micr-error {
+    background : var(--warning-bg);
+    color      : var(--warning);
+    border     : 1px solid var(--warning-b);
+}
+
+.popup-close-btn {
+    background  : transparent !important;
+    border      : none !important;
+    color       : #ffffff !important;
+    font-size   : 16px !important;
+    font-weight : 700 !important;
+    cursor      : pointer !important;
+    padding     : 2px 8px !important;
+    line-height : 1 !important;
+}
+
+/* =============================================
+   BODY — VERTICAL LAYOUT (v2)
+   Top: image section (front/back switch)
+   Middle: hint bar
+   Bottom: data entry fields
+   ============================================= */
+
+.popup-body-v2 {
+    display        : flex;
+    flex-direction : column;
+    background     : #ffffff;
+    width          : 100%;
+    max-height     : 88vh;
+    overflow-y     : auto;
+}
+
+/* ── IMAGE SECTION ── */
+.popup-img-section {
+    padding       : 6px 16px 6px 16px;
+    background    : #f4f7fb;
+    border-bottom : 1px solid var(--border);
+}
+
+/* Top bar: ■ FRONT SIDE on left, [⇄ Show Back] on right — compact */
+.popup-img-topbar {
+    display         : flex;
+    align-items     : center;
+    justify-content : space-between;
+    margin-bottom   : 5px;
+}
+
+.popup-side-label {
+    font-size      : 11px;
+    font-weight    : 700;
+    color          : var(--primary);
+    text-transform : uppercase;
+    letter-spacing : 0.5px;
+}
+
+/* Switch button — small, sits top-right, NOT full width */
+.btn-switch-img {
+    height         : 24px !important;
+    padding        : 0 12px !important;
+    background     : var(--primary) !important;
+    color          : #ffffff !important;
+    border         : none !important;
+    border-radius  : var(--radius-sm) !important;
+    font-size      : 11px !important;
+    font-weight    : 600 !important;
+    cursor         : pointer !important;
+    white-space    : nowrap !important;
+    width          : auto !important;
+    min-width      : 0 !important;
+    display        : inline-block !important;
+    transition     : background 0.15s !important;
+}
+
+.btn-switch-img:hover {
+    background : var(--primary-light) !important;
+}
+
+/* Image frame — fixed height, no extra margin */
+.popup-img-frame {
+    width: 100%;
+    min-height: 280px;
+    max-height: 380px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #f5f0e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.popup-real-img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 380px;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+/* Cheque front face card (fallback placeholder) */
+.popup-cheque-card {
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    background    : #ffffff;
+    padding       : 12px;
+}
+
+.popup-cheque-bank {
+    font-size    : 13px;
+    font-weight  : 700;
+    color        : #1a3a6b;
+    display      : block;
+    margin-bottom: 2px;
+}
+
+.popup-cheque-sub {
+    font-size    : 10px;
+    color        : var(--text-muted);
+    display      : block;
+    margin-bottom: 8px;
+}
+
+.popup-cheque-payline {
+    font-size     : 11px;
+    color         : var(--text-secondary);
+    border-bottom : 1px solid var(--border);
+    padding-bottom: 5px;
+    margin-bottom : 6px;
+}
+
+.popup-cheque-amount-box {
+    display       : inline-flex;
+    align-items   : center;
+    border        : 2px solid var(--text-primary);
+    padding       : 4px 12px;
+    border-radius : 3px;
+    font-size     : 14px;
+    font-weight   : 700;
+    color         : var(--text-primary);
+    margin-bottom : 8px;
+}
+
+.popup-cheque-micr {
+    border-top    : 2px solid var(--text-primary);
+    padding-top   : 5px;
+    font-family   : var(--font-mono);
+    font-size     : 10px;
+    color         : var(--text-primary);
+    letter-spacing: 1px;
+    word-break    : break-all;
+}
+
+/* Cheque back card (fallback placeholder) */
+.popup-back-card {
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    background    : #eceff1;
+    padding       : 20px 16px;
+    text-align    : center;
+}
+
+.popup-back-icon {
+    font-size    : 22px;
+    display      : block;
+    margin-bottom: 4px;
+}
+
+.popup-back-title {
+    font-size  : 12px;
+    font-weight: 600;
+    color      : #546E7A;
+    display    : block;
+}
+
+.popup-back-sub {
+    font-size : 10px;
+    color     : #78909C;
+    display   : block;
+    margin-top: 3px;
+}
+
+/* ── HINT BAR ── */
+.popup-hint-bar {
+    padding       : 3px 16px;
+    background    : #fffde7;
+    border-bottom : 1px solid #fff176;
+}
+
+.popup-hint-text {
+    font-size : 10px;
+    color     : #5d4037;
+}
+
+/* ── FIELDS SECTION ── */
+.popup-fields-section {
+    padding : 6px 16px 8px 16px;
+}
+
+.popup-subsection-label {
+    display : none;
+}
+
+/* MICR — 6 cols */
+.popup-micr-row {
+    display               : grid;
+    grid-template-columns : repeat(6, 1fr);
+    gap                   : 4px 8px;
+    margin-bottom         : 8px;
+    padding-bottom        : 8px;
+    border-bottom         : 1px solid var(--border);
+}
+
+/* Cheque details — 3 cols (Presenting Bank / Drawer Name removed) */
+.popup-detail-row {
+    display               : grid;
+    grid-template-columns : repeat(3, 1fr);
+    gap                   : 4px 8px;
+    margin-bottom         : 5px;
+}
+
+/* AMT IN WORDS full width */
+.popup-amtwords-row {
+    display        : flex;
+    flex-direction : column;
+    gap            : 2px;
+    margin-bottom  : 6px;
+}
+
+.popup-field-group {
+    display        : flex;
+    flex-direction : column;
+    gap            : 2px;
+}
+
+.popup-field-label {
+    font-size      : 9px;
+    font-weight    : 700;
+    color          : var(--text-secondary);
+    text-transform : uppercase;
+    letter-spacing : 0.3px;
+    white-space    : nowrap;
+    overflow       : hidden;
+    text-overflow  : ellipsis;
+}
+
+.popup-field-label-req::after {
+    content : " *";
+    color   : var(--danger);
+}
+
+.popup-field-input {
+    height        : 27px;
+    padding       : 0 7px;
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    font-size     : 12px;
+    color         : var(--text-primary);
+    background    : var(--surface);
+    width         : 100%;
+    box-sizing    : border-box;
+    transition    : border-color 0.15s;
+}
+
+.popup-field-input:focus {
+    outline      : none;
+    border-color : var(--primary-light);
+    box-shadow   : 0 0 0 2px rgba(43, 91, 168, 0.1);
+}
+
+.popup-field-readonly {
+    background : var(--alt) !important;
+    color      : var(--text-muted) !important;
+}
+
+/*
+   Edited field — professional left border indicator
+   Applied via Java: field.setSclass("popup-field-input popup-field-edited")
+   Indicates that the current value differs from the originally loaded value.
+   Automatically removed if the user reverts the field to its original value.
+*/
+.popup-field-edited {
+    border-left : 3px solid #2D6BCF !important;
+    box-shadow  : -1px 0 0 0 rgba(45, 107, 207, 0.25) !important;
+}
+
+/*
+   Read-only auto-generated edited field — softer indicator.
+   Applied via Java when a read-only field (e.g. tbAmountInWords, tbMicrNumber)
+   has been updated by the system and its value differs from what was
+   originally loaded. Teal/green left border distinguishes it from
+   user-editable field highlights.
+   Applied via Java: field.setSclass("popup-field-input popup-field-readonly popup-field-readonly-edited")
+*/
+.popup-field-readonly-edited {
+    border-left : 3px solid #1A8A72 !important;
+    box-shadow  : -1px 0 0 0 rgba(26, 138, 114, 0.2) !important;
+}
+
+/*
+   Error field highlight — red border + light red background
+   Applied via Java: field.setSclass("popup-field-input popup-field-error")
+   Shown when:
+     - MICR number does not match City + Bank + Branch
+     - Amount in Words does not match numeric Amount
+     - Required field is empty on save attempt
+*/
+.popup-field-error {
+    border-color : var(--danger) !important;
+    background   : #FFF0F0 !important;
+    box-shadow   : 0 0 0 2px rgba(192, 57, 43, 0.2) !important;
+}
+
+/*
+   Inline validation message — shown below a field group
+   when validation fails. Red text, small font.
+*/
+.popup-validation-msg {
+    font-size   : 10px;
+    color       : var(--danger);
+    font-weight : 600;
+    padding     : 1px 0 2px 0;
+    display     : block;
+}
+
+/*
+   Hidden state — label is present in DOM but invisible.
+   Composer toggles between this and popup-validation-msg
+   to show/hide the message without layout shift.
+*/
+.popup-validation-msg-hidden {
+    font-size      : 10px;
+    color          : transparent;
+    padding        : 1px 0 2px 0;
+    display        : block;
+    pointer-events : none;
+}
+
+/* =============================================
+   ACTION BUTTONS
+   ============================================= */
+
+.popup-action-row {
+    display         : flex;
+    justify-content : flex-end;
+    gap             : 10px;
+    padding-top     : 8px;
+    border-top      : 1px solid var(--border);
+    margin-top      : 4px;
+}
+
+.btn-popup-cancel {
+    height        : 30px;
+    padding       : 0 16px;
+    background    : var(--surface);
+    color         : var(--text-secondary);
+    border        : 1px solid var(--border);
+    border-radius : var(--radius-sm);
+    font-size     : 12px;
+    font-weight   : 600;
+    cursor        : pointer;
+}
+
+.btn-popup-cancel:hover { background: var(--alt); }
+
+.btn-popup-save {
+    height        : 30px;
+    padding       : 0 18px;
+    background    : var(--primary);
+    color         : #ffffff;
+    border        : none;
+    border-radius : var(--radius-sm);
+    font-size     : 12px;
+    font-weight   : 600;
+    cursor        : pointer;
+}
+
+.btn-popup-save:hover { background: var(--primary-light); }

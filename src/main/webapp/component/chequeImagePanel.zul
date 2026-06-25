@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Macro Component : chequeImagePanel.zul
+    Purpose         : Cheque image panel — Show Front / Show Back toggle.
+
+    FIX (this revision):
+    ─────────────────────────────────────────────────────────────────────
+    PROBLEM:  Show Back button was NOT working because the old code used
+              <n:button> with onclick="document.getElementById('chq-front-panel')"
+              ZK renders <div id="chq-front-panel"> as <div id="chq-front-panel__z_ko_0">
+              So getElementById() ALWAYS fails — panel never toggles.
+
+    SOLUTION: Replace <n:button> with ZK <button> (id="chq-btn-front" / id="chq-btn-back")
+              The parent composer wires these buttons and calls setVisible() on the
+              ZK <div> panels — which is the ONLY reliable way to toggle ZK components.
+
+    @Wire IDs (all unchanged — composers keep wiring same IDs):
+        chq-btn-front         ← NEW ZK button (was n:button)
+        chq-btn-back          ← NEW ZK button (was n:button)
+        chq-front-panel       ← ZK Div — toggled via composer setVisible()
+        chq-back-panel        ← ZK Div — toggled via composer setVisible()
+        chq-real-front        ← ZK Image (image loader sets src)
+        chq-real-back         ← ZK Image (image loader sets src)
+        chq-real-wrapper      ← ZK Div  (shown when front image URL exists)
+        chq-img-placeholder   ← ZK Div  (shown when no front image)
+        chq-real-back-wrapper ← ZK Div  (shown when back image URL exists)
+        chq-back-placeholder  ← ZK Div  (shown when no back image)
+-->
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:n="native">
+
+    <!-- ── Toggle bar: side label + Show Front / Show Back buttons ────── -->
+    <div style="display:flex;align-items:center;justify-content:space-between;
+                margin-bottom:5px;">
+
+        <!-- Side label — updated by composer when panel toggles -->
+        <label id="chq-side-label"
+               value="■ FRONT IMAGE"
+               style="font-size:11px;font-weight:700;color:#1a3a6e;
+                      text-transform:uppercase;letter-spacing:0.5px;"/>
+
+        <!-- ZK buttons — wired in composer, onClick handled server-side -->
+        <div style="display:flex;gap:6px;">
+            <button id="chq-btn-front"
+                    label="Show Front"
+                    style="height:24px;padding:0 10px;background:#1a3a6e;color:#fff;
+                           border:none;border-radius:4px;font-size:11px;font-weight:600;
+                           cursor:pointer;font-family:inherit;"/>
+            <button id="chq-btn-back"
+                    label="Show Back"
+                    style="height:24px;padding:0 10px;background:#E8EDF3;color:#4B5563;
+                           border:1px solid #C0C8D4;border-radius:4px;font-size:11px;
+                           font-weight:600;cursor:pointer;font-family:inherit;"/>
+        </div>
+
+    </div>
+
+    <!-- ── FRONT panel (visible by default) ───────────────────────────── -->
+    <div id="chq-front-panel">
+
+        <!-- Real front image — shown when URL is available -->
+        <div id="chq-real-wrapper" visible="false"
+             style="border:1px solid #C0C8D4;border-radius:5px;overflow:hidden;
+                    background:#f5f0e8;margin-bottom:6px;width:100%;">
+            <image id="chq-real-front"
+                   style="width:100%;display:block;height:auto;
+                          min-height:200px;max-height:380px;
+                          object-fit:contain;background:#f5f0e8;"/>
+        </div>
+
+        <!-- CSS fix: force ZK image to stretch full width -->
+        <style><![CDATA[
+            #chq-real-wrapper .z-image,
+            #chq-real-wrapper .z-image-content { display:block !important; width:100% !important; }
+            #chq-real-wrapper .z-image img,
+            #chq-real-wrapper img {
+                display:block !important; width:100% !important;
+                height:auto !important; object-fit:contain !important;
+            }
+            #chq-real-back-wrapper .z-image,
+            #chq-real-back-wrapper .z-image-content { display:block !important; width:100% !important; }
+            #chq-real-back-wrapper .z-image img,
+            #chq-real-back-wrapper img {
+                display:block !important; width:100% !important;
+                height:auto !important; object-fit:contain !important;
+            }
+        ]]></style>
+
+        <!-- Placeholder — shown when no front image URL -->
+        <div id="chq-img-placeholder" visible="true">
+            <n:div style="background:#F8FAFC;border:1px dashed #C0C8D4;border-radius:5px;
+                          padding:20px;text-align:center;margin-bottom:6px;
+                          display:flex;flex-direction:column;align-items:center;
+                          gap:4px;min-height:200px;justify-content:center;">
+                <n:div style="font-size:26px;">🖼️</n:div>
+                <n:div style="font-size:12px;font-weight:600;color:#6B7280;">Front Image Not Available</n:div>
+                <n:div style="font-size:11px;color:#9CA3AF;">No scanned image found for this cheque.</n:div>
+            </n:div>
+        </div>
+
+    </div>
+
+    <!-- ── BACK panel (hidden by default) ─────────────────────────────── -->
+    <div id="chq-back-panel" visible="false">
+
+        <!-- Real back image — shown when URL is available -->
+        <div id="chq-real-back-wrapper" visible="false"
+             style="border:1px solid #C0C8D4;border-radius:5px;overflow:hidden;
+                    background:#f5f0e8;margin-bottom:6px;width:100%;">
+            <image id="chq-real-back"
+                   style="width:100%;display:block;height:auto;
+                          min-height:200px;max-height:380px;
+                          object-fit:contain;background:#f5f0e8;"/>
+        </div>
+
+        <!-- Placeholder — shown when no back image URL -->
+        <div id="chq-back-placeholder" visible="true">
+            <n:div style="background:#F8FAFC;border:1px dashed #C0C8D4;border-radius:5px;
+                          padding:20px;text-align:center;margin-bottom:6px;
+                          display:flex;flex-direction:column;align-items:center;
+                          gap:4px;min-height:200px;justify-content:center;">
+                <n:div style="font-size:26px;">🔄</n:div>
+                <n:div style="font-size:12px;font-weight:600;color:#6B7280;">Back Image Not Available</n:div>
+                <n:div style="font-size:11px;color:#9CA3AF;">No back scan found for this cheque.</n:div>
+            </n:div>
+        </div>
+
+    </div>
+
+</zk>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page title="Cheque Details"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml">
+
+    <div id="checkerChequeDetailWin"
+         apply="com.cts.inward.composer.TV_II_CheckerChequeDetailComposer"
+         width="100%">
+
+        <style src="/css/inward/inwardDashboard.css"/>
+
+        <div sclass="page-bg">
+
+            <!-- ── Top Nav Breadcrumb ── -->
+            <div sclass="top-nav">
+                <h:span style="color:#cdd6e8;">Home</h:span>
+                <h:span style="margin:0 7px;color:#6b7fa8;">›</h:span>
+                <h:span style="color:#cdd6e8;cursor:pointer;"
+                        id="breadcrumbDashboard">Checker Dashboard</h:span>
+                <h:span style="margin:0 7px;color:#6b7fa8;">›</h:span>
+                <h:span style="color:#ffffff;font-weight:600;">Cheque Details</h:span>
+            </div>
+
+            <!-- ── Page Header ── -->
+            <div sclass="page-header">
+                <div>
+                    <div sclass="page-title">Cheque Details</div>
+                    <label id="lblBatchMeta" sclass="page-meta"/>
+                </div>
+                <button id="btnBack"
+                        label="← Back to Dashboard"
+                        style="background:#1a2a4a;color:white;border:none;
+                               border-radius:6px;padding:6px 16px;
+                               font-size:13px;cursor:pointer;"/>
+            </div>
+
+            <!-- ── Coming Soon placeholder ── -->
+            <div style="margin:40px 28px;background:#ffffff;border-radius:10px;
+                        box-shadow:0 1px 6px rgba(0,0,0,0.09);
+                        padding:60px 40px;text-align:center;">
+
+                <h:div style="font-size:56px;margin-bottom:16px;">🧾</h:div>
+
+                <h:h2 style="color:#1a2a4a;font-size:22px;font-weight:700;
+                             margin-bottom:10px;">
+                    Cheque Details — Coming Soon
+                </h:h2>
+
+                <h:p style="color:#6b7a99;font-size:14px;max-width:480px;
+                            margin:0 auto 24px auto;line-height:1.6;">
+                    This page will display all cheques assigned to the TV1
+                    checker queue for the selected batch, along with individual
+                    cheque verification and decision actions.
+                </h:p>
+
+                <h:div style="display:inline-block;background:#f0f4ff;
+                              border:1px solid #c7d4f0;border-radius:8px;
+                              padding:12px 28px;">
+                    <label id="lblBatchInfo"
+                           style="color:#1a2a4a;font-size:15px;font-weight:600;"/>
+                </h:div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</zk>
