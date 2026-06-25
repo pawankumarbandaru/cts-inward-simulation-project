@@ -213,6 +213,8 @@ public class ReportGenerationServiceImpl implements ReportGenerationService {
 		return baos.toByteArray();
 	}
 	
+	//Get all cheques for Report.
+	
 	@Override
 	public List<ReportChequeDetailDTO> findAllChequesForReport(String batchId) {
 	    return chequeDao.findAllChequesForReport(batchId);

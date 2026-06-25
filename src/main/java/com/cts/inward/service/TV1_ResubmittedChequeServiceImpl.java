@@ -21,7 +21,7 @@ import com.cts.inward.enums.SendTo;
  *           checker_refer_reason (return-to-maker note) and checker_reject_reason
  *           (permanent rejection note) are kept in separate columns so both stay
  *           visible in the audit trail.
- * Author  : Ramana
+ * Author  : Ramana JS
  * Date    : 24-06-2025
  */
 public class TV1_ResubmittedChequeServiceImpl implements TV1_ResubmittedChequeService {
