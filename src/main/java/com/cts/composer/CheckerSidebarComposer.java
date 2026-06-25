@@ -4,33 +4,14 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
-import org.zkoss.zk.ui.select.annotation.Wire;
-import org.zkoss.zul.Div;
-import org.zkoss.zul.Label;
 
 public class CheckerSidebarComposer extends SelectorComposer<Component> {
 
     private static final long serialVersionUID = 1L;
 
-    // Reports sub-menu toggle
-    @Wire
-    private Div checkerReportsMenu;
-
-    @Wire
-    private Label checkerReportsArrow;
-
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        checkerReportsArrow.setValue("▶");
-    }
-
-    // ── REPORTS toggle ────────────────────────────────────────
-    @Listen("onClick=#checkerReportsHeader")
-    public void toggleReportsMenu() {
-        boolean open = !checkerReportsMenu.isVisible();
-        checkerReportsMenu.setVisible(open);
-        checkerReportsArrow.setValue(open ? "▼" : "▶");
     }
 
     // ── PAGE NAVIGATION ──────────────────────────────────────

@@ -1,160 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-	sidebar.zul — ClearPay CTS Sidebar Component
-	Sub-items: indentation + font styling only, no icon boxes.
-	Emoji/icons to be added later.
+    sidebar.zul — ClearPay CTS Sidebar Component
+    Sub-items: indentation + font styling only, no icon boxes.
+    Emoji/icons to be added later.
 -->
 <div id="sidebarRoot" apply="com.cts.composer.SidebarComposer"
-	sclass="cts-sidebar">
+    sclass="cts-sidebar">
 
-	<!-- ── MAIN MENU ─────────────────────────── -->
-	<div sclass="cts-section-label">
-		<label value="MAIN MENU" />
-	</div>
+    <!-- ── MAIN MENU ─────────────────────────── -->
+    <div sclass="cts-section-label">
+        <label value="MAIN MENU" />
+    </div>
 
-	<div sclass="cts-menu-item active">
-		<custom-attributes perm="DASHBOARD_VIEW"
-			pagePath="/zul/inward/inwardDashboard.zul" />
-		<div sclass="cts-row">
-			<div sclass="cts-icon-badge cts-icon-home">
-				<label value="🏠" />
-			</div>
-			<label sclass="cts-item-label" value="Dashboard" />
-		</div>
-	</div>
+    <div sclass="cts-menu-item active">
+        <custom-attributes perm="DASHBOARD_VIEW"
+            pagePath="/zul/inward/inwardDashboard.zul" />
+        <div sclass="cts-row">
+            <div sclass="cts-icon-badge cts-icon-home">
+                <label value="🏠" />
+            </div>
+            <label sclass="cts-item-label" value="Dashboard" />
+        </div>
+    </div>
 
-	<!-- ── CLEARING ──────────────────────────── -->
-	<div sclass="cts-section-label">
-		<label value="CLEARING" />
-	</div>
+    <!-- ── CLEARING ──────────────────────────── -->
+    <div sclass="cts-section-label">
+        <label value="CLEARING" />
+    </div>
 
-	<!-- INWARD CLEARING — static heading, always expanded -->
-	<div sclass="cts-menu-header">
-		<div sclass="cts-row">
-			<div sclass="cts-icon-badge cts-icon-inward">
-				<label value="🏦" />
-			</div>
-			<label sclass="cts-item-label" value="Inward Clearing" />
-		</div>
-	</div>
+    <!-- INWARD CLEARING — static heading, always expanded -->
+    <div sclass="cts-menu-header">
+        <div sclass="cts-row">
+            <div sclass="cts-icon-badge cts-icon-inward">
+                <label value="🏦" />
+            </div>
+            <label sclass="cts-item-label" value="Inward Clearing" />
+        </div>
+    </div>
 
-	<div id="inwardMenu" sclass="cts-submenu" visible="true">
-		<div sclass="cts-menu-item">
-			<custom-attributes perm=""
-				pagePath="/zul/inward/uploadService.zul" />
-			<div sclass="cts-sub-row">
-				<label sclass="cts-sub-label" value="Upload Service" />
-			</div>
-		</div>
-		<div sclass="cts-menu-item">
-			<custom-attributes perm=""
-				pagePath="/zul/inward/makerBatchDetail.zul" />
-			<div sclass="cts-sub-row">
-				<label sclass="cts-sub-label" value="MICR Service" />
-			</div>
-		</div>
-		<div sclass="cts-menu-item">
-			<custom-attributes perm=""
-				pagePath="/zul/inward/M_ReturnedByChecker.zul" />
-			<div sclass="cts-sub-row">
-				<label sclass="cts-sub-label" value="Return Cheques" />
-			</div>
-		</div>
-		<div sclass="cts-menu-item">
-			<custom-attributes perm=""
-				pagePath="/zul/inward/checkerQueue.zul" />
-			<div sclass="cts-sub-row">
-				<label sclass="cts-sub-label" value="Checker Queue" />
-			</div>
-		</div>
-		<div sclass="cts-menu-item">
-			<custom-attributes perm=""
-				pagePath="/zul/inward/escalationQueue.zul" />
-			<div sclass="cts-sub-row">
-				<label sclass="cts-sub-label" value="Escalation Queue" />
-			</div>
-		</div>
-	</div>
+    <div id="inwardMenu" sclass="cts-submenu" visible="true">
+        <div sclass="cts-menu-item">
+            <custom-attributes perm=""
+                pagePath="/zul/inward/uploadService.zul" />
+            <div sclass="cts-sub-row">
+                <label sclass="cts-sub-label" value="Upload Service" />
+            </div>
+        </div>
 
-	<!-- ── REPORTS ───────────────────────────── -->
-	<div sclass="cts-section-label">
-		<label value="REPORTS" />
-	</div>
+        <div sclass="cts-menu-item">
+            <custom-attributes perm=""
+                pagePath="/zul/inward/M_ReturnedByChecker.zul" />
+            <div sclass="cts-sub-row">
+                <label sclass="cts-sub-label" value="Return Cheques" />
+            </div>
+        </div>
+    </div>
 
-	<div id="inwardReportsHeader" sclass="cts-menu-header">
-		<div sclass="cts-row">
-			<div sclass="cts-icon-badge cts-icon-report-in">
-				<label value="📋" />
-			</div>
-			<label sclass="cts-item-label" value="Inward Reports" />
-			<label id="inwardReportsArrow" sclass="cts-arrow" value="▶" />
-		</div>
-	</div>
+    <!-- ── REPORTS ───────────────────────────── -->
+    <div sclass="cts-section-label">
+        <label value="REPORTS" />
+    </div>
 
-	<div id="inwardReportsMenu" sclass="cts-submenu" visible="false">
-		<div sclass="cts-menu-item">
-			<custom-attributes perm=""
-				pagePath="/zul/inward/inwardReport.zul" />
-			<div sclass="cts-sub-row">
-				<label sclass="cts-sub-label" value="Maker Report" />
-			</div>
-		</div>
-		<div sclass="cts-menu-item">
-			<custom-attributes perm=""
-				pagePath="/zul/inward/reports/checkerReport.zul" />
-			<div sclass="cts-sub-row">
-				<label sclass="cts-sub-label" value="Checker Report" />
-			</div>
-		</div>
-	</div>
+    <div id="inwardReportsHeader" sclass="cts-menu-header">
+        <div sclass="cts-row">
+            <div sclass="cts-icon-badge cts-icon-report-in">
+                <label value="📋" />
+            </div>
+            <label sclass="cts-item-label" value="Inward Reports" />
+            <label id="inwardReportsArrow" sclass="cts-arrow" value="▶" />
+        </div>
+    </div>
 
-	<!-- ── SETTINGS ──────────────────────────── -->
-	<div sclass="cts-section-label">
-		<label value="SETTINGS" />
-	</div>
-
-	<div id="userHeader" sclass="cts-menu-header">
-		<div sclass="cts-row">
-			<div sclass="cts-icon-badge cts-icon-user">
-				<label value="👤" />
-			</div>
-			<label sclass="cts-item-label" value="User Management" />
-			<label id="userArrow" sclass="cts-arrow" value="▶" />
-		</div>
-	</div>
-
-	<div id="userMenu" sclass="cts-submenu" visible="false">
-		<div sclass="cts-menu-item">
-			<custom-attributes perm=""
-				pagePath="/zul/settings/roleManagement.zul" />
-			<div sclass="cts-sub-row">
-				<label sclass="cts-sub-label" value="Role Management" />
-			</div>
-		</div>
-		<div sclass="cts-menu-item">
-			<custom-attributes perm=""
-				pagePath="/zul/settings/userManagement.zul" />
-			<div sclass="cts-sub-row">
-				<label sclass="cts-sub-label" value="User Management" />
-			</div>
-		</div>
-		<div sclass="cts-menu-item">
-			<custom-attributes perm=""
-				pagePath="/zul/settings/pendingUserApproval.zul" />
-			<div sclass="cts-sub-row">
-				<label sclass="cts-sub-label"
-					value="Pending User Approval" />
-			</div>
-		</div>
-		<div sclass="cts-menu-item">
-			<custom-attributes perm=""
-				pagePath="/zul/settings/pendingRoleApproval.zul" />
-			<div sclass="cts-sub-row">
-				<label sclass="cts-sub-label"
-					value="Pending Role Approval" />
-			</div>
-		</div>
-	</div>
+    <div id="inwardReportsMenu" sclass="cts-submenu" visible="false">
+        <div sclass="cts-menu-item">
+            <custom-attributes perm=""
+                pagePath="/zul/inward/inwardReport.zul" />
+            <div sclass="cts-sub-row">
+                <label sclass="cts-sub-label" value="Maker Report" />
+            </div>
+        </div>
+        <div sclass="cts-menu-item">
+            <custom-attributes perm=""
+                pagePath="/zul/inward/reports/checkerReport.zul" />
+            <div sclass="cts-sub-row">
+                <label sclass="cts-sub-label" value="Checker Report" />
+            </div>
+        </div>
+    </div>
 
 </div>

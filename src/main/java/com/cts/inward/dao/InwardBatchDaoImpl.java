@@ -10,7 +10,6 @@ import com.cts.inward.enums.SendTo;
 import com.cts.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,59 +20,79 @@ import java.util.List;
 public class InwardBatchDaoImpl implements InwardBatchDao {
 
 	/**
-	 * 
 	 * Fetches dashboard statistics for a given date range.
-	 * 
-	 * Input: fromDate - Start date/time for filtering batches. toDate - End
-	 * date/time for filtering batches.
-	 * 
-	 * 
-	 * Count total batches created within the date range. Count batches with status
-	 * CLEARED. Count batches with status PENDING. Count batches with status DRAFT.
-	 * 
-	 * Populate DashboardStatsDTO with these counts. Returns: DashboardStatsDTO
-	 * containing: - Total batches - Cleared batches - Pending batches - Draft
-	 * batches
-	 * 
+	 *
+	 * Input: fromDate - Start date/time for filtering batches.
+	 *        toDate   - End date/time for filtering batches.
+	 *
+	 * Count total batches created within the date range.
+	 * Count batches with status CLEARED.
+	 * Count batches with status PENDING.
+	 * Count batches with status DRAFT.
+	 *
+	 * Populate DashboardStatsDTO with these counts.
+	 * Returns: DashboardStatsDTO containing:
+	 *          - Total batches
+	 *          - Cleared batches
+	 *          - Pending batches
+	 *          - Draft batches
 	 */
 	// MakerDashboard
 	@Override
 	public DashboardStatsDTO getDashboardStats(Date fromDate, Date toDate) {
 
-		LocalDateTime fromLdt = fromDate != null ? fromDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+		// Convert java.util.Date to LocalDateTime for SQL timestamp comparison
+		LocalDateTime fromLdt = fromDate != null
+				? fromDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
 				: null;
 
-		LocalDateTime toLdt = toDate != null ? toDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+		LocalDateTime toLdt = toDate != null
+				? toDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
 				: null;
 
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-			Long totalBatches = session
-					.createQuery("select count(b.id) from InwardBatch b "
-							+ "where b.createdAt between :fromDate and :toDate", Long.class)
-					.setParameter("fromDate", fromLdt).setParameter("toDate", toLdt).uniqueResult();
+			// Count all batches created within the date range
+			Long totalBatches = ((Number) session
+					.createNativeQuery("SELECT COUNT(id) FROM inward_batch " +
+							"WHERE created_at BETWEEN :fromDate AND :toDate")
+					.setParameter("fromDate", fromLdt)
+					.setParameter("toDate", toLdt)
+					.getSingleResult()).longValue();
 
-			Long clearedBatches = session
-					.createQuery("select count(b.id) from InwardBatch b " + "where b.batchStatus = :status "
-							+ "and b.createdAt between :fromDate and :toDate", Long.class)
-					.setParameter("status", BatchStatus.Cleared).setParameter("fromDate", fromLdt)
-					.setParameter("toDate", toLdt).uniqueResult();
+			// Count only Cleared status batches within the date range
+			Long clearedBatches = ((Number) session
+					.createNativeQuery("SELECT COUNT(id) FROM inward_batch " +
+							"WHERE batch_status = 'Cleared' " +
+							"AND created_at BETWEEN :fromDate AND :toDate")
+					.setParameter("fromDate", fromLdt)
+					.setParameter("toDate", toLdt)
+					.getSingleResult()).longValue();
 
-			Long pendingBatches = session
-					.createQuery("select count(b.id) from InwardBatch b " + "where b.batchStatus = :status "
-							+ "and b.createdAt between :fromDate and :toDate", Long.class)
-					.setParameter("status", BatchStatus.Pending).setParameter("fromDate", fromLdt)
-					.setParameter("toDate", toLdt).uniqueResult();
+			// Count only Pending status batches within the date range
+			Long pendingBatches = ((Number) session
+					.createNativeQuery("SELECT COUNT(id) FROM inward_batch " +
+							"WHERE batch_status = 'Pending' " +
+							"AND created_at BETWEEN :fromDate AND :toDate")
+					.setParameter("fromDate", fromLdt)
+					.setParameter("toDate", toLdt)
+					.getSingleResult()).longValue();
 
-			Long draftBatches = session
-					.createQuery("select count(b.id) from InwardBatch b " + "where b.batchStatus = :status "
-							+ "and b.createdAt between :fromDate and :toDate", Long.class)
-					.setParameter("status", BatchStatus.Draft).setParameter("fromDate", fromLdt)
-					.setParameter("toDate", toLdt).uniqueResult();
+			// Count only Draft status batches within the date range
+			Long draftBatches = ((Number) session
+					.createNativeQuery("SELECT COUNT(id) FROM inward_batch " +
+							"WHERE batch_status = 'Draft' " +
+							"AND created_at BETWEEN :fromDate AND :toDate")
+					.setParameter("fromDate", fromLdt)
+					.setParameter("toDate", toLdt)
+					.getSingleResult()).longValue();
 
-			return new DashboardStatsDTO(totalBatches == null ? 0 : totalBatches,
-					clearedBatches == null ? 0 : clearedBatches, pendingBatches == null ? 0 : pendingBatches,
-					draftBatches == null ? 0 : draftBatches);
+			return new DashboardStatsDTO(
+					totalBatches,
+					clearedBatches,
+					pendingBatches,
+					draftBatches
+			);
 		}
 	}
 
@@ -87,12 +106,18 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 
 			System.out.println("SESSION OPENED");
 
-			Object count = session.createNativeQuery("select count(*) from inward_batch").getSingleResult();
+			// Sanity check: verify total row count in the table via native SQL
+			Object count = session
+					.createNativeQuery("SELECT COUNT(*) FROM inward_batch")
+					.getSingleResult();
 			System.out.println("DB COUNT = " + count);
 
+			// Fetch only Draft status batches — Maker can still edit these
+			// addEntity() maps each result row to an InwardBatch object
 			List<InwardBatch> list = session
-					.createQuery("from InwardBatch b where b.batchStatus = :status", InwardBatch.class)
-					.setParameter("status", BatchStatus.Draft).list();
+					.createNativeQuery("SELECT * FROM inward_batch WHERE batch_status = 'Draft'")
+					.addEntity(InwardBatch.class)
+					.list();
 			System.out.println("ENTITY COUNT = " + list.size());
 
 			return list;
@@ -111,10 +136,13 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 	@Override
 	public List<InwardBatch> searchBatches(String batchId, BatchStatus status, Date fromDate, Date toDate) {
 
-		LocalDateTime fromLdt = fromDate != null ? fromDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+		// Convert java.util.Date to LocalDateTime for SQL timestamp comparison
+		LocalDateTime fromLdt = fromDate != null
+				? fromDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
 				: null;
 
-		LocalDateTime toLdt = toDate != null ? toDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+		LocalDateTime toLdt = toDate != null
+				? toDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
 				: null;
 
 		Session session = null;
@@ -122,34 +150,46 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 
-			StringBuilder hql = new StringBuilder("FROM InwardBatch b WHERE 1=1 ");
+			// Start with base SQL — WHERE 1=1 allows safe appending of optional AND filters
+			StringBuilder sql = new StringBuilder("SELECT * FROM inward_batch WHERE 1=1 ");
 
+			// Append batch_id filter only if provided — LOWER() for case-insensitive partial match
 			if (batchId != null && !batchId.trim().isEmpty()) {
-				hql.append("AND LOWER(b.batchId) LIKE :batchId ");
+				sql.append("AND LOWER(batch_id) LIKE :batchId ");
 			}
 
+			// Append batch_status filter only if a status was selected
 			if (status != null) {
-				hql.append("AND b.batchStatus = :status ");
+				sql.append("AND batch_status = :status ");
 			}
 
+			// Append from-date filter only if provided
 			if (fromLdt != null) {
-				hql.append("AND b.createdAt >= :fromDate ");
+				sql.append("AND created_at >= :fromDate ");
 			}
 
+			// Append to-date filter only if provided
 			if (toLdt != null) {
-				hql.append("AND b.createdAt <= :toDate ");
+				sql.append("AND created_at <= :toDate ");
 			}
 
-			hql.append("ORDER BY b.createdAt DESC");
+			// Always sort newest batches first
+			sql.append("ORDER BY created_at DESC");
 
-			Query<InwardBatch> query = session.createQuery(hql.toString(), InwardBatch.class);
+			// addEntity() maps each SQL result row to an InwardBatch object
+			org.hibernate.query.NativeQuery<InwardBatch> query = session
+					.createNativeQuery(sql.toString())
+					.addEntity(InwardBatch.class);
 
+			// Bind parameter values only for the filters that were actually appended
 			if (batchId != null && !batchId.trim().isEmpty()) {
+				// Wrap with % for LIKE wildcard — lowercase match
 				query.setParameter("batchId", "%" + batchId.toLowerCase() + "%");
 			}
 
 			if (status != null) {
-				query.setParameter("status", status);
+				// Enum is passed as its String name since SQL does not know Java enums
+				query.setParameter("status", status.name());
 			}
 
 			if (fromLdt != null) {
@@ -173,11 +213,16 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 	@Override
 	public java.math.BigDecimal getTotalAmountByBatchId(Long batchId) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			java.math.BigDecimal result = session
-					.createQuery("SELECT COALESCE(SUM(c.amount), 0) FROM InwardCheque c WHERE c.batch.id = :batchId",
-							java.math.BigDecimal.class)
-					.setParameter("batchId", batchId).uniqueResult();
-			return result != null ? result : java.math.BigDecimal.ZERO;
+
+			// SUM of all cheque amounts for the batch; COALESCE returns 0 if no cheques exist
+			// inward_cheque.batch_id is the FK column linking to inward_batch.id
+			Object result = session
+					.createNativeQuery("SELECT COALESCE(SUM(amount), 0) FROM inward_cheque " +
+							"WHERE batch_id = :batchId")
+					.setParameter("batchId", batchId)
+					.getSingleResult();
+
+			return result != null ? new BigDecimal(result.toString()) : BigDecimal.ZERO;
 		}
 	}
 
@@ -185,11 +230,15 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 	@Override
 	public Long getAcceptedCountByBatchId(Long batchId) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			Long result = session
-					.createQuery("SELECT COUNT(c) FROM InwardCheque c " + "WHERE c.batch.id = :batchId "
-							+ "AND c.decision = :decision " + "AND c.chequeStatus = :status", Long.class)
-					.setParameter("batchId", batchId).setParameter("decision", DecisionStatus.ACCEPTED)
-					.setParameter("status", ChequeStatus.Ready).uniqueResult();
+
+			// Count cheques accepted by the checker — decision = ACCEPTED AND cheque_status = Ready
+			Long result = ((Number) session
+					.createNativeQuery("SELECT COUNT(*) FROM inward_cheque " +
+							"WHERE batch_id = :batchId " +
+							"AND decision = 'ACCEPTED' " +
+							"AND cheque_status = 'Ready'")
+					.setParameter("batchId", batchId)
+					.getSingleResult()).longValue();
 
 			return result != null ? result : 0L;
 		}
@@ -199,34 +248,40 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 	@Override
 	public Long getRejectedCountByBatchId(Long batchId) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			Long result = session
-					.createQuery("SELECT COUNT(c) FROM InwardCheque c "
-							+ "WHERE c.batch.id = :batchId AND c.decision = :decision", Long.class)
-					.setParameter("batchId", batchId).setParameter("decision", DecisionStatus.REJECTED).uniqueResult();
+
+			// Count cheques permanently rejected by the checker — decision = REJECTED
+			Long result = ((Number) session
+					.createNativeQuery("SELECT COUNT(*) FROM inward_cheque " +
+							"WHERE batch_id = :batchId " +
+							"AND decision = 'REJECTED'")
+					.setParameter("batchId", batchId)
+					.getSingleResult()).longValue();
+
 			return result != null ? result : 0L;
 		}
 	}
 
-	// MakerDahboardService
+	// MakerDashboardService
 	@Override
 	public Long getInvalidCountByBatchId(Long batchId) {
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-	        return session.createQuery(
-	                "SELECT COUNT(c) FROM InwardCheque c " +
-	                "WHERE c.batch.id = :batchId " +
-	                "AND (c.chequeStatus = :status " +
-	                "OR c.cbsValidation = :cbsValidation)",
-	                Long.class)
-	            .setParameter("batchId", batchId)
-	            .setParameter("status", ChequeStatus.Repair)
-	            .setParameter("cbsValidation", CbsValidation.Invalid)
-	            .uniqueResult();
-	    }
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			// Count cheques that need attention — either MICR repair or CBS invalid
+			// OR condition covers both failure types in one query
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(*) FROM inward_cheque " +
+							"WHERE batch_id = :batchId " +
+							"AND (cheque_status = 'Repair' OR cbs_validation = 'Invalid')")
+					.setParameter("batchId", batchId)
+					.getSingleResult()).longValue();
+		}
 	}
 
 	@Override
 	public void save(InwardBatch batch) {
 
+		// save() still uses session.persist() — no SQL query needed here
+		// Hibernate generates the INSERT statement automatically from the entity fields
 		Transaction tx = null;
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			tx = session.beginTransaction();
@@ -239,18 +294,6 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 		}
 	}
 
-	// ── CHANGE 5 : Fixed update() — re-fetches managed entity inside its own
-	// session
-	//
-	// OLD CODE : session.merge(batch)
-	// → batch came from findByBatchId() whose try-with-resources already closed
-	// the session. So batch is DETACHED. Hibernate tries to use the old
-	// closed connection to check entity state → "LogicalConnection is closed"
-	//
-	// FIX : Re-fetch a fresh managed InwardBatch by batchId inside THIS session.
-	// Then copy only the fields we want to update onto the managed entity.
-	// session.merge(managed) works because managed lives in the same open session.
-	// ────────────────────────────────────────────────────────────────────────────────
 	@Override
 	public void update(InwardBatch batch) {
 
@@ -259,18 +302,23 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 
 			tx = session.beginTransaction();
 
-			// Re-fetch inside this session so we always have a live managed entity
-			InwardBatch managed = session
-					.createQuery("FROM InwardBatch b WHERE b.batchId = :batchId", InwardBatch.class)
-					.setParameter("batchId", batch.getBatchId()).uniqueResult();
+			// Re-fetch the managed entity inside this session using the business key (batch_id)
+			// addEntity() maps the result row back to an InwardBatch object
+			InwardBatch managed = (InwardBatch) session
+					.createNativeQuery("SELECT * FROM inward_batch WHERE batch_id = :batchId")
+					.addEntity(InwardBatch.class)
+					.setParameter("batchId", batch.getBatchId())
+					.uniqueResult();
 
 			if (managed != null) {
-				// Copy only the fields that should be updated
+				// Copy only the fields that need updating — avoid touching other columns
 				managed.setSuccessCount(batch.getSuccessCount());
 				managed.setTotalCheques(batch.getTotalCheques());
 				managed.setBatchStatus(batch.getBatchStatus());
 				managed.setMicrRepairCount(batch.getMicrRepairCount());
-				session.merge(managed); // merge on managed entity — safe
+
+				// merge() is safe here because managed is a live entity inside this open session
+				session.merge(managed);
 			}
 
 			tx.commit();
@@ -282,16 +330,21 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 		}
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
 	// for MICR
 	@Override
 	public InwardBatch findByBatchId(String batchId) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			return session.createQuery("FROM InwardBatch b WHERE b.batchId = :batchId", InwardBatch.class)
-					.setParameter("batchId", batchId).uniqueResult();
+
+			// Search by the string business key (batch_id column), not the numeric PK (id)
+			// addEntity() maps the result row to an InwardBatch object
+			return (InwardBatch) session
+					.createNativeQuery("SELECT * FROM inward_batch WHERE batch_id = :batchId")
+					.addEntity(InwardBatch.class)
+					.setParameter("batchId", batchId)
+					.uniqueResult();
 		}
 	}
-	
+
 	@Override
 	public void updateBatchStatus(Long id, BatchStatus status) {
 
@@ -299,8 +352,13 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 
 			session.beginTransaction();
 
-			session.createMutationQuery("update InwardBatch b " + "set b.batchStatus = :status " + "where b.id = :id")
-					.setParameter("status", status).setParameter("id", id).executeUpdate();
+			// Direct UPDATE on the batch_status column by numeric PK — no entity load needed
+			// Enum is passed as its String name since SQL does not know Java enums
+			session.createNativeQuery(
+			        "UPDATE inward_batch SET batch_status = CAST(:status AS batch_status) WHERE id = :id")
+			    .setParameter("status", status.name())
+			    .setParameter("id", id)
+			    .executeUpdate();
 
 			session.getTransaction().commit();
 		}
@@ -309,24 +367,39 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 	@Override
 	public List<InwardBatch> findAll() {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			return session.createQuery("FROM InwardBatch ORDER BY createdAt DESC", InwardBatch.class).list();
+
+			// Fetch all rows from inward_batch, newest first by created_at
+			// addEntity() maps each result row to an InwardBatch object
+			return session
+					.createNativeQuery("SELECT * FROM inward_batch ORDER BY created_at DESC")
+					.addEntity(InwardBatch.class)
+					.list();
 		}
 	}
 
 	@Override
 	public InwardBatch findLatest() {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			return session.createQuery("FROM InwardBatch ORDER BY id DESC", InwardBatch.class).setMaxResults(1)
+
+			// ORDER BY id DESC gives the newest batch first
+			// LIMIT 1 fetches only that one row
+			return (InwardBatch) session
+					.createNativeQuery("SELECT * FROM inward_batch ORDER BY id DESC LIMIT 1")
+					.addEntity(InwardBatch.class)
 					.uniqueResult();
 		}
 	}
 
-	
-
 	@Override
 	public InwardBatch findById(Long id) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			return session.get(InwardBatch.class, id);
+
+			// Direct PK lookup on inward_batch.id — fastest way to fetch a single batch
+			return (InwardBatch) session
+					.createNativeQuery("SELECT * FROM inward_batch WHERE id = :id")
+					.addEntity(InwardBatch.class)
+					.setParameter("id", id)
+					.uniqueResult();
 		}
 	}
 
@@ -337,11 +410,19 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 		LocalDateTime to = endOfDay(date);
 
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			// JOIN inward_cheque → inward_batch to find batches that have TV_1 cheques
+			// DISTINCT avoids duplicate batch rows when multiple cheques belong to the same batch
 			return session
-					.createQuery("select distinct c.batch " + "from InwardCheque c " + "where c.sendTo = :sendTo "
-							+ "and c.batch.createdAt between :from and :to " + "order by c.batch.createdAt desc",
-							InwardBatch.class)
-					.setParameter("sendTo", SendTo.TV_1).setParameter("from", from).setParameter("to", to).list();
+					.createNativeQuery("SELECT DISTINCT ib.* FROM inward_batch ib " +
+							"JOIN inward_cheque ic ON ic.batch_id = ib.id " +
+							"WHERE ic.send_to = 'TV_1' " +
+							"AND ib.created_at BETWEEN :from AND :to " +
+							"ORDER BY ib.created_at DESC")
+					.addEntity(InwardBatch.class)
+					.setParameter("from", from)
+					.setParameter("to", to)
+					.list();
 		}
 	}
 
@@ -354,18 +435,20 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-			return session
-					.createQuery(
-							"select count(distinct c.batch.id) " + "from InwardCheque c " + "where c.sendTo = :sendTo "
-									+ "and c.batch.createdAt between :from and :to "
-									+ "and c.batch.batchStatus = :batchStatus " + "and c.chequeStatus = :chequeStatus "
-									+ "and c.cbsValidation = :cbsValidation " + "and c.decision = :decision",
-							Long.class)
-					.setParameter("sendTo", SendTo.TV_1).setParameter("from", from).setParameter("to", to)
-					.setParameter("batchStatus", BatchStatus.PendingAtChecker)
-					.setParameter("chequeStatus", ChequeStatus.Processed)
-					.setParameter("cbsValidation", CbsValidation.Valid).setParameter("decision", DecisionStatus.PENDING)
-					.uniqueResult();
+			// COUNT DISTINCT batch IDs — one batch can have many cheques but we count it only once
+			// All five conditions must match for a cheque to be counted
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(DISTINCT ic.batch_id) FROM inward_cheque ic " +
+							"JOIN inward_batch ib ON ic.batch_id = ib.id " +
+							"WHERE ic.send_to = 'TV_1' " +
+							"AND ib.created_at BETWEEN :from AND :to " +
+							"AND ib.batch_status = 'PendingAtChecker' " +
+							"AND ic.cheque_status = 'Processed' " +
+							"AND ic.cbs_validation = 'Valid' " +
+							"AND ic.decision = 'PENDING'")
+					.setParameter("from", from)
+					.setParameter("to", to)
+					.getSingleResult()).longValue();
 		}
 	}
 
@@ -378,56 +461,51 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-			return session
-					.createQuery(
-							"select count(distinct c.batch.id) " + "from InwardCheque c " + "where c.sendTo = :sendTo "
-									+ "and c.batch.createdAt between :from and :to "
-									+ "and c.batch.batchStatus = :batchStatus " + "and c.chequeStatus = :chequeStatus "
-									+ "and c.cbsValidation = :cbsValidation " + "and c.decision = :decision",
-							Long.class)
-					.setParameter("sendTo", SendTo.TV_1).setParameter("from", from).setParameter("to", to)
-					.setParameter("batchStatus", BatchStatus.PendingAtChecker)
-					.setParameter("chequeStatus", ChequeStatus.Processed)
-					.setParameter("cbsValidation", CbsValidation.Valid).setParameter("decision", DecisionStatus.PENDING)
-					.uniqueResult();
+			// Same multi-condition filter as assigned — pending means no decision taken yet by TV1
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(DISTINCT ic.batch_id) FROM inward_cheque ic " +
+							"JOIN inward_batch ib ON ic.batch_id = ib.id " +
+							"WHERE ic.send_to = 'TV_1' " +
+							"AND ib.created_at BETWEEN :from AND :to " +
+							"AND ib.batch_status = 'PendingAtChecker' " +
+							"AND ic.cheque_status = 'Processed' " +
+							"AND ic.cbs_validation = 'Valid' " +
+							"AND ic.decision = 'PENDING'")
+					.setParameter("from", from)
+					.setParameter("to", to)
+					.getSingleResult()).longValue();
 		}
 	}
 
 	// ── KPI: cleared batches ───────────────────────────────────────────────
-	// Counts distinct batches that have been successfully validated
-	// and assigned to a checker queue (TV_1 or TV_2).
 	@Override
 	public Long getClearedBatchCountTV1(Date date) {
 
-	    LocalDateTime from = startOfDay(date);
-	    LocalDateTime to = endOfDay(date);
+		LocalDateTime from = startOfDay(date);
+		LocalDateTime to = endOfDay(date);
 
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-	        return session.createQuery(
-	                "select count(distinct b.id) " +
-	                "from InwardBatch b " +
-	                "where b.createdAt between :from and :to " +
-	                "and not exists (" +
-	                "   select c.id " +
-	                "   from InwardCheque c " +
-	                "   where c.batch.id = b.id " +
-	                "   and c.cbsValidation = :cbsValidation " +
-	                "   and c.amount <= :limit " +
-	                "   and c.chequeStatus = :processed" +
-	                ")",
-	                Long.class)
-	            .setParameter("from", from)
-	            .setParameter("to", to)
-	            .setParameter("limit", new BigDecimal("100000"))
-	            .setParameter("cbsValidation", CbsValidation.Valid)
-	            .setParameter("processed", ChequeStatus.Processed)
-	            .uniqueResult();
-	    }
+			// NOT EXISTS subquery — count batches that have NO remaining Processed cheques
+			// A batch is cleared when all TV1-eligible cheques (amount <= 100000, Valid) are decided
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(DISTINCT ib.id) FROM inward_batch ib " +
+							"WHERE ib.created_at BETWEEN :from AND :to " +
+							"AND NOT EXISTS (" +
+							"   SELECT 1 FROM inward_cheque ic " +
+							"   WHERE ic.batch_id = ib.id " +
+							"   AND ic.cbs_validation = 'Valid' " +
+							"   AND ic.amount <= :limit " +
+							"   AND ic.cheque_status = 'Processed'" +
+							")")
+					.setParameter("from", from)
+					.setParameter("to", to)
+					.setParameter("limit", new BigDecimal("100000"))
+					.getSingleResult()).longValue();
+		}
 	}
-	
+
 	// ── KPI: pending cheques ───────────────────────────────────────────────
-	// Pending = decision IS NULL OR decision = PENDING
 	@Override
 	public Long getPendingChequeCountTV1(Date date) {
 
@@ -436,160 +514,342 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-			return session
-					.createQuery(
-							"select count(c.id) " + "from InwardCheque c " + "where c.sendTo = :sendTo "
-									+ "and c.batch.createdAt between :from and :to "
-									+ "and c.batch.batchStatus = :batchStatus " + "and c.chequeStatus = :chequeStatus "
-									+ "and c.cbsValidation = :cbsValidation " + "and c.decision = :decision",
-							Long.class)
-					.setParameter("sendTo", SendTo.TV_1).setParameter("from", from).setParameter("to", to)
-					.setParameter("batchStatus", BatchStatus.PendingAtChecker)
-					.setParameter("chequeStatus", ChequeStatus.Processed)
-					.setParameter("cbsValidation", CbsValidation.Valid).setParameter("decision", DecisionStatus.PENDING)
-					.uniqueResult();
+			// Count individual cheque rows (not distinct batches) pending TV1 action
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(ic.id) FROM inward_cheque ic " +
+							"JOIN inward_batch ib ON ic.batch_id = ib.id " +
+							"WHERE ic.send_to = 'TV_1' " +
+							"AND ib.created_at BETWEEN :from AND :to " +
+							"AND ib.batch_status = 'PendingAtChecker' " +
+							"AND ic.cheque_status = 'Processed' " +
+							"AND ic.cbs_validation = 'Valid' " +
+							"AND ic.decision = 'PENDING'")
+					.setParameter("from", from)
+					.setParameter("to", to)
+					.getSingleResult()).longValue();
 		}
 	}
 
 	// ── Per-batch: ALL cheques in the batch ───────────────────────────────
 	@Override
 	public Long getTotalChequesForBatchTV1(Long batchId) {
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-	        return session.createQuery(
-	                "select count(c.id) from InwardCheque c " +
-	                "where c.batch.id = :batchId " +
-	                "and c.cbsValidation = :cbsValidation",
-	                Long.class)
-	            .setParameter("batchId", batchId)
-	            .setParameter("cbsValidation", CbsValidation.Valid)
-	            .uniqueResult();
-	    }
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			// Count all cheques in the batch that passed CBS validation
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(id) FROM inward_cheque " +
+							"WHERE batch_id = :batchId " +
+							"AND cbs_validation = 'Valid'")
+					.setParameter("batchId", batchId)
+					.getSingleResult()).longValue();
+		}
 	}
 
 	// ── Per-batch: cheques where sendTo = queue ───────────────────────────
 	@Override
 	public Long getAssignedChequesForBatchTV1(Long batchId) {
 
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-	        return session.createQuery(
-	                "select count(c.id) " +
-	                "from InwardCheque c " +
-	                "where c.batch.id = :batchId " +
-	                "and c.amount <= :maxAmount " +
-	                "and c.batch.batchStatus = :batchStatus " +
-	                "and c.cbsValidation = :cbsValidation",
-	                Long.class)
-	            .setParameter("batchId", batchId)
-	            .setParameter("maxAmount", 100000.00)
-	            .setParameter("batchStatus", BatchStatus.PendingAtChecker)
-	            .setParameter("cbsValidation", CbsValidation.Valid)
-	            .uniqueResult();
-	    }
+			// Amount <= 100000 (₹1 lakh threshold) — these go to TV1
+			// JOIN inward_batch to check batch_status on the parent batch
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(ic.id) FROM inward_cheque ic " +
+							"JOIN inward_batch ib ON ic.batch_id = ib.id " +
+							"WHERE ic.batch_id = :batchId " +
+							"AND ic.amount <= :maxAmount " +
+							"AND ib.batch_status = 'PendingAtChecker' " +
+							"AND ic.cbs_validation = 'Valid'")
+					.setParameter("batchId", batchId)
+					.setParameter("maxAmount", 100000.00)
+					.getSingleResult()).longValue();
+		}
 	}
 
 	// ── Per-batch: pending cheques ────────────────────────────────────────
-	// Pending = sendTo = queue AND (decision IS NULL OR decision = PENDING)
 	@Override
 	public Long getPendingChequesForBatchTV1(Long batchId) {
 
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-	        return session.createQuery(
-	                "select count(c.id) " +
-	                "from InwardCheque c " +
-	                "where c.batch.id = :batchId " +
-	                "and c.amount <= :limit " +
-	                "and c.cbsValidation = :cbsValidation " +
-	                "and c.chequeStatus = :chequeStatus",
-	                Long.class)
-	            .setParameter("batchId", batchId)
-	            .setParameter("limit", new BigDecimal("100000"))
-	            .setParameter("cbsValidation", CbsValidation.Valid)
-	            .setParameter("chequeStatus", ChequeStatus.Processed)
-	            .uniqueResult();
-	    }
+			// Pending TV1 cheques — amount <= 100000, CBS Valid, still in Processed status
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(id) FROM inward_cheque " +
+							"WHERE batch_id = :batchId " +
+							"AND amount <= :limit " +
+							"AND cbs_validation = 'Valid' " +
+							"AND cheque_status = 'Processed'")
+					.setParameter("batchId", batchId)
+					.setParameter("limit", new BigDecimal("100000"))
+					.getSingleResult()).longValue();
+		}
 	}
-	
-	
+
 	// ── Per-batch: cleared cheques ─────────────────────────────────────────
-	// Cleared = sendTo = TV_1 or TV_2 AND decision IN (APPROVED, ACCEPTED)
 	@Override
 	public Long getClearedChequesForBatchTV1(Long batchId) {
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-	        return session.createQuery(
-	                "select count(c.id) from InwardCheque c " +
-	                "where c.batch.id = :batchId " +
-	                "and c.chequeStatus <> :status " +
-	                "and c.amount <= :maxAmount " +
-	                "and c.cbsValidation = :cbsValidation",
-	                Long.class)
-	            .setParameter("batchId", batchId)
-	            .setParameter("status", ChequeStatus.Processed)
-	            .setParameter("maxAmount", 100000)
-	            .setParameter("cbsValidation", CbsValidation.Valid)
-	            .uniqueResult();
-	    }
+			// Cleared TV1 cheques — amount <= 100000, CBS Valid, cheque_status is NOT Processed
+			// (meaning a decision has already been taken on them)
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(id) FROM inward_cheque " +
+							"WHERE batch_id = :batchId " +
+							"AND cheque_status <> 'Processed' " +
+							"AND amount <= :maxAmount " +
+							"AND cbs_validation = 'Valid'")
+					.setParameter("batchId", batchId)
+					.setParameter("maxAmount", 100000)
+					.getSingleResult()).longValue();
+		}
 	}
 
-	/**
-	 * Submitted Batches Count
-	 *
-	 * Counts distinct batches assigned to TV_1 for the selected date where: - Batch
-	 * Status = Submitted - Cheque Status = Normal - CBS Validation = Valid -
-	 * Decision Status = ACCEPTED - Send To = TV_1
-	 */
-//    @Override
-//    public Long getSubmittedBatchCount(Date date) {
-//
-//        LocalDateTime from = startOfDay(date);
-//        LocalDateTime to = endOfDay(date);
-//
-//        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-//
-//            return session.createQuery(
-//                    "select count(distinct c.batch.id) " +
-//                    "from InwardCheque c " +
-//                    "where c.sendTo = :sendTo " +
-//                    "and c.batch.createdAt between :from and :to " +
-//                    "and c.batch.batchStatus = :batchStatus " +
-//                    "and c.chequeStatus = :chequeStatus " +
-//                    "and c.cbsValidation = :cbsValidation " +
-//                    "and c.decision = :decision",
-//                    Long.class)
-//                    .setParameter("sendTo", SendTo.TV_1)
-//                    .setParameter("from", from)
-//                    .setParameter("to", to)
-//                    .setParameter("batchStatus", BatchStatus.ClearedAtChecker)
-//                    .setParameter("chequeStatus", ChequeStatus.Processed)
-//                    .setParameter("cbsValidation", CbsValidation.Valid)
-//                    .setParameter("decision", DecisionStatus.ACCEPTED)
-//                    .uniqueResult();
-//        }
-//    }
-
-	/**
-	 * Submitted Cheques Count For Batch
-	 *
-	 * Counts cheques in a specific batch where: - Batch Status = Submitted - Cheque
-	 * Status = Normal - CBS Validation = Valid - Decision Status = ACCEPTED - Send
-	 * To = TV_1
-	 */
+	// Submitted Cheques Count For Batch
 	@Override
 	public Long getSubmittedBatchesTV1(Long batchId) {
 
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
+			// Count cheques submitted for TV1 — all five conditions must match
+			// JOIN inward_batch to check batch_status on the parent batch
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(ic.id) FROM inward_cheque ic " +
+							"JOIN inward_batch ib ON ic.batch_id = ib.id " +
+							"WHERE ic.batch_id = :batchId " +
+							"AND ic.send_to = 'TV_1' " +
+							"AND ib.batch_status = 'ClearedAtChecker' " +
+							"AND ic.cheque_status = 'Ready' " +
+							"AND ic.cbs_validation = 'Valid' " +
+							"AND ic.decision = 'ACCEPTED'")
+					.setParameter("batchId", batchId)
+					.getSingleResult()).longValue();
+		}
+	}
+
+	// ── Batch list for a queue on a specific day ───────────────────────────
+	@Override
+	public List<InwardBatch> getBatchesByQueueAndDate(SendTo queue, Date date) {
+
+		LocalDateTime from = startOfDay(date);
+		LocalDateTime to = endOfDay(date);
+
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			// DISTINCT avoids duplicate batch rows when multiple cheques belong to the same batch
+			// IN clause checks two allowed batch statuses: PendingAtChecker or ClearedAtChecker
 			return session
-					.createQuery("select count(c.id) " + "from InwardCheque c " + "where c.batch.id = :batchId "
-							+ "and c.sendTo = :sendTo " + "and c.batch.batchStatus = :batchStatus "
-							+ "and c.chequeStatus = :chequeStatus " + "and c.cbsValidation = :cbsValidation "
-							+ "and c.decision = :decision", Long.class)
-					.setParameter("batchId", batchId).setParameter("sendTo", SendTo.TV_1)
-					.setParameter("batchStatus", BatchStatus.ClearedAtChecker)
-					.setParameter("chequeStatus", ChequeStatus.Ready).setParameter("cbsValidation", CbsValidation.Valid)
-					.setParameter("decision", DecisionStatus.ACCEPTED).uniqueResult();
+					.createNativeQuery("SELECT DISTINCT ib.* FROM inward_batch ib " +
+							"JOIN inward_cheque ic ON ic.batch_id = ib.id " +
+							"WHERE ib.created_at BETWEEN :from AND :to " +
+							"AND ib.batch_status IN ('PendingAtChecker', 'ClearedAtChecker') " +
+							"ORDER BY ib.created_at DESC")
+					.addEntity(InwardBatch.class)
+					.setParameter("from", from)
+					.setParameter("to", to)
+					.list();
+		}
+	}
+
+	@Override
+	public Long getAssignedBatchCountTV2(SendTo queue, Date date) {
+	    LocalDateTime from = startOfDay(date);
+	    LocalDateTime to = endOfDay(date);
+
+	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+	        return ((Number) session
+	                .createNativeQuery("SELECT COUNT(DISTINCT ic.batch_id) FROM inward_cheque ic " +
+	                        "JOIN inward_batch ib ON ic.batch_id = ib.id " +
+	                        "WHERE ic.send_to = CAST(:queue AS send_to_enum) " +
+	                        "AND ib.created_at BETWEEN :from AND :to")
+	                .setParameter("queue", queue.name())
+	                .setParameter("from", from)
+	                .setParameter("to", to)
+	                .getSingleResult()).longValue();
+	    }
+	}
+
+	// ── KPI: pending batches (not yet Cleared) ─────────────────────────────
+	@Override
+	public Long getPendingBatchCountTV2(SendTo queue, Date date) {
+
+		LocalDateTime from = startOfDay(date);
+		LocalDateTime to = endOfDay(date);
+
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			// Same multi-condition filter as TV1 pending — send_to uses the queue parameter for TV2
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(DISTINCT ic.batch_id) FROM inward_cheque ic " +
+							"JOIN inward_batch ib ON ic.batch_id = ib.id " +
+							"WHERE ic.send_to = CAST(:queue AS send_to_enum) " +
+							"AND ib.created_at BETWEEN :from AND :to " +
+							"AND ib.batch_status = 'PendingAtChecker' " +
+							"AND ic.cheque_status = 'Processed' " +
+							"AND ic.cbs_validation = 'Valid' " +
+							"AND ic.decision = 'PENDING'")
+					.setParameter("queue", queue.name())
+					.setParameter("from", from)
+					.setParameter("to", to)
+					.getSingleResult()).longValue();
+		}
+	}
+
+	// ── KPI: cleared batches ───────────────────────────────────────────────
+	@Override
+	public Long getClearedBatchCountTV2(SendTo queue, Date date) {
+
+		LocalDateTime from = startOfDay(date);
+		LocalDateTime to = endOfDay(date);
+
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			// NOT EXISTS subquery — count batches that have NO remaining Processed cheques
+			// TV2 handles high-value cheques (amount > 100000)
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(DISTINCT ib.id) FROM inward_batch ib " +
+							"WHERE ib.created_at BETWEEN :from AND :to " +
+							"AND NOT EXISTS (" +
+							"   SELECT 1 FROM inward_cheque ic " +
+							"   WHERE ic.batch_id = ib.id " +
+							"   AND ic.cbs_validation = 'Valid' " +
+							"   AND ic.amount > :limit " +
+							"   AND ic.cheque_status = 'Processed'" +
+							")")
+					.setParameter("from", from)
+					.setParameter("to", to)
+					.setParameter("limit", new BigDecimal("100000"))
+					.getSingleResult()).longValue();
+		}
+	}
+
+	// ── KPI: pending cheques ───────────────────────────────────────────────
+	@Override
+	public Long getPendingChequeCountTV2(SendTo queue, Date date) {
+		LocalDateTime from = startOfDay(date);
+		LocalDateTime to = endOfDay(date);
+
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			// Count cheques where decision is NULL or decision is not ACCEPTED
+			// IS NULL handles cases where no decision has been set yet
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(ic.id) FROM inward_cheque ic " +
+							"JOIN inward_batch ib ON ic.batch_id = ib.id " +
+							"WHERE ic.send_to = CAST(:queue AS send_to_enum) " +
+							"AND ib.created_at BETWEEN :from AND :to " +
+							"AND (ic.decision IS NULL OR ic.decision <> 'ACCEPTED')")
+					.setParameter("queue", queue.name())
+					.setParameter("from", from)
+					.setParameter("to", to)
+					.getSingleResult()).longValue();
+		}
+	}
+
+	// ── Per-batch: ALL cheques in the batch ───────────────────────────────
+	@Override
+	public Long getTotalChequesForBatchTV2(Long batchId) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			// Count all cheques in the batch that passed CBS validation
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(id) FROM inward_cheque " +
+							"WHERE batch_id = :batchId " +
+							"AND cbs_validation = 'Valid'")
+					.setParameter("batchId", batchId)
+					.getSingleResult()).longValue();
+		}
+	}
+
+	// ── Per-batch: cheques where sendTo = queue ───────────────────────────
+	@Override
+	public Long getAssignedChequesForBatchTV2(Long batchId, SendTo queue) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			// TV2 handles high-value cheques — amount > 100000 (above ₹1 lakh threshold)
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(id) FROM inward_cheque " +
+							"WHERE batch_id = :batchId " +
+							"AND amount > :maxAmount " +
+							"AND cbs_validation = 'Valid'")
+					.setParameter("batchId", batchId)
+					.setParameter("maxAmount", 100000.00)
+					.getSingleResult()).longValue();
+		}
+	}
+
+	// ── Per-batch: pending cheques ────────────────────────────────────────
+	@Override
+	public Long getPendingChequesForBatchTV2(Long batchId, SendTo queue) {
+
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			// Pending TV2 cheques — send_to matches queue, all five conditions must match
+			// Enum is passed as its String name since SQL does not know Java enums
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(ic.id) FROM inward_cheque ic " +
+							"JOIN inward_batch ib ON ic.batch_id = ib.id " +
+							"WHERE ic.batch_id = :batchId " +
+							"AND ic.send_to = CAST(:sendTo AS send_to_enum) " +
+							"AND ib.batch_status = 'PendingAtChecker' " +
+							"AND ic.cheque_status = 'Processed' " +
+							"AND ic.cbs_validation = 'Valid' " +
+							"AND ic.decision = 'PENDING'")
+					.setParameter("batchId", batchId)
+					.setParameter("sendTo", queue.name())
+					.getSingleResult()).longValue();
+		}
+	}
+
+	// ── Per-batch: cleared cheques ─────────────────────────────────────────
+	@Override
+	public Long getClearedChequesForBatchTV2(Long batchId, SendTo queue) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			// Cleared TV2 cheques — amount > 100000, CBS Valid, cheque_status is NOT Processed
+			// (meaning a decision has already been taken on them)
+			return ((Number) session
+					.createNativeQuery("SELECT COUNT(id) FROM inward_cheque " +
+							"WHERE batch_id = :batchId " +
+							"AND cheque_status <> 'Processed' " +
+							"AND amount > :minAmount " +
+							"AND cbs_validation = 'Valid'")
+					.setParameter("batchId", batchId)
+					.setParameter("minAmount", new BigDecimal("100000"))
+					.getSingleResult()).longValue();
+		}
+	}
+
+	@Override
+	public void updateBatchStatusIfCompleted(Long batchId) {
+
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			Transaction tx = session.beginTransaction();
+
+			// Count cheques still in undecided statuses (Normal, Processed, Repair) and CBS Valid
+			// IN clause covers all three undecided cheque statuses in one query
+			Long pendingCount = ((Number) session
+					.createNativeQuery("SELECT COUNT(id) FROM inward_cheque " +
+							"WHERE batch_id = :batchId " +
+							"AND cbs_validation = 'Valid' " +
+							"AND cheque_status IN ('Normal', 'Processed', 'Repair')")
+					.setParameter("batchId", batchId)
+					.getSingleResult()).longValue();
+
+			if (pendingCount != null && pendingCount == 0) {
+
+				// No pending cheques remain — update batch_status to ClearedAtChecker
+				// Extra safety check: only update if batch is NOT already ClearedAtChecker
+				session.createNativeQuery(
+								"UPDATE inward_batch SET batch_status = 'ClearedAtChecker' " +
+								"WHERE id = :batchId " +
+								"AND batch_status <> 'ClearedAtChecker'")
+						.setParameter("batchId", batchId)
+						.executeUpdate();
+			}
+
+			tx.commit();
 		}
 	}
 
@@ -602,237 +862,4 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(23, 59, 59);
 	}
 
-	// ── Batch list for a queue on a specific day ───────────────────────────
-	@Override
-	public List<InwardBatch> getBatchesByQueueAndDate(SendTo queue, Date date) {
-
-	    LocalDateTime from = startOfDay(date);
-	    LocalDateTime to   = endOfDay(date);
-
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-
-	        return session.createQuery(
-	                "select distinct c.batch " +
-	                "from InwardCheque c " +
-	                "where c.batch.createdAt between :from and :to " +
-	                "and c.batch.batchStatus in (:pending, :cleared) " +
-	                "order by c.batch.createdAt desc",
-	                InwardBatch.class)
-	                .setParameter("from", from)
-	                .setParameter("to", to)
-	                .setParameter("pending", BatchStatus.PendingAtChecker)
-	                .setParameter("cleared", BatchStatus.ClearedAtChecker)
-	                .list();
-	    }
-	}
-
-	// ── KPI: total assigned batches for the day ────────────────────────────
-	@Override
-	public Long getAssignedBatchCountTV2(SendTo queue, Date date) {
-		LocalDateTime from = startOfDay(date);
-		LocalDateTime to = endOfDay(date);
-
-		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			return session
-					.createQuery("select count(distinct c.batch.id) " + "from InwardCheque c "
-							+ "where c.sendTo = :queue " + "and c.batch.createdAt between :from and :to", Long.class)
-					.setParameter("queue", queue).setParameter("from", from).setParameter("to", to).uniqueResult();
-		}
-	}
-
-	// ── KPI: pending batches (not yet Cleared) ─────────────────────────────
-	@Override
-	public Long getPendingBatchCountTV2(SendTo queue, Date date) {
-
-	    LocalDateTime from = startOfDay(date);
-	    LocalDateTime to   = endOfDay(date);
-
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-
-	        return session.createQuery(
-	                "select count(distinct c.batch.id) " +
-	                "from InwardCheque c " +
-	                "where c.sendTo = :queue " +
-	                "and c.batch.createdAt between :from and :to " +
-	                "and c.batch.batchStatus = :batchStatus " +
-	                "and c.chequeStatus = :chequeStatus " +
-	                "and c.cbsValidation = :cbsValidation " +
-	                "and c.decision = :decision",
-	                Long.class)
-	                .setParameter("queue", queue)
-	                .setParameter("from", from)
-	                .setParameter("to", to)
-	                .setParameter("batchStatus", BatchStatus.PendingAtChecker)
-	                .setParameter("chequeStatus", ChequeStatus.Processed)
-	                .setParameter("cbsValidation", CbsValidation.Valid)
-	                .setParameter("decision", DecisionStatus.PENDING)
-	                .uniqueResult();
-	    }
-	}
-
-	// ── KPI: cleared batches ───────────────────────────────────────────────
-	@Override
-	public Long getClearedBatchCountTV2(SendTo queue, Date date) {
-
-	    LocalDateTime from = startOfDay(date);
-	    LocalDateTime to = endOfDay(date);
-
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-
-	        return session.createQuery(
-	                "select count(distinct b.id) " +
-	                "from InwardBatch b " +
-	                "where b.createdAt between :from and :to " +
-	                "and not exists (" +
-	                "   select c.id " +
-	                "   from InwardCheque c " +
-	                "   where c.batch.id = b.id " +
-	                "   and c.cbsValidation = :cbsValidation " +
-	                "   and c.amount > :limit " +
-	                "   and c.chequeStatus = :processed" +
-	                ")",
-	                Long.class)
-	            .setParameter("from", from)
-	            .setParameter("to", to)
-	            .setParameter("limit", new BigDecimal("100000"))
-	            .setParameter("cbsValidation", CbsValidation.Valid)
-	            .setParameter("processed", ChequeStatus.Processed)
-	            .uniqueResult();
-	    }
-	}
-
-	// ── KPI: pending cheques ───────────────────────────────────────────────
-	// Pending = decision IS NULL OR decision = PENDING
-	@Override
-	public Long getPendingChequeCountTV2(SendTo queue, Date date) {
-		LocalDateTime from = startOfDay(date);
-		LocalDateTime to = endOfDay(date);
-
-		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			return session
-					.createQuery("select count(c.id) " + "from InwardCheque c " + "where c.sendTo = :queue "
-							+ "and c.batch.createdAt between :from and :to "
-							+ "and (c.decision is null or c.decision <> :accepted)", Long.class)
-					.setParameter("queue", queue).setParameter("from", from).setParameter("to", to)
-					.setParameter("accepted", DecisionStatus.ACCEPTED).uniqueResult();
-		}
-	}
-
-	// ── Per-batch: ALL cheques in the batch ───────────────────────────────
-	@Override
-	public Long getTotalChequesForBatchTV2(Long batchId) {
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-	        return session.createQuery(
-	                "select count(c.id) from InwardCheque c " +
-	                "where c.batch.id = :batchId " +
-	                "and c.cbsValidation = :cbsValidation",
-	                Long.class)
-	            .setParameter("batchId", batchId)
-	            .setParameter("cbsValidation", CbsValidation.Valid)
-	            .uniqueResult();
-	    }
-	}
-
-	// ── Per-batch: cheques where sendTo = queue ───────────────────────────
-	@Override
-	public Long getAssignedChequesForBatchTV2(Long batchId, SendTo queue) {
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-	        return session.createQuery(
-	                "select count(c.id) from InwardCheque c " +
-	                "where c.batch.id = :batchId " +
-	                "and c.amount > :maxAmount " +
-	                "and c.cbsValidation = :cbsValidation",
-	                Long.class)
-	            .setParameter("batchId", batchId)
-	            .setParameter("maxAmount", 100000.00)
-	            .setParameter("cbsValidation", CbsValidation.Valid)
-	            .uniqueResult();
-	    }
-	}
-	
-	// ── Per-batch: pending cheques ────────────────────────────────────────
-	// Pending = sendTo = queue AND (decision IS NULL OR decision = PENDING)
-	@Override
-	public Long getPendingChequesForBatchTV2(Long batchId, SendTo queue) {
-
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-
-	        return session.createQuery(
-	                "select count(c.id) " +
-	                "from InwardCheque c " +
-	                "where c.batch.id = :batchId " +
-	                "and c.sendTo = :sendTo " +
-	                "and c.batch.batchStatus = :batchStatus " +
-	                "and c.chequeStatus = :chequeStatus " +
-	                "and c.cbsValidation = :cbsValidation " +
-	                "and c.decision = :decision",
-	                Long.class)
-	            .setParameter("batchId", batchId)
-	            .setParameter("sendTo", queue)
-	            .setParameter("batchStatus", BatchStatus.PendingAtChecker)
-	            .setParameter("chequeStatus", ChequeStatus.Processed)
-	            .setParameter("cbsValidation", CbsValidation.Valid)
-	            .setParameter("decision", DecisionStatus.PENDING)
-	            .uniqueResult();
-	    }
-	}
-
-	// ── Per-batch: cleared cheques ─────────────────────────────────────────
-	// Cleared = sendTo = queue AND decision IN (APPROVED, ACCEPTED)
-	@Override
-	public Long getClearedChequesForBatchTV2(Long batchId, SendTo queue) {
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-
-	        return session.createQuery(
-	                "select count(c.id) from InwardCheque c " +
-	                "where c.batch.id = :batchId " +
-	                "and c.chequeStatus <> :status " +
-	                "and c.amount > :minAmount " +
-	                "and c.cbsValidation = :cbsValidation",
-	                Long.class)
-	            .setParameter("batchId", batchId)
-	            .setParameter("status", ChequeStatus.Processed)
-	            .setParameter("minAmount", new BigDecimal("100000"))
-	            .setParameter("cbsValidation", CbsValidation.Valid)
-	            .uniqueResult();
-	    }
-	}
-
-	@Override
-	public void updateBatchStatusIfCompleted(Long batchId) {
-
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-
-	        Transaction tx = session.beginTransaction();
-
-	        Long pendingCount = session.createQuery(
-	                "select count(c.id) " +
-	                "from InwardCheque c " +
-	                "where c.batch.id = :batchId " +
-	                "and c.cbsValidation = :valid " +
-	                "and c.chequeStatus in (:normal, :processed, :repair)",
-	                Long.class)
-	                .setParameter("batchId", batchId)
-	                .setParameter("valid", CbsValidation.Valid)
-	                .setParameter("normal", ChequeStatus.Normal)
-	                .setParameter("processed", ChequeStatus.Processed)
-	                .setParameter("repair", ChequeStatus.Repair)
-	                .uniqueResult();
-
-	        if (pendingCount != null && pendingCount == 0) {
-
-	            session.createMutationQuery(
-	                    "update InwardBatch b " +
-	                    "set b.batchStatus = :status " +
-	                    "where b.id = :batchId " +
-	                    "and b.batchStatus <> :status")
-	                    .setParameter("status", BatchStatus.ClearedAtChecker)
-	                    .setParameter("batchId", batchId)
-	                    .executeUpdate();
-	        }
-
-	        tx.commit();
-	    }
-	}
-	
 }

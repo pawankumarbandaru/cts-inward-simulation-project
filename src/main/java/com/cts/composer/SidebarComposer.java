@@ -14,19 +14,14 @@ public class SidebarComposer extends SelectorComposer<Component> {
 
 	@Wire
 	private Div inwardReportsMenu;
-	@Wire
-	private Div userMenu;
 
 	@Wire
 	private Label inwardReportsArrow;
-	@Wire
-	private Label userArrow;
 
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
 		inwardReportsArrow.setValue("▶");
-		userArrow.setValue("▶");
 	}
 
 	// ── INWARD REPORTS ──
@@ -35,14 +30,6 @@ public class SidebarComposer extends SelectorComposer<Component> {
 		boolean open = !inwardReportsMenu.isVisible();
 		inwardReportsMenu.setVisible(open);
 		inwardReportsArrow.setValue(open ? "▼" : "▶");
-	}
-
-	// ── USER MANAGEMENT ──
-	@Listen("onClick=#userHeader")
-	public void toggleUserMenu() {
-		boolean open = !userMenu.isVisible();
-		userMenu.setVisible(open);
-		userArrow.setValue(open ? "▼" : "▶");
 	}
 
 	// ── PAGE NAVIGATION ──
