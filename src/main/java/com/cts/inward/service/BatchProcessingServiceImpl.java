@@ -398,9 +398,18 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
                 System.out.println("Cheque exceded 90 days: " + cheque.getChequeNo());
             }
         }
+        
+	     // =====================================================
+	     // STEP 7 : Image Path Validation
+	     // Rule : Front and Rear image paths must not be blank
+	     // =====================================================
+	     if (isBlank(cheque.getFrontImagePath()) || isBlank(cheque.getRearImagePath())) {
+	         System.out.println("Image path missing : " + cheque.getChequeNo());
+	         valid = false;
+	     }
 
         // =====================================================
-        // STEP 7 : Set Final Cheque Status based on valid flag
+        // STEP 8 : Set Final Cheque Status based on valid flag
         // =====================================================
         if (valid) {
             cheque.setChequeStatus(ChequeStatus.Normal);
@@ -408,17 +417,6 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
             cheque.setChequeStatus(ChequeStatus.Repair);
         }
 
-        // =====================================================
-        // STEP 8 : Force Reject status if image path is missing.
-        // This check runs AFTER the valid flag decision above.
-        // Even if all other fields are valid (status = Normal),
-        // a missing front or rear image forces the status to Reject.
-        // The cheque is still inserted into DB — Maker will handle it.
-        // =====================================================
-        if (isBlank(cheque.getFrontImagePath()) || isBlank(cheque.getRearImagePath())) {
-            cheque.setChequeStatus(ChequeStatus.Reject);
-            System.out.println("Image path missing — forced Reject status : " + cheque.getChequeNo());
-        }
     }
 
     /**
