@@ -170,6 +170,7 @@ public class ChequeEditPopupComposer extends SelectorComposer<Component> {
     
     
     // DoAfter Compose Method
+    // Used to create for wiring
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
