@@ -437,8 +437,6 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 
 	// ── Helpers ───────────────────────────────────────────────────────────
 
-
-
 	private String nullSafe(String value) {
 		return value != null ? value : "-";
 	}
