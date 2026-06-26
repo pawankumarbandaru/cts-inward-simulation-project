@@ -42,7 +42,7 @@ public class InwardChequeServiceMICRImpl implements InwardChequeMICRService {
     };
 
     // ============================================================
-    // CHEQUE OPERATIONS — yours, kept as-is
+    // CHEQUE OPERATIONS — 
     // ============================================================
 
     @Override
@@ -133,13 +133,6 @@ public class InwardChequeServiceMICRImpl implements InwardChequeMICRService {
         inwardChequeDao.update(selectedCheque);
     }
 
-//	@Override
-//	public long getTV1ChequeCount(Long currentBatchId) {
-//		// TODO Auto-generated method stub
-//		return inwardChequeDao.getTV1ChequeCount(currentBatchId);
-//	}
-
-    //Fetches TV1 or TV2 data according to the login
     @Override
     public long getChequeCountByRole(Long batchId, String role) {
         // TODO Auto-generated method stub
@@ -156,7 +149,6 @@ public class InwardChequeServiceMICRImpl implements InwardChequeMICRService {
 
     // ============================================================
     // BATCH OPERATIONS — getBatchStatus/getBatchById/getLatestBatch
-    // added from teammate's file (you didn't have these)
     // ============================================================
 
     @Override
@@ -202,9 +194,9 @@ public class InwardChequeServiceMICRImpl implements InwardChequeMICRService {
     // ============================================================
 
     // MICR — skip the first 6 digits (cheque number prefix), then read the
-    // next 9 digits as city(3) + bank(3) + branch(3): positions 7-9, 10-12,
-    // 13-15. The trailing 6-digit base number (positions 16-21) is
-    // intentionally ignored for now.
+    // next 9 digits as city(3) + bank(3) + branch(3): positions 7-9, 10-12
+   
+   
     @Override
     public String[] parseMicrParts(String rawMicrCode) {
         String rawMicr    = rawMicrCode != null ? rawMicrCode : "";
@@ -246,7 +238,7 @@ public class InwardChequeServiceMICRImpl implements InwardChequeMICRService {
     }
 
     // ============================================================
-    // FIELD VALIDATION RULES — common, kept as your version
+    // FIELD VALIDATION RULES 
     // ============================================================
 
     @Override
@@ -459,7 +451,7 @@ public class InwardChequeServiceMICRImpl implements InwardChequeMICRService {
                 && ChequeStatus.Repair.equals(cheque.getChequeStatus());
     }
     // ============================================================
-    // AMOUNT CONVERSION — common, kept as your version
+    // AMOUNT CONVERSION — 
     // ============================================================
 
     @Override
@@ -515,9 +507,7 @@ public class InwardChequeServiceMICRImpl implements InwardChequeMICRService {
     }
 
     // ============================================================
-    // CHEQUE EDIT & MICR REPAIR — added from teammate's file
-    // (you didn't have saveChequeEdit, getRepairByChequeId, saveRepair,
-    // updateRepair, or the saveOrUpdateMicrRepair helper)
+    // CHEQUE EDIT & MICR REPAIR — 
     // ============================================================
 
     @Override
@@ -533,10 +523,6 @@ public class InwardChequeServiceMICRImpl implements InwardChequeMICRService {
         String correctedChequeNo = chequeNo != null ? chequeNo.trim() : "";
         String correctedBankCode = bankCode != null ? bankCode.trim() : "";
         String correctedBranchCode = branchCode != null ? branchCode.trim() : "";
-
-//        if (ChequeStatus.Repair.equals(cheque.getChequeStatus())) {
-//            saveOrUpdateMicrRepair(cheque, correctedMicr, correctedChequeNo, correctedBankCode, correctedBranchCode);
-//        }
 
         cheque.setChequeNo(correctedChequeNo);
         cheque.setMicrCode(correctedMicr);

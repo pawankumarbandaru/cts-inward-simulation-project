@@ -28,34 +28,14 @@ import com.cts.inward.service.CbsValidationServiceImpl;
 import com.cts.inward.service.InwardChequeMICRService;
 import com.cts.inward.service.InwardChequeServiceMICRImpl;
 
-/**
- * CbsChequeListComposer ───────────────────── TWO-PHASE approach:
- *
- * PHASE 1 — Load all cheques immediately on page open. All cheque rows appear
- * at once with status = "Processing..." User can see all cheques right away.
- *
- * PHASE 2 — Timer processes CBS validation one cheque at a time. Every 700ms
- * the timer picks the next cheque, calls Firebase CBS, gets the result, then
- * directly updates only that row's status label and reason label in the listbox
- * — no full re-render. User sees each cheque's status change from
- * "Processing..." → "VALID" or "INVALID" one by one.
- *
- * WHY direct label update instead of full re-render: Re-rendering the whole
- * listbox on every tick would reset scroll position and flicker the screen.
- * Since each CbsResultRow stores a direct reference to its statusLabel and
- * reasonLabel components, we can update just those two labels — smooth and
- * efficient.
- */
 public class CbsChequeListComposer extends SelectorComposer<Component> {
 
 	private static final long serialVersionUID = 1L;
 	private static final int PAGE_SIZE = 8;
 
-	// ── Services ──────────────────────────────────────────────────────────
 	private final InwardChequeMICRService chequeService = new InwardChequeServiceMICRImpl();
 	private final CbsValidationService cbsService = new CbsValidationServiceImpl();
 
-	// ── Wired UI components ───────────────────────────────────────────────
 	@Wire
 	Listbox lbCbsChequeList;
 	@Wire
@@ -67,18 +47,18 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 	@Wire
 	Timer cbsProcessTimer;
 
-	// ── In-memory lists ───────────────────────────────────────────────────
-	// allResults : all rows (all cheques, including "Processing..." ones)
-	// filteredResults : subset after filter + search applied (used for display)
 	private List<CbsResultRow> allResults = new ArrayList<>();
 	private List<CbsResultRow> filteredResults = new ArrayList<>();
 
-	// ── State ─────────────────────────────────────────────────────────────
 	private Long currentBatchId = null;
 	private int processingIndex = 0; // which cheque in allResults to process next
 
-	// ── Lifecycle ─────────────────────────────────────────────────────────
-
+	/**
+	 * Subscribes to the "batchContext" queue to receive batchDbId and trigger Phase
+	 * 1 loading, and to "removeInvalidCheques" to filter out rejected rows after
+	 * Return to RRF. Related to: CBS Validation page — wires this composer to
+	 * page-level events.
+	 */
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
@@ -87,7 +67,6 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 		cbsProcessTimer.stop();
 
 		// Subscribe to batchContext queue
-		// CbsValidationComposer publishes batchDbId here after page is rendered
 		EventQueues.lookup("batchContext", EventQueues.DESKTOP, true).subscribe((Event event) -> {
 			Object data = event.getData();
 			if (data instanceof Long) {
@@ -98,23 +77,16 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 
 		// Subscribe to removeInvalidCheques
 		// Fired by CbsValidationComposer after saving REJECTED decisions to DB.
-		// NOTE: EventQueues.DESKTOP scope subscribers are executed on the ZK
-		// event thread — they already have a valid execution context.
-		// Do NOT use Executions.activate/deactivate here; it causes a deadlock
-		// by trying to acquire the desktop lock that is already held.
 		EventQueues.lookup("removeInvalidCheques", EventQueues.DESKTOP, true).subscribe((Event event) -> {
 			removeInvalidRowsFromList();
 		});
 	}
 
-	// ══════════════════════════════════════════════════════════════════════
-	// PHASE 1 — Load all cheques at once, show "Processing..." status
-	// ══════════════════════════════════════════════════════════════════════
-
 	/**
-	 * Loads all cheques for the batch from DB. Creates a CbsResultRow for each with
-	 * result=null (Processing...). Renders ALL rows immediately into the listbox.
-	 * Then starts the timer for Phase 2.
+	 * Loads all cheques for the batch from DB, builds a CbsResultRow per cheque
+	 * with result=null ("Processing..."), renders all rows immediately, then starts
+	 * the timer for Phase 2. Related to: CBS Validation page Phase 1 — populates
+	 * the full list before validation begins.
 	 */
 	private void loadAllChequesAndStartProcessing() {
 		if (currentBatchId == null || currentBatchId <= 0)
@@ -151,21 +123,12 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 		cbsProcessTimer.start();
 	}
 
-	// ══════════════════════════════════════════════════════════════════════
-	// PHASE 2 — Timer: validate one cheque per tick, update its row live
-	// ══════════════════════════════════════════════════════════════════════
-
 	/**
-	 * Fires every 700ms (set in ZUL: delay="700").
-	 *
-	 * Picks the next unprocessed row from allResults. Calls Firebase CBS → gets
-	 * validation result. Saves to DB. Then directly updates that row's statusLabel
-	 * and reasonLabel in the listbox — no full re-render needed.
-	 *
-	 * WHY direct label update: Each CbsResultRow stores a reference to its own
-	 * statusLabel and reasonLabel components. We update those labels directly. ZK
-	 * sends only those 2 component changes to the browser — smooth, no flicker, no
-	 * scroll reset.
+	 * Called every 700ms by the ZK Timer; fetches CBS data for the next unprocessed
+	 * cheque, validates it, persists the result via native SQL, updates the row's
+	 * labels in-place, and stops the timer + fires "cbsValidationComplete" when all
+	 * cheques are processed. Related to: CBS Validation page Phase 2 — drives live
+	 * per-cheque status updates.
 	 */
 	@Listen("onTimer = #cbsProcessTimer")
 	public void onTimerTick() {
@@ -183,7 +146,6 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 		System.out.println("CbsChequeListComposer: processing " + processingIndex + "/" + allResults.size() + " → "
 				+ cheque.getChequeNo());
 
-		// ── Fetch from Firebase CBS ───────────────────────────────────
 		CbsAccountData cbsData = null;
 		String fetchErr = null;
 		try {
@@ -194,7 +156,6 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 					"CbsChequeListComposer: CBS fetch failed for " + cheque.getChequeNo() + ": " + e.getMessage());
 		}
 
-		// ── Validate ──────────────────────────────────────────────────
 		CbsValidationResult result;
 		if (fetchErr != null) {
 			result = CbsValidationResult.failure("Missing CBS Data");
@@ -206,11 +167,6 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 			}
 		}
 
-		// ── Persist to DB ─────────────────────────────────────────────
-		// Use a targeted native-SQL update by ID instead of
-		// chequeService.updateCheque() (session.merge() on this detached
-		// entity fails silently because of the lazy @ManyToOne batch
-		// association, so cbsValidation was never actually saved).
 		CbsValidation cbsResult = result.isValid() ? CbsValidation.Valid : CbsValidation.Invalid;
 		try {
 			chequeService.updateCbsValidationResult(cheque.getId(), cbsResult, result.getReason());
@@ -222,13 +178,9 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 		}
 
 		// ── Store result in the row ───────────────────────────────────
-		// holderName is already set from DB in Phase 1 — no update needed.
 		row.result = result;
 
 		// ── Directly update this row's status + reason labels ─────────
-		// Only works if the row is currently visible in the listbox.
-		// If the row is on a different page, it will show correctly
-		// when the user navigates to that page (renderPage reads row.result).
 		updateRowLabels(row);
 
 		// Notify batch summary to refresh counts
@@ -237,12 +189,8 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 	}
 
 	/**
-	 * Directly updates the statusLabel and reasonLabel of one row.
-	 *
-	 * If the row is currently visible (statusLabel is not null and is attached to a
-	 * live page), the update is instant. If the row is on a different page (not
-	 * rendered), we skip — renderPage() will pick up row.result when the user
-	 * navigates there.
+	 * Directly updates the statusLabel text/sclass and reasonLabel text for one row
+	 * Related to: CBS Validation page — provides flicker-free per-row live updates.
 	 */
 	private void updateRowLabels(CbsResultRow row) {
 		if (row.statusLabel == null || row.reasonLabel == null)
@@ -258,14 +206,16 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 			}
 			row.reasonLabel.setValue(nullSafe(row.result.getReason()));
 		} catch (Exception e) {
-			// Row may have been detached from DOM (e.g. page changed) — safe to ignore
 			System.err.println("CbsChequeListComposer: label update skipped for " + row.cheque.getChequeNo() + ": "
 					+ e.getMessage());
 		}
 	}
 
-	// ── Validation complete ───────────────────────────────────────────────
-
+	/**
+	 * Collects valid/invalid counts from all completed results and publishes them
+	 * to the "cbsValidationComplete" queue so CbsValidationComposer can enable the
+	 * action buttons. Related to: CBS Validation page — signals the end processing.
+	 */
 	private void onValidationComplete() {
 		List<CbsValidationResult> results = allResults.stream().map(row -> row.result).filter(result -> result != null)
 				.collect(Collectors.toList());
@@ -278,8 +228,11 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 				.publish(new Event("onCbsValidationComplete", null, counts));
 	}
 
-	// ── Remove INVALID rows after Return to RRF ───────────────────────────
-
+	/**
+	 * Removes all INVALID rows from allResults (keeping only valid ones) and
+	 * re-renders the list after "Return to RRF" has been confirmed and saved to DB.
+	 * Related to: CBS Validation page — cleans up the list after RRF action.
+	 */
 	private void removeInvalidRowsFromList() {
 		allResults = allResults.stream().filter(row -> row.result != null && row.result.isValid())
 				.collect(Collectors.toList());
@@ -287,18 +240,27 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 		applyFilterAndRefresh();
 	}
 
-	// ── Filter & Search ───────────────────────────────────────────────────
-
+	/**
+	 * Triggers applyFilterAndRefresh() whenever the search textbox value changes.
+	 */
 	@Listen("onChange = #tbCbsSearch")
 	public void onSearch() {
 		applyFilterAndRefresh();
 	}
 
+	/**
+	 * Triggers applyFilterAndRefresh() whenever a status filter option is selected.
+	 */
 	@Listen("onSelect = #lbCbsStatusFilter")
 	public void onFilterChange() {
 		applyFilterAndRefresh();
 	}
 
+	/**
+	 * Applies the current keyword and status filter to allResults, updates
+	 * filteredResults, clamps the active page, and re-renders the current page.
+	 * Related to: CBS Validation page — drives the search/filteron the CBS list.
+	 */
 	private void applyFilterAndRefresh() {
 		String keyword = tbCbsSearch != null ? tbCbsSearch.getValue().trim().toLowerCase() : "";
 		String statusFilter = getSelectedStatus();
@@ -317,6 +279,10 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 		renderPage(pgCbsChequeList.getActivePage());
 	}
 
+	/**
+	 * Returns the value of the currently selected status filter listitem, or "ALL"
+	 * if nothing is selected or the listbox is null.
+	 */
 	private String getSelectedStatus() {
 		if (lbCbsStatusFilter == null)
 			return "ALL";
@@ -324,10 +290,13 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 		return (selected != null) ? selected.getValue().toString() : "ALL";
 	}
 
+	/**
+	 * Returns true if the row matches the status filter: ALL passes everything,
+	 * VALID/INVALID match row.result; rows still Processing... only show under ALL.
+	 */
 	private boolean matchesStatus(CbsResultRow row, String status) {
 		if ("ALL".equals(status))
 			return true;
-		// While still Processing, only show in ALL filter
 		if (row.result == null)
 			return "ALL".equals(status);
 		if ("VALID".equals(status))
@@ -337,27 +306,37 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 		return true;
 	}
 
+	/**
+	 * Returns true if the cheque number or holder name contains the keyword; always
+	 * returns true if the keyword is empty.
+	 */
 	private boolean matchesKeyword(CbsResultRow row, String keyword) {
 		if (keyword.isEmpty())
 			return true;
 		return contains(row.cheque.getChequeNo(), keyword) || contains(row.holderName, keyword);
 	}
 
+	/**
+	 * Returns true if the field is non-null and contains the keyword
+	 * (case-insensitive).
+	 */
 	private boolean contains(String field, String keyword) {
 		return field != null && field.toLowerCase().contains(keyword);
 	}
 
-	// ── Pagination ────────────────────────────────────────────────────────
-
+	/**
+	 * Renders the page corresponding to the pagination event's active page index.
+	 */
 	@Listen("onPaging = #pgCbsChequeList")
 	public void onPageChange(PagingEvent event) {
 		renderPage(event.getActivePage());
 	}
 
 	/**
-	 * Renders one page slice of filteredResults into the listbox. Clears and
-	 * rebuilds only the visible page. Each row's Label references (statusLabel,
-	 * reasonLabel) are set here so Phase 2 timer can update them directly.
+	 * Clears the listbox and rebuilds one page slice of filteredResults; stores
+	 * direct Label references (statusLabel, reasonLabel) in each CbsResultRow for
+	 * live Phase 2 updates. Related to: CBS Validation page — renders the visible
+	 * cheque rows with current CBS status.
 	 */
 	private void renderPage(int pageIndex) {
 		lbCbsChequeList.getItems().clear();
@@ -373,19 +352,17 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 		}
 	}
 
-	// ── Row Builder ───────────────────────────────────────────────────────
-
 	/**
-	 * Builds one listitem for a CbsResultRow.
-	 *
-	 * Stores references to statusLabel and reasonLabel directly in the row. Phase 2
-	 * timer uses these to update only those two labels live. holderName is already
-	 * set from DB in Phase 1 — shown immediately.
+	 * Builds a single Listitem for a CbsResultRow with columns for row number,
+	 * cheque number, masked account, holder name, CBS status badge, and reason;
+	 * stores statusLabel and reasonLabel references in the row for direct Phase 2
+	 * updates. Returns: Listitem — a fully built CBS row ready to be appended to
+	 * the listbox.
 	 */
 	private Listitem buildRow(CbsResultRow row, int rowNum) {
 		Listitem item = new Listitem();
 
-		// Col 1: Row number (matches MICR page "#" column)
+		// Col 1: Row number
 		item.appendChild(new Listcell(String.valueOf(rowNum)));
 
 		// Col 2: Cheque Number
@@ -400,7 +377,7 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 		String masked = (accNo != null && accNo.length() >= 4) ? "****" + accNo.substring(accNo.length() - 4) : "****";
 		item.appendChild(new Listcell(masked));
 
-		// Col 4: Account Holder Name — loaded from DB in Phase 1, shown immediately
+		// Col 4: Account Holder Name — loaded from DB .
 		Label holderNameLabel = new Label(nullSafe(row.holderName));
 		holderNameLabel.setSclass("cell-normal");
 		Listcell holderCell = new Listcell();
@@ -419,14 +396,14 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 			statusLabel = new Label("INVALID");
 			statusLabel.setSclass("cbs-status-badge cbs-badge-invalid");
 		}
-		row.statusLabel = statusLabel; // store reference
+		row.statusLabel = statusLabel; // store reference for live update
 		Listcell statusCell = new Listcell();
 		statusCell.appendChild(statusLabel);
 		item.appendChild(statusCell);
 
 		// Col 6: Reason
 		Label reasonLabel = new Label(row.result != null ? nullSafe(row.result.getReason()) : "");
-		row.reasonLabel = reasonLabel; // store reference
+		row.reasonLabel = reasonLabel; // store reference for live update
 		Listcell reasonCell = new Listcell();
 		reasonLabel.setSclass("cbs-reason-label");
 		reasonCell.appendChild(reasonLabel);
@@ -435,31 +412,21 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 		return item;
 	}
 
-	// ── Helpers ───────────────────────────────────────────────────────────
-
-
-
+	/** Returns the value if non-null, otherwise returns "-". */
 	private String nullSafe(String value) {
 		return value != null ? value : "-";
 	}
 
-	// ── Inner class: one row in the CBS validation list ───────────────────
-
 	/**
-	 * Holds all data for one cheque row.
+	 * Holds all data for one cheque row in the CBS validation list. result starts
+	 * as null ("Processing..."); statusLabel and reasonLabel are live ZK
 	 *
-	 * result starts as null = "Processing..." After CBS validation, result is set
-	 * with the actual outcome.
-	 *
-	 * statusLabel and reasonLabel are references to the actual ZK Label components
-	 * rendered in the listbox for this row. Phase 2 timer uses these to update the
-	 * row live without re-rendering.
 	 */
 	private static class CbsResultRow {
 		final InwardCheque cheque;
 
-		// These are set after CBS validation completes for this cheque
-		CbsValidationResult result = null; // null = still processing
+		// Set after CBS validation completes for this cheque; null = still processing
+		CbsValidationResult result = null;
 		String holderName = "-";
 
 		// Direct references to the rendered ZK label components
@@ -469,8 +436,7 @@ public class CbsChequeListComposer extends SelectorComposer<Component> {
 
 		CbsResultRow(InwardCheque cheque) {
 			this.cheque = cheque;
-			// Load holder name immediately from DB — no CBS call needed.
-			// payeeName is already stored in the inward_cheque table.
+
 			this.holderName = (cheque.getPayeeName() != null && !cheque.getPayeeName().isBlank())
 					? cheque.getPayeeName()
 					: "-";
