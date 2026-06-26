@@ -21,4 +21,5 @@ public interface InwardDashboardService {
             Date fromDate,
             Date toDate
     );
+   
 }
