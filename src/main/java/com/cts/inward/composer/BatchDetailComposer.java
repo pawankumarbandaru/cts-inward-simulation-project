@@ -60,14 +60,14 @@ public class BatchDetailComposer extends SelectorComposer<Component> {
     private String    currentRole    = "MAKER"; // safe default
     private Component self;
     
- // Keeps track of this composer's own subscription so it can be removed
-    // before re-subscribing. Without this, every time this page is loaded
-    // (batch click, sidebar nav, return from CBS, etc.) a NEW listener was
-    // added to the desktop-scoped "chequeSelected" queue, and old listeners
-    // were never cleaned up. A single click then fired the popup creation
-    // once per accumulated listener, causing duplicate
-    // <window id="chequeEditPopupWindow"> components and the ZK
-    // "Not unique in ID space" error.
+     /*Keeps track of this composer's own subscription so it can be removed
+     before re-subscribing. Without this, every time this page is loaded
+     (batch click, sidebar nav, return from CBS, etc.) a NEW listener was
+     added to the desktop-scoped "chequeSelected" queue, and old listeners
+     were never cleaned up. A single click then fired the popup creation
+     once per accumulated listener, causing duplicate
+     <window id="chequeEditPopupWindow"> components and the ZK
+     "Not unique in ID space" error.*/
     private EventListener<Event> chequeSelectedListener;
 
 
@@ -195,23 +195,28 @@ public class BatchDetailComposer extends SelectorComposer<Component> {
     private void listenForChequeSelected() {
         EventQueue<Event> queue = EventQueues.lookup("chequeSelected", EventQueues.DESKTOP, true);
 
-        // Remove this composer's own previous subscription (if this page was
-        // loaded before in the same desktop session) so listeners never pile
-        // up across repeated page visits.
+        // Remove the old listener if it exists
         if (chequeSelectedListener != null) {
             queue.unsubscribe(chequeSelectedListener);
         }
 
+        // Create a new listener
         chequeSelectedListener = (Event event) -> {
             InwardCheque cheque = (InwardCheque) event.getData();
             openChequePopup(cheque);
         };
+
+        // Subscribe the new listener
         queue.subscribe(chequeSelectedListener);
     }
-
+    
+    
     private void openChequePopup(InwardCheque cheque) {
         try {
+        	// Checks whether a popup already exists.
             Component existing = self.getFellowIfAny("chequeEditPopupWindow");
+            
+            // Removes the existing popup.
             if (existing != null) existing.detach();
 
             // Here Storing the cheque data as object and User role as String for showing 
