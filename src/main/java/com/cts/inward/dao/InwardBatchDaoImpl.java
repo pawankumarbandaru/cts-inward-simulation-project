@@ -489,19 +489,23 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 			// NOT EXISTS subquery — count batches that have NO remaining Processed cheques
 			// A batch is cleared when all TV1-eligible cheques (amount <= 100000, Valid) are decided
 			return ((Number) session
-					.createNativeQuery("SELECT COUNT(DISTINCT ib.id) FROM inward_batch ib " +
-							"WHERE ib.created_at BETWEEN :from AND :to " +
-							"AND NOT EXISTS (" +
-							"   SELECT 1 FROM inward_cheque ic " +
-							"   WHERE ic.batch_id = ib.id " +
-							"   AND ic.cbs_validation = 'Valid' " +
-							"   AND ic.amount <= :limit " +
-							"   AND ic.cheque_status = 'Processed'" +
-							")")
-					.setParameter("from", from)
-					.setParameter("to", to)
-					.setParameter("limit", new BigDecimal("100000"))
-					.getSingleResult()).longValue();
+				    .createNativeQuery(
+				        "SELECT COUNT(DISTINCT ib.id) " +
+				        "FROM inward_batch ib " +
+				        "WHERE ib.created_at BETWEEN :from AND :to " +
+				        "AND ib.batch_status IN ('PendingAtChecker', 'ClearedAtChecker') " +
+				        "AND NOT EXISTS ( " +
+				        "   SELECT 1 " +
+				        "   FROM inward_cheque ic " +
+				        "   WHERE ic.batch_id = ib.id " +
+				        "   AND ic.cbs_validation = 'Valid' " +
+				        "   AND ic.amount <= :limit " +
+				        "   AND ic.cheque_status = 'Processed' " +
+				        ")")
+				    .setParameter("from", from)
+				    .setParameter("to", to)
+				    .setParameter("limit", new BigDecimal("100000"))
+				    .getSingleResult()).longValue();
 		}
 	}
 
@@ -699,28 +703,30 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 	@Override
 	public Long getClearedBatchCountTV2(SendTo queue, Date date) {
 
-		LocalDateTime from = startOfDay(date);
-		LocalDateTime to = endOfDay(date);
+	    LocalDateTime from = startOfDay(date);
+	    LocalDateTime to = endOfDay(date);
 
-		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-			// NOT EXISTS subquery — count batches that have NO remaining Processed cheques
-			// TV2 handles high-value cheques (amount > 100000)
-			return ((Number) session
-					.createNativeQuery("SELECT COUNT(DISTINCT ib.id) FROM inward_batch ib " +
-							"WHERE ib.created_at BETWEEN :from AND :to " +
-							"AND NOT EXISTS (" +
-							"   SELECT 1 FROM inward_cheque ic " +
-							"   WHERE ic.batch_id = ib.id " +
-							"   AND ic.cbs_validation = 'Valid' " +
-							"   AND ic.amount > :limit " +
-							"   AND ic.cheque_status = 'Processed'" +
-							")")
-					.setParameter("from", from)
-					.setParameter("to", to)
-					.setParameter("limit", new BigDecimal("100000"))
-					.getSingleResult()).longValue();
-		}
+	        return ((Number) session
+	                .createNativeQuery(
+	                        "SELECT COUNT(DISTINCT ib.id) " +
+	                        "FROM inward_batch ib " +
+	                        "WHERE ib.created_at BETWEEN :from AND :to " +
+	                        "AND ib.batch_status IN ('PendingAtChecker', 'ClearedAtChecker') " +
+	                        "AND NOT EXISTS ( " +
+	                        "   SELECT 1 " +
+	                        "   FROM inward_cheque ic " +
+	                        "   WHERE ic.batch_id = ib.id " +
+	                        "   AND ic.cbs_validation = 'Valid' " +
+	                        "   AND ic.amount > :limit " +
+	                        "   AND ic.cheque_status = 'Processed' " +
+	                        ")")
+	                .setParameter("from", from)
+	                .setParameter("to", to)
+	                .setParameter("limit", new BigDecimal("100000"))
+	                .getSingleResult()).longValue();
+	    }
 	}
 
 	// ── KPI: pending cheques ───────────────────────────────────────────────
