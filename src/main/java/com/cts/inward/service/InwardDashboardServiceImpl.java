@@ -1,10 +1,10 @@
 package com.cts.inward.service;
 
 import java.math.BigDecimal;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.cts.inward.dao.InwardBatchDao;
 import com.cts.inward.dao.InwardBatchDaoImpl;
@@ -111,19 +111,9 @@ public class InwardDashboardServiceImpl implements InwardDashboardService {
 
 		dto.setStatus(batch.getBatchStatus() != null ? batch.getBatchStatus() : null);
 
-		// Total amount
-		BigDecimal totalAmount = batchDao.getTotalAmountByBatchId(batch.getId());
-		dto.setTotalAmount(totalAmount != null ? totalAmount : BigDecimal.ZERO);
-
-		//  accepted and rejected counts from DecisionStatus ──
-		Long accepted = batchDao.getAcceptedCountByBatchId(batch.getId());
-		Long rejected = batchDao.getRejectedCountByBatchId(batch.getId());
-		dto.setAcceptedCheques(accepted != null ? accepted.intValue() : 0);
-		dto.setRejectedCheques(rejected != null ? rejected.intValue() : 0);
-		
+				
 		Integer total = batch.getTotalCheques() == null ? 0 : batch.getTotalCheques();
-		int pending = (int) Math.max(total - accepted - rejected, 0);
-		dto.setPendingCheques(pending);
+		
 
 		Long invalid = batchDao.getInvalidCountByBatchId(batch.getId());
 		Long valid = total - invalid;
@@ -133,4 +123,6 @@ public class InwardDashboardServiceImpl implements InwardDashboardService {
 
 		return dto;
 	}
+	
+	
 }

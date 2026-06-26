@@ -90,7 +90,6 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 	private Listbox chequeListbox;
 
 	// ── Services / DAOs ───────────────────────────────────────────
-	private final InwardDashboardService dashService = new InwardDashboardServiceImpl();
 	private final ReportGenerationService reportService = new ReportGenerationServiceImpl();
 //	private final ReportChequeDetailDao chequeDao = new ReportChequeDetailDaoImpl();
 
@@ -110,6 +109,12 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 	private final DateTimeFormatter dtfDisplay = DateTimeFormatter.ofPattern("dd MMM yyyy");
 	private final DateTimeFormatter dtfDateTime = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm");
 
+	
+	/**
+	 * Initializes the report screen after the ZK page is loaded.
+	 * Sets default date filters, loads today's batches,
+	 * initializes pagination, and updates the download button state.
+	 */
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
@@ -131,6 +136,11 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 		}
 	}
 
+	/**
+	 * Handles changes to the From Date filter.
+	 * Ensures the selected date range remains valid and
+	 * reloads the batch list for the updated range.
+	 */
 	// Filter functionality ON date change
 	@Listen("onChange=#filterDate")
 	public void onDateChange() {
@@ -152,6 +162,10 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 		selectedBatchIds.clear();
 		loadBatchesForRange(selected, to);
 	}
+	/**
+	 * Searches batches using the selected date range
+	 * and optional batch number filter.
+	 */
 
 	@Listen("onChange=#filterDateTo")
 	public void onDateToChange() {
@@ -202,6 +216,11 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 		selectedBatchIds.clear();
 		loadBatchesForRange(today(), today());
 	}
+	
+	/**
+	 * Selects or deselects all batches currently displayed
+	 * in the batch list and updates the download button state.
+	 */
 
 	/** Select-all header checkbox */
 	@Listen("onCheck=#chkSelectAll")
@@ -215,6 +234,12 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 		renderBatchTable(filteredBatches);
 		updateSmartButton();
 	}
+	
+	/**
+	 * Downloads reports for selected batches.
+	 * If no batches are selected, reports are generated
+	 * for all batches currently displayed.
+	 */
 
 	/** Single smart download button — downloads selected if any, else all */
 	@Listen("onClick=#btnSmartDownload")
@@ -238,46 +263,47 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 	 * of InwardBatchDTO objects and filters valid batches.
 	 */
 	private void loadBatchesForRange(Date from, Date to) {
-		/**
-		 * Calls the dashboard service to fetch inward batch data for the
-		 * specified date range and converts the results into DTO objects.
-		 */
-		List<InwardBatchDTO> raw = dashService.searchBatches("", "", toStartOfDay(from), toEndOfDay(to));
 
-		allBatches = raw.stream().filter(b -> {
-			int acc = b.getAcceptedCheques() != null ? b.getAcceptedCheques() : 0;
-			int rej = b.getRejectedCheques() != null ? b.getRejectedCheques() : 0;
-			return (acc + rej) > 0;
-		}).collect(Collectors.toList());
+	    allBatches = reportService.getProcessedBatches(
+	            toStartOfDay(from),
+	            toEndOfDay(to));
 
-		filteredBatches = new ArrayList<>(allBatches);
-		resetToFirstPage();
-		renderBatchTable(filteredBatches);
-		updateSmartButton();
+	    filteredBatches = new ArrayList<>(allBatches);
+
+	    resetToFirstPage();
+	    renderBatchTable(filteredBatches);
+	    updateSmartButton();
 	}
-
 	/**
+	 * 
+	 * 
 	 * Filters batches based on the entered batch number. Returns matching batches
 	 * and updates the batch table.
 	 */
 
 	private void applyBatchNoFilter() {
-		// Get the entered batch number and convert it to lowercase for search.
-		final String f = txtBatchNo.getValue() == null ? "" : txtBatchNo.getValue().trim().toLowerCase();
 
-		// Filter batches that match the entered batch number.
-		filteredBatches = f.isEmpty() ? new ArrayList<>(allBatches)
-				: allBatches.stream().filter(b -> b.getBatchId() != null && b.getBatchId().toLowerCase().contains(f))
-						.collect(Collectors.toList());
-		resetToFirstPage();
-		renderBatchTable(filteredBatches);
-		if (filteredBatches.isEmpty())
-			Clients.showNotification("No batches found.", "warning", null, "top_center", 3000);
+	    filteredBatches =
+	            reportService.filterBatches(
+	                    allBatches,
+	                    txtBatchNo.getValue());
+
+	    resetToFirstPage();
+	    renderBatchTable(filteredBatches);
+
+	    if (filteredBatches.isEmpty()) {
+	        Clients.showNotification(
+	                "No batches found.",
+	                "warning",
+	                null,
+	                "top_center",
+	                3000);
+	    }
 	}
 
 	/**
-	 * Jumps the batch listbox's pager back to page 1 (used whenever filters
-	 * change).
+	 * Resets batch list pagination to the first page.
+	 * Used whenever filters are changed.
 	 */
 	private void resetToFirstPage() {
 		org.zkoss.zul.Paging paging = batchListbox.getPagingChild();
@@ -287,8 +313,10 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 	}
 
 	/**
-	 * Renders the batch list table for the current page. Pagination is handled
-	 * manually because rows are appended directly to the table.
+	 * Renders the batch list table for the current page.
+	 * Handles pagination, selection state, and batch actions.
+	 *
+	 * @param batches List of batches to display
 	 */
 	private void renderBatchTable(List<InwardBatchDTO> batches) {
 
@@ -416,6 +444,11 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 			batchListbox.appendChild(item);
 		}
 	}
+	
+	/**
+	 * Updates the smart download button label and style
+	 * based on the number of selected batches.
+	 */
 
 	/** Updates the smart button label based on selection state */
 	private void updateSmartButton() {
@@ -429,6 +462,13 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 		}
 	}
 
+	
+	/**
+	 * Opens the batch detail view and loads all cheque
+	 * information for the selected batch.
+	 *
+	 * @param batch Selected batch
+	 */
 	private void openBatchDetail(InwardBatchDTO batch) {
 		currentBatch = batch;
 
@@ -458,12 +498,21 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 		showBatchDetail();
 	}
 
+	
+	/**
+	 * Returns to the batch list view from the detail screen.
+	 */
 	@Listen("onClick=#btnBackToList")
 	public void onBackToList() {
 		currentBatch = null;
 		showBatchList();
 	}
 
+	
+	/**
+	 * Downloads reports for the cheques currently displayed
+	 * in the batch detail view.
+	 */
 	@Listen("onClick=#btnDetailDownload")
 	public void onDetailDownload() {
 		if (currentBatch == null)
@@ -472,52 +521,53 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 	}
 
 	/**
-	 * Live search — fires on every keystroke (onChanging gives the mid-type value
-	 * via event)
+	 * Performs live cheque filtering while the user types
+	 * in the search box.
 	 */
 	@Listen("onChanging=#txtDetailSearch")
 	public void onDetailSearchChanging(org.zkoss.zk.ui.event.InputEvent e) {
 		applyDetailFilters(e.getValue());
 	}
 
-	/** Also handle onChange in case user pastes or clears the field */
+	/**
+	 * Applies cheque filtering when the search value changes.
+	 */
 	@Listen("onChange=#txtDetailSearch")
 	public void onDetailSearchChange() {
 		applyDetailFilters(txtDetailSearch.getValue());
 	}
 
-	/** Status filter dropdown */
+	/**
+	 * Filters cheque records using the selected status value.
+	 */
 	@Listen("onChange=#cmbStatusFilter")
 	public void onStatusFilter() {
 		applyDetailFilters(txtDetailSearch.getValue());
 	}
+	
+	/**
+	 * Filters cheque records using the entered search text
+	 * and selected status filter.
+	 *
+	 * @param searchText Search value entered by the user
+	 */
 
 	private void applyDetailFilters(String searchText) {
-		String q = searchText == null ? "" : searchText.trim().toLowerCase();
-		String status = cmbStatusFilter.getValue() == null ? "All" : cmbStatusFilter.getValue().trim();
 
-		List<ReportChequeDetailDTO> filtered = allCheques.stream().filter(c -> {
-			// text search — matches chequeNo, accountNo, payeeName, or amount
-			if (!q.isEmpty()) {
-				boolean textMatch = (c.getChequeNo() != null && c.getChequeNo().toLowerCase().contains(q))
-						|| (c.getAccountNo() != null && c.getAccountNo().toLowerCase().contains(q))
-						|| (c.getPayeeName() != null && c.getPayeeName().toLowerCase().contains(q))
-						|| (c.getAmount() != null && c.getAmount().toPlainString().contains(q));
-				if (!textMatch)
-					return false;
-			}
-			// status filter
-			if (!status.isEmpty() && !"All".equalsIgnoreCase(status)) {
-				String chequeStatus = c.getStatus() != null ? c.getStatus() : "PENDING";
-				return chequeStatus.equalsIgnoreCase(status);
-			}
-			return true;
-		}).collect(Collectors.toList());
+	    currentFilteredCheques =
+	            reportService.filterCheques(
+	                    allCheques,
+	                    searchText,
+	                    cmbStatusFilter.getValue());
 
-		currentFilteredCheques = filtered;
-		renderChequeTable(currentFilteredCheques);
+	    renderChequeTable(currentFilteredCheques);
 	}
-
+	/**
+	 * Renders cheque details in the detail view grid.
+	 *
+	 * @param cheques List of cheque records to display
+	 */
+	
 	private void renderChequeTable(List<ReportChequeDetailDTO> cheques) {
 		chequeListbox.getItems().clear();
 
@@ -558,29 +608,32 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 		}
 	}
 
-	// ══════════════════════════════════════════════════════════════
-	// View switching
-	// ══════════════════════════════════════════════════════════════
-
+	/**
+	 * Displays the batch list screen and hides the detail view.
+	 */
 	private void showBatchList() {
 		viewBatchList.setVisible(true);
 		viewBatchDetail.setVisible(false);
 	}
 
+	/**
+	 * Displays the batch detail screen and hides the batch list.
+	 */
 	private void showBatchDetail() {
 		viewBatchList.setVisible(false);
 		viewBatchDetail.setVisible(true);
 	}
 
-	// ══════════════════════════════════════════════════════════════
-	// Download logic
-	// ══════════════════════════════════════════════════════════════
-
 	/**
-	 * Download report for the filtered cheque grid in the detail view. - If
-	 * filtered list has only ACCEPTED cheques → download RES only. - If filtered
-	 * list has only REJECTED cheques → download RRF only. - If filtered list has
-	 * both → download both. - PENDING-only or empty → warn, nothing to download.
+	 * Generates and downloads RES and/or RRF reports based on
+	 * the currently filtered cheque records.
+	 *
+	 * Accepted cheques generate a RES report.
+	 * Rejected cheques generate an RRF report.
+	 * If both are present, both reports are downloaded.
+	 *
+	 * @param batchId Batch identifier
+	 * @param cheques Filtered cheque records
 	 */
 	private void downloadFilteredCheques(String batchId, List<ReportChequeDetailDTO> cheques) {
 		if (cheques == null || cheques.isEmpty()) {
@@ -637,6 +690,13 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 		}
 	}
 
+	
+	/**
+	 * Generates and downloads consolidated reports for the
+	 * specified batch list.
+	 *
+	 * @param batches Batches selected for report generation
+	 */
 	private void downloadReportForBatches(List<InwardBatchDTO> batches) {
 		List<String> batchIds = batches.stream().map(InwardBatchDTO::getBatchId).collect(Collectors.toList());
 
@@ -713,14 +773,28 @@ public class InwardReportComposer extends SelectorComposer<Component> {
 		return cal.getTime();
 	}
 
-	// ══════════════════════════════════════════════════════════════
-	// Formatting helpers
-	// ══════════════════════════════════════════════════════════════
+	/**
+	 * Returns the given value or a default placeholder
+	 * when the value is null.
+	 *
+	 * @param val Input value
+	 * @return Value or "-"
+	 */
 
 	private String nullSafe(String val) {
 		return val != null ? val : "-";
 	}
 
+	
+	/**
+	 * Formats an integer using Indian digit grouping.
+	 *
+	 * Example:
+	 * 1234567 -> 12,34,567
+	 *
+	 * @param num Number to format
+	 * @return Formatted number
+	 */
 	private String formatIndian(BigDecimal amount) {
 		long intPart = amount.longValue();
 		String intStr = formatIndianInteger(intPart);

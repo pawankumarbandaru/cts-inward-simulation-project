@@ -2,6 +2,7 @@ package com.cts.inward.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -9,18 +10,29 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.cts.inward.dao.InwardBatchDao;
+import com.cts.inward.dao.InwardBatchDaoImpl;
 import com.cts.inward.dao.InwardChequeDao;
 import com.cts.inward.dao.InwardChequeDaoImpl;
 import com.cts.inward.dto.ChequeReportDTO;
+import com.cts.inward.dto.InwardBatchDTO;
 import com.cts.inward.dto.ReportChequeDetailDTO;
+import com.cts.inward.entity.InwardBatch;
 
-import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 public class ReportGenerationServiceImpl implements ReportGenerationService {
 
 	private final InwardChequeDao chequeDao = new InwardChequeDaoImpl();
+	
+	private final InwardBatchDao batchDao = new InwardBatchDaoImpl();
 
 	private final SimpleDateFormat sdfReport = new SimpleDateFormat("dd MMM yyyy");
 
@@ -219,4 +231,181 @@ public class ReportGenerationServiceImpl implements ReportGenerationService {
 	public List<ReportChequeDetailDTO> findAllChequesForReport(String batchId) {
 	    return chequeDao.findAllChequesForReport(batchId);
 	}
+	
+	
+//	@Override
+//	public List<InwardBatchDTO> getProcessedBatches(Date fromDate, Date toDate) {
+//
+//	    List<InwardBatchDTO> batches =
+//	            searchBatches("", "", fromDate, toDate);
+//
+//	    return batches.stream()
+//	            .filter(batch -> {
+//	                int accepted = batch.getAcceptedCheques() != null
+//	                        ? batch.getAcceptedCheques()
+//	                        : 0;
+//
+//	                int rejected = batch.getRejectedCheques() != null
+//	                        ? batch.getRejectedCheques()
+//	                        : 0;
+//
+//	                return (accepted + rejected) > 0;
+//	            })
+//	            .collect(Collectors.toList());
+//	}
+	@Override
+	public List<InwardBatchDTO> getProcessedBatches(
+	        Date fromDate,
+	        Date toDate) {
+
+	    List<InwardBatch> batches =
+	            batchDao                       .searchBatches(
+	                    "",
+	                    null,
+	                    fromDate,
+	                    toDate);
+
+	    List<InwardBatchDTO> result = new ArrayList<>();
+
+	    for (InwardBatch batch : batches) {
+
+	        InwardBatchDTO dto = convertToDTO(batch);
+
+	        int accepted =
+	                dto.getAcceptedCheques() != null
+	                ? dto.getAcceptedCheques()
+	                : 0;
+
+	        int rejected =
+	                dto.getRejectedCheques() != null
+	                ? dto.getRejectedCheques()
+	                : 0;
+
+	        if ((accepted + rejected) > 0) {
+	            result.add(dto);
+	        }
+	    }
+
+	    return result;
+	}
+
+	
+	private InwardBatchDTO convertToDTO(InwardBatch batch) {
+
+	    InwardBatchDTO dto = new InwardBatchDTO();
+
+	    dto.setId(batch.getId());
+	    dto.setBatchId(batch.getBatchId());
+
+	    if (batch.getCreatedAt() != null) {
+	        dto.setUploadDate(batch.getCreatedAt());
+	    }
+
+	    dto.setTotalCheques(batch.getTotalCheques());
+
+	    Integer cleared = batch.getSuccessCount() == null
+	            ? 0
+	            : batch.getSuccessCount();
+
+	    dto.setClearedCheques(cleared);
+
+	    BigDecimal totalAmount = batchDao.getTotalAmountByBatchId(batch.getId());
+		dto.setTotalAmount(totalAmount != null ? totalAmount : BigDecimal.ZERO);
+		
+		Long accepted = batchDao.getAcceptedCountByBatchId(batch.getId());
+		Long rejected = batchDao.getRejectedCountByBatchId(batch.getId());
+
+		dto.setAcceptedCheques(
+		        accepted != null ? accepted.intValue() : 0);
+
+		dto.setRejectedCheques(
+		        rejected != null ? rejected.intValue() : 0);
+
+		Integer total =
+		        batch.getTotalCheques() == null
+		        ? 0
+		        : batch.getTotalCheques();
+
+		int pending = (int) Math.max(
+		        total
+		        - (accepted != null ? accepted : 0)
+		        - (rejected != null ? rejected : 0),
+		        0);
+
+		dto.setPendingCheques(pending);
+	    
+
+	    return dto;
+	}
+	
+	@Override
+	public List<ReportChequeDetailDTO> filterCheques(
+	        List<ReportChequeDetailDTO> cheques,
+	        String searchText,
+	        String status) {
+
+	    String q = searchText == null
+	            ? ""
+	            : searchText.trim().toLowerCase();
+
+	    return cheques.stream()
+	            .filter(c -> {
+
+	                if (!q.isEmpty()) {
+
+	                    boolean textMatch =
+	                            (c.getChequeNo() != null
+	                             && c.getChequeNo().toLowerCase().contains(q))
+
+	                            || (c.getAccountNo() != null
+	                                && c.getAccountNo().toLowerCase().contains(q))
+
+	                            || (c.getPayeeName() != null
+	                                && c.getPayeeName().toLowerCase().contains(q))
+
+	                            || (c.getAmount() != null
+	                                && c.getAmount().toPlainString().contains(q));
+
+	                    if (!textMatch) {
+	                        return false;
+	                    }
+	                }
+
+	                if (status != null
+	                        && !"All".equalsIgnoreCase(status)
+	                        && !status.isBlank()) {
+
+	                    String chequeStatus =
+	                            c.getStatus() != null
+	                                    ? c.getStatus()
+	                                    : "PENDING";
+
+	                    return chequeStatus.equalsIgnoreCase(status);
+	                }
+
+	                return true;
+	            })
+	            .collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<InwardBatchDTO> filterBatches(
+	        List<InwardBatchDTO> batches,
+	        String batchNo) {
+
+	    String filter = batchNo == null
+	            ? ""
+	            : batchNo.trim().toLowerCase();
+
+	    if (filter.isEmpty()) {
+	        return new ArrayList<>(batches);
+	    }
+
+	    return batches.stream()
+	            .filter(b -> b.getBatchId() != null
+	                    && b.getBatchId().toLowerCase().contains(filter))
+	            .collect(Collectors.toList());
+	}
+	
+	
 }

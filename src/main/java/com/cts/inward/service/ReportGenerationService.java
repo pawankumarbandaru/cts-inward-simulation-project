@@ -1,9 +1,11 @@
 package com.cts.inward.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.cts.inward.dto.ChequeReportDTO;
+import com.cts.inward.dto.InwardBatchDTO;
 import com.cts.inward.dto.ReportChequeDetailDTO;
 
 public interface ReportGenerationService {
@@ -26,4 +28,18 @@ public interface ReportGenerationService {
     
     
     List<ReportChequeDetailDTO> findAllChequesForReport(String batchId);
+    
+    
+     List<InwardBatchDTO> getProcessedBatches(Date fromDate, Date toDate);
+    
+     List<ReportChequeDetailDTO> filterCheques(
+	        List<ReportChequeDetailDTO> cheques,
+	        String searchText,
+	        String status) ;
+     
+     List<InwardBatchDTO> filterBatches(
+    	        List<InwardBatchDTO> batches,
+    	        String batchNo);
+     
+     
 }
