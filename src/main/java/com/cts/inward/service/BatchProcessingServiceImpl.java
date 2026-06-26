@@ -36,6 +36,9 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
             throw new RuntimeException("ZIP file is missing or not found");
         }
 
+        // Variables declaration - finally block can access them
+        Map<String, File> images=null;
+        
         try {
             // STEP 1 : Parse XML
             List<ChequeDTO> cheques = xmlService.parseXml(xmlFile);
@@ -48,9 +51,9 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
             // STEP 2 : Resolve Batch ID
             String batchId = resolveBatchId(cheques);
 
-            // STEP 3 : Extract ZIP
+            // STEP 3 : Extract ZIP 
             String extractionFolder = PropertyUtil.getProperty("extraction.folder");
-            Map<String, File> images = zipService.extractZip(zipFile, extractionFolder);
+            images = zipService.extractZip(zipFile, extractionFolder);
             if (images == null || images.isEmpty()) {
                 throw new RuntimeException("No images found in ZIP file");
             }
@@ -174,6 +177,10 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Batch Processing Failed : " + e.getMessage(), e);
+        } finally {
+            // Runs always — success or failure
+            // At this point images are already saved to Supabase Storage
+        	cleanupTempFiles(xmlFile, zipFile, images);
         }
     }
 
@@ -426,6 +433,56 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
     private static boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
     }
+    
+ // ============================================================
+ // TEMP FILE CLEANUP
+ // Deletes the uploaded XML file and all extracted
+ // image files after batch processing is complete.
+ // Called from finally block to ensure cleanup always happens.
+ // ============================================================
+	private void cleanupTempFiles(File xmlFile, File zipFile, Map<String, File> images) {
+
+		System.out.println("----------------------------------------");
+		System.out.println("Cleanup Started...");
+
+		// ── 1. Delete XML File ───────────────────────────────────
+		if (xmlFile != null && xmlFile.exists()) {
+			boolean deleted = xmlFile.delete();
+			if (deleted) {
+				System.out.println("XML Deleted      : " + xmlFile.getName());
+			} else {
+				System.out.println("XML Delete Failed: " + xmlFile.getName());
+			}
+		}
+
+		// ── 2. Delete ZIP File ───────────────────────────────────
+		if (zipFile != null && zipFile.exists()) {
+			boolean deleted = zipFile.delete();
+			if (deleted) {
+				System.out.println("ZIP Deleted      : " + zipFile.getName());
+			} else {
+				System.out.println("ZIP Delete Failed: " + zipFile.getName());
+			}
+		}
+
+		// ── 3. Delete Extracted Image Files ─────────────────────
+		if (images != null && !images.isEmpty()) {
+			for (Map.Entry<String, File> entry : images.entrySet()) {
+				File imageFile = entry.getValue();
+				if (imageFile != null && imageFile.exists()) {
+					boolean deleted = imageFile.delete();
+					if (deleted) {
+						System.out.println("Image Deleted    : " + imageFile.getName());
+					} else {
+						System.out.println("Image Del Failed : " + imageFile.getName());
+					}
+				}
+			}
+		}
+
+		System.out.println("Cleanup Completed.");
+		System.out.println("----------------------------------------");
+	}
 
 	@Override
 	public InwardBatch findByBatchId(String batchId) {
