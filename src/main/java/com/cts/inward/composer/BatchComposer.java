@@ -204,17 +204,60 @@ public class BatchComposer extends SelectorComposer<Component> {
                     }
                 }
 
-	            Messagebox.show(
-	                    "Batch Processed Successfully!\n\n"
-	                    + "Batch ID      :  " + batchId    + "\n"
-	                    + "Total Cheques :  " + total      + "\n"
-	                    + "Inserted Cheques   :  " + inserted   + "\n"
-	                    + "Duplicate Cheques       :  " + skipped    + "\n"
-	                    + "Failed Cheques     :  " + failed,
-	                    "Processing Complete",
-	                    Messagebox.OK,
-	                    Messagebox.INFORMATION,
-	                    event -> navigateToMicrService(batchDbId));
+                int totalCount    = Integer.parseInt(total);
+                int insertedCount = Integer.parseInt(inserted);
+                int skippedCount  = Integer.parseInt(skipped);
+                int failedCount   = Integer.parseInt(failed);
+
+                // ── Decide message and title based on counts ──────────────────
+
+                String title;
+                String icon;
+                String message;
+
+                if (insertedCount == 0 && skippedCount == totalCount) {
+                    // All cheques were duplicates — entire batch already exists
+                    title   = "Batch Already Present";
+                    icon    = Messagebox.EXCLAMATION;
+                    message = "Batch '" + batchId + "' is already present in the system.\n\n"
+                            + "All " + totalCount + " cheque(s) in this batch are already inserted.\n"
+                            + "No new cheques were found to process.";
+
+                } else if (insertedCount == 0 && failedCount == totalCount) {
+                    // All cheques failed — nothing was inserted
+                    title   = "Batch Processing Failed";
+                    icon    = Messagebox.ERROR;
+                    message = "Batch '" + batchId + "' could not be processed.\n\n"
+                            + "All " + totalCount + " cheque(s) failed during processing.\n"
+                            + "Please check the XML and ZIP files and try again.";
+
+                } else if (skippedCount > 0 && insertedCount > 0) {
+                    // Mixed — some new cheques inserted, some duplicates skipped
+                    title   = "Batch Partially Processed";
+                    icon    = Messagebox.INFORMATION;
+                    message = "Batch '" + batchId + "' processed with new and duplicate cheques.\n\n"
+                            + "Total Cheques     :  " + totalCount    + "\n"
+                            + "New Inserted      :  " + insertedCount + "\n"
+                            + "Duplicates Skipped:  " + skippedCount  + "\n"
+                            + "Failed            :  " + failedCount;
+
+                } else {
+                    // All cheques inserted successfully — fresh new batch
+                    title   = "Batch Processed Successfully";
+                    icon    = Messagebox.INFORMATION;
+                    message = "Batch '" + batchId + "' has been processed successfully.\n\n"
+                            + "Total Cheques     :  " + totalCount    + "\n"
+                            + "Inserted Cheques  :  " + insertedCount + "\n"
+                            + "Duplicate Cheques :  " + skippedCount  + "\n"
+                            + "Failed Cheques    :  " + failedCount;
+                }
+
+                Messagebox.show(
+                        message,
+                        title,
+                        Messagebox.OK,
+                        icon,
+                        event -> navigateToMicrService(batchDbId));
 
 	        }, null);
 	    });
