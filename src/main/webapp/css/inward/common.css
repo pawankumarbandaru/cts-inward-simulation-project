@@ -149,12 +149,16 @@
 }
 
 .z-messagebox-button {
-    background: #0b2e59 !important; /* Navy Blue */
+    background: #1a2a4a !important; /* Navy Blue */
     color: white !important;
-    border: 1px solid #0b2e59 !important;
+    border: 1px solid #1a2a4a !important;
     border-radius: 4px;
 }
 
 .z-label{
     font-size:13px;
+}
+.z-button{
+	 background-color: #1a2a4a !important; 
+	  color: white !important;
 }

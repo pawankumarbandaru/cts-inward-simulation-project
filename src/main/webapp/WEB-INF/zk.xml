@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zk>
 
-    <system-config>
-        <!-- Max upload size in KB — 51200 = 50 MB -->
-        <max-upload-size>51200</max-upload-size>
-    </system-config>
+	<system-config>
+
+		<!-- Max upload size in KB — 102400 = 100 MB -->
+		<max-upload-size>102400</max-upload-size>
+
+	</system-config>
 
 </zk>

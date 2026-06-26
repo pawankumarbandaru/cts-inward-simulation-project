@@ -232,29 +232,10 @@ public class ReportGenerationServiceImpl implements ReportGenerationService {
 	    return chequeDao.findAllChequesForReport(batchId);
 	}
 	
-	
-//	@Override
-//	public List<InwardBatchDTO> getProcessedBatches(Date fromDate, Date toDate) {
-//
-//	    List<InwardBatchDTO> batches =
-//	            searchBatches("", "", fromDate, toDate);
-//
-//	    return batches.stream()
-//	            .filter(batch -> {
-//	                int accepted = batch.getAcceptedCheques() != null
-//	                        ? batch.getAcceptedCheques()
-//	                        : 0;
-//
-//	                int rejected = batch.getRejectedCheques() != null
-//	                        ? batch.getRejectedCheques()
-//	                        : 0;
-//
-//	                return (accepted + rejected) > 0;
-//	            })
-//	            .collect(Collectors.toList());
-//	}
+
 	@Override
 	public List<InwardBatchDTO> getProcessedBatches(
+			
 	        Date fromDate,
 	        Date toDate) {
 
