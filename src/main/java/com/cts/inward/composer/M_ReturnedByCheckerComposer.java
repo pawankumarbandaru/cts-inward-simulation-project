@@ -221,7 +221,7 @@ public class M_ReturnedByCheckerComposer extends SelectorComposer<Component> {
 
         // Col 4 — Amount (₹)
         String amountStr = cheque.getAmount() != null
-            ? "₹ " + String.format("%,.2f", cheque.getAmount()) : "—";
+            ?  String.format("%,.2f", cheque.getAmount()) : "—";
         Label amountLabel = new Label(amountStr);
         amountLabel.setSclass("chk-col-amount");
         row.appendChild(amountLabel);

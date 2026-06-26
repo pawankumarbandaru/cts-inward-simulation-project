@@ -164,13 +164,6 @@
 	            item.appendChild(new Listcell(
 	                    String.valueOf(batch.getTotalCheques())));
 	
-	            // Cleared Cheques
-	//            item.appendChild(new Listcell(
-	//                    String.valueOf(batch.getClearedCheques())));
-	//
-	//            // Pending Cheques
-	//            item.appendChild(new Listcell(
-	//                    String.valueOf(batch.getPendingCheques())));
 	            
 	            item.appendChild(new Listcell(
 	                    String.valueOf(batch.getValidCheques() != null ? batch.getValidCheques() : 0)));
