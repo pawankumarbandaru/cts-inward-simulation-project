@@ -130,12 +130,12 @@
                 <div sclass="cts-table-wrap cts-merged-table">
                     <grid id="rcb-grid" sclass="rcb-grid">
                         <columns sizable="false" sclass="cts-grid-header-blue">
-                            <column label="#"                     width="52px"  align="center"/>
-                            <column label="Batch Number"          width="120px" align="center"/>
-                            <column label="Cheque Number"         width="130px" align="center"/>
-                            <column label="Amount (₹)"            width="110px" align="center"/>
-                            <column label="Checker SendBack Reason"  hflex="1"     align="left"/>
-                            <column label="Action"                width="140px" align="center"/>
+                            <column label="#"                        width="45px"  align="center"/>
+                            <column label="Batch Number"             width="110px" align="center"/>
+                            <column label="Cheque Number"            width="120px" align="center"/>
+                            <column label="Amount (&#8377;)"         width="105px" align="center"/>
+                            <column label="Checker SendBack Reason"  width="380px" align="left"/>
+                            <column label="Action"                   width="110px" align="center"/>
                         </columns>
                         <rows id="rcb-rows">
                             <row id="rcb-empty" visible="false">

@@ -251,7 +251,7 @@ public class TV1_ReviewWorkspaceComposer extends SelectorComposer<Component> {
         // Auto-fill MICR NO. (read-only display) — City + Bank + Branch
         populateMicrAuto();
 
-        // Highlight edited fields directly via server-side sclass 
+        // Highlight edited fields directly via server-side sclass (no client JS)
         if (currentCheque.isEditedByMaker()) {
             String fields = currentCheque.getEditedFields() != null
                 ? currentCheque.getEditedFields() : "";
