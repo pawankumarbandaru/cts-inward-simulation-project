@@ -80,13 +80,7 @@
                 <label sclass="cts-sub-label" value="Maker Report" />
             </div>
         </div>
-        <div sclass="cts-menu-item">
-            <custom-attributes perm=""
-                pagePath="/zul/inward/reports/checkerReport.zul" />
-            <div sclass="cts-sub-row">
-                <label sclass="cts-sub-label" value="Checker Report" />
-            </div>
-        </div>
+       
     </div>
 
 </div>
