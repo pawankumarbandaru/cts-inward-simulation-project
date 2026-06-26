@@ -18,39 +18,12 @@ import com.cts.inward.enums.BatchStatus;
 import com.cts.inward.service.InwardChequeMICRService;
 import com.cts.inward.service.InwardChequeServiceMICRImpl;
 
-/**
- * CbsValidationComposer ────────────────────── Composer for cbsValidation.zul —
- * the CBS Validation page.
- *
- * Responsibilities: 1. Resolve batchDbId via the service layer (no direct DAO
- * access) 2. Set page subtitle label 3. Listen for "cbsValidationComplete"
- * event from CbsChequeListComposer → receives long[] {validCount, invalidCount}
- * → enables/shows the correct button(s) based on counts 4. Handle "Return to
- * RRF" button click: → loads all INVALID cheques for this batch → sets decision
- * = REJECTED on each and saves to DB → publishes "removeInvalidCheques" so
- * CbsChequeListComposer removes those rows from the in-memory list →
- * re-evaluates button state (if no invalid remain → show Forward) 5. Handle
- * "Forward to Tv1 and Tv2" button click
- *
- * Button rules:
- * ┌─────────────────────┬──────────────────────────────────────────┐ │ Button │
- * Active when │
- * ├─────────────────────┼──────────────────────────────────────────┤ │ Return
- * to RRF │ invalidCount > 0 │ │ Forward to Tv1 Tv2 │ invalidCount == 0 (all
- * valid) │ └─────────────────────┴──────────────────────────────────────────┘
- * Both buttons are hidden (visible=false) until validation completes.
- *
- * NOTE: This composer does NOT access any DAO directly. All data access goes
- * through InwardChequeMICRService.
- */
 public class CbsValidationComposer extends SelectorComposer<Component> {
 
 	private static final long serialVersionUID = 1L;
 
-	// ── Service only — NO DAO references in the composer ─────────────────
 	private final InwardChequeMICRService chequeService = new InwardChequeServiceMICRImpl();
 
-	// ── Wired UI components (only what lives in cbsValidation.zul itself) ─
 	@Wire
 	Label lblCbsPageSubtitle;
 	@Wire
@@ -58,21 +31,19 @@ public class CbsValidationComposer extends SelectorComposer<Component> {
 	@Wire
 	Button btnForwardTv1Tv2;
 
-	// ── State ─────────────────────────────────────────────────────────────
 	private Long currentBatchId = null;
-	
-	String role = (String) Executions.getCurrent()
-	                .getDesktop()
-	                .getAttribute("role");
 
+	String role = (String) Executions.getCurrent().getDesktop().getAttribute("role");
 
-	// ── Lifecycle ─────────────────────────────────────────────────────────
-
+	/**
+	 * the page subtitle, hides both action buttons, publishes batchContext, and
+	 * subscribes to cbsValidationComplete to enable buttons after validation
+	 * finishes. Related to: CBS Validation page — page-level initialization.
+	 */
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
 
-		// ── 1. Resolve batchDbId ─────────────────────────────────────────
 		Object batchDbIdArg = Executions.getCurrent().getDesktop().getAttribute("cbsBatchDbId");
 		if (batchDbIdArg == null) {
 			batchDbIdArg = Executions.getCurrent().getAttribute("cbsBatchDbId");
@@ -91,8 +62,6 @@ public class CbsValidationComposer extends SelectorComposer<Component> {
 			}
 		}
 
-		// FIX: replaced inline batchDao.findLatest() call with service method.
-		// The composer must not hold a DAO reference.
 		if (currentBatchId == null || currentBatchId <= 0) {
 			currentBatchId = chequeService.resolveLatestBatchId();
 		}
@@ -101,74 +70,67 @@ public class CbsValidationComposer extends SelectorComposer<Component> {
 
 		System.out.println("CbsValidationComposer: batchDbId = " + currentBatchId);
 
-		// ── 2. Batch summary macro ────────────────────────────────────────
 		try {
 			comp.getFellow("cbsBatchSummaryMacro").setAttribute("batchDbId", currentBatchId);
 		} catch (Exception e) {
 			System.err.println("CbsValidationComposer: cbsBatchSummaryMacro not found");
 		}
 
-		 // ── 3. Page subtitle ──────────────────────────────────────────────
-        try {
-            long total = chequeService.getTotalChequeCount(currentBatchId,role);
-            lblCbsPageSubtitle.setValue("CBS Validation " + currentBatchId + " · " + total + " cheques");
-        } catch (Exception e) {
-            lblCbsPageSubtitle.setValue("CBS Validation " + currentBatchId);
-        }
+		// Page subtitle
+		try {
+			long total = chequeService.getTotalChequeCount(currentBatchId, role);
+			lblCbsPageSubtitle.setValue("CBS Validation " + currentBatchId + " · " + total + " cheques");
+		} catch (Exception e) {
+			lblCbsPageSubtitle.setValue("CBS Validation " + currentBatchId);
+		}
 
-		// ── 4. Both buttons hidden until validation completes ─────────────
+		// Both buttons hidden until validation completes
 		btnReturnToRrf.setVisible(false);
 		btnForwardTv1Tv2.setVisible(false);
 
-		// ── 5. Publish batchDbId so macro composers start their work ──────
+		// Publish batchDbId so macro composers start their work
 		EventQueues.lookup("batchContext", EventQueues.DESKTOP, true)
 				.publish(new Event("onBatchResolved", null, currentBatchId));
 
-		// ── 6. Listen for cbsValidationComplete ───────────────────────────
 		// CbsChequeListComposer publishes this when all cheques are processed.
-		// The event data is long[] { validCount, invalidCount }.
 		EventQueues.lookup("cbsValidationComplete", EventQueues.DESKTOP, true).subscribe((Event event) -> {
 			long[] summary = (long[]) event.getData();
 			updateButtonState(summary[0], summary[1]);
 		});
 	}
 
-	// ── Button state management ───────────────────────────────────────────
-
 	/**
-	 * Decides which buttons to show and enable based on validation counts.
-	 *
-	 * This method belongs in the composer — it directly manipulates ZK Button
-	 * components (setVisible / setDisabled). It must NOT be moved to a service
-	 * class: services are UI-framework-agnostic and must not import ZK types.
-	 *
-	 * Rule: invalid > 0 → Return to RRF enabled, Forward greyed out invalid == 0 →
-	 * Return to RRF greyed out, Forward enabled
+	 * Shows and enables/disables "Return to RRF" and "Forward to TV1/TV2" buttons
+	 * based on validCount and invalidCount received after all CBS validation
+	 * completes. Related to: CBS Validation page — drives which action button is
+	 * active after validation.
 	 */
 	private void updateButtonState(long validCount, long invalidCount) {
 		System.out.println(
 				"CbsValidationComposer: updateButtonState " + "valid=" + validCount + " invalid=" + invalidCount);
 
 		if (invalidCount > 0) {
-			// Some cheques are invalid → only Return to RRF should be active
 			btnReturnToRrf.setVisible(true);
 			btnReturnToRrf.setDisabled(false);
 
 			btnForwardTv1Tv2.setVisible(true);
-			btnForwardTv1Tv2.setDisabled(true); // visible but greyed out
+			btnForwardTv1Tv2.setDisabled(true);
 
 		} else {
 			// All cheques are valid → only Forward button active
 			btnReturnToRrf.setVisible(true);
-			btnReturnToRrf.setDisabled(true); // visible but greyed out
+			btnReturnToRrf.setDisabled(true);
 
 			btnForwardTv1Tv2.setVisible(true);
 			btnForwardTv1Tv2.setDisabled(false);
 		}
 	}
 
-	// ── Return to RRF button ──────────────────────────────────────────────
-
+	/**
+	 * Shows a confirmation dialog before calling processReturnToRrf(); proceeds
+	 * only if the user confirms YES. Related to: CBS Validation page — "Return to
+	 * RRF" button click handler.
+	 */
 	@Listen("onClick = #btnReturnToRrf")
 	public void onReturnToRrf() {
 		Messagebox.show("Mark all INVALID cheques as REJECTED and remove them from this list?", "Confirm Return to RRF",
@@ -180,11 +142,8 @@ public class CbsValidationComposer extends SelectorComposer<Component> {
 	}
 
 	/**
-	 * Loads all INVALID cheques for this batch from the DB. Sets decision =
-	 * REJECTED on each one and saves. Then fires "removeInvalidCheques" so
-	 * CbsChequeListComposer removes those rows from its in-memory list and
-	 * refreshes the view. Finally re-evaluates button state — since all invalid are
-	 * now gone, Forward button should become active.
+	 * Loads INVALID cheques for the batch, bulk-marks them REJECTED via native SQL
+	 * Related to: CBS Validation page — core "Return to RRF" business logic.
 	 */
 	private void processReturnToRrf() {
 		if (currentBatchId == null)
@@ -200,10 +159,6 @@ public class CbsValidationComposer extends SelectorComposer<Component> {
 
 			int count = invalidCheques.size();
 
-			// Use native SQL bulk UPDATE to set decision = REJECTED.
-			// This avoids the PostgreSQL custom ENUM cast issue that occurs
-			// when Hibernate tries to save via session.merge() with
-			// @Enumerated(EnumType.STRING) on a custom-type column.
 			chequeService.markInvalidChequesAsRejected(currentBatchId);
 
 			// Notify BatchSummaryComposer to refresh its summary counts
@@ -231,17 +186,18 @@ public class CbsValidationComposer extends SelectorComposer<Component> {
 		}
 	}
 
-	// ── Forward to Tv1 and Tv2 button ────────────────────────────────────
-
 	/**
 	 * Threshold amount used to route cheques between TV1 and TV2. amount <=
-	 * THRESHOLD_AMOUNT → TV_1 amount > THRESHOLD_AMOUNT → TV_2
-	 *
-	 * TODO: move to application.properties if this needs to be configurable without
-	 * a rebuild.
+	 * THRESHOLD_AMOUNT → TV_1 ; amount > THRESHOLD_AMOUNT → TV_2.
 	 */
 	private static final java.math.BigDecimal THRESHOLD_AMOUNT = new java.math.BigDecimal("100000");
 
+	/**
+	 * Updates batch status to PendingAtChecker, routes all valid cheques to TV1 or
+	 * TV2 based on the ₹1,00,000 threshold, disables both buttons, and shows a
+	 * summary message. Related to: CBS Validation page — "Forward to TV1 and TV2"
+	 * button click handler.
+	 */
 	@Listen("onClick = #btnForwardTv1Tv2")
 	public void onForwardTv1Tv2() {
 		if (currentBatchId == null)
@@ -258,7 +214,6 @@ public class CbsValidationComposer extends SelectorComposer<Component> {
 					"CbsValidationComposer: forwarded batchId=" + currentBatchId + " to TV1/TV2 with threshold="
 							+ THRESHOLD_AMOUNT + " (TV1=" + tv1Count + ", TV2=" + tv2Count + ")");
 
-			// Disable both buttons — this batch has now been forwarded
 			btnReturnToRrf.setDisabled(true);
 			btnForwardTv1Tv2.setDisabled(true);
 
