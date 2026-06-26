@@ -12,7 +12,7 @@ import com.cts.inward.entity.InwardCheque;
  *           Sits between the composer and the DAO — handles approve/reject/return-to-maker
  *           decisions and the loading rules for the review workspace.
  *           No DB queries here — only validation, routing, and state transitions.
- * Author  : Ramana JS
+ * Author  : Ramana
  * Date    : 24-06-2025
  */
 public interface TV1_ResubmittedChequeService {

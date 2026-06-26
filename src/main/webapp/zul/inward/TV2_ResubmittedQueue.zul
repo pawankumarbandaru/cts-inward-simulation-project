@@ -156,13 +156,13 @@
                 <div sclass="cts-table-wrap cts-merged-table">
                     <grid id="v2-grid" sclass="rcb-grid">
                         <columns sizable="false" sclass="cts-grid-header-blue">
-                            <column label="#"              width="52px"  align="center"/>
-                            <column label="Cheque No."     width="130px" align="center"/>
-                            <column label="Batch ID"       width="120px" align="center"/>
-                            <column label="Amount (₹)"     width="110px" align="center"/>
-                            <column label="Checker Remark" hflex="1"     align="center"/>
-                            <column label="Edited"         width="110px" align="center"/>
-                            <column label="Action"         width="140px" align="center"/>
+                            <column label="#"              width="45px"  align="center"/>
+                            <column label="Cheque No."     width="110px" align="center"/>
+                            <column label="Batch ID"       width="110px" align="center"/>
+                            <column label="Amount (&#8377;)" width="105px" align="center"/>
+                            <column label="Checker Remark" width="260px" align="left"/>
+                            <column label="Edited"         width="90px"  align="center"/>
+                            <column label="Action"         width="110px" align="center"/>
                         </columns>
                         <rows id="v2-rows">
                             <row id="v2-empty-row" visible="false">

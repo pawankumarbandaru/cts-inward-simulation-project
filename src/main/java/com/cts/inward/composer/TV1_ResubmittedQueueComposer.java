@@ -195,7 +195,7 @@ public class TV1_ResubmittedQueueComposer extends SelectorComposer<Component> {
      *  1. #   2. Cheque No.   3. Batch ID   4. Amount (₹)
      *  5. Checker Sendback Reason   6. Edited   7. Action
      *
-     * Columns removed: Submitted By, CBS Status (not needed for reviewer).
+     * 
      */
     private Row buildTableRow(InwardCheque cheque, int rowNum) {
         Row row = new Row();
