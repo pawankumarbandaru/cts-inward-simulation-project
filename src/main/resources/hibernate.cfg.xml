@@ -63,16 +63,16 @@
             does NOT support prepared statements across pooled connections.
         -->
         <property name="hibernate.connection.url">
-            jdbc:postgresql://aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres?prepareThreshold=0
-        </property>
-
-        <property name="hibernate.connection.username">
-            postgres.gzohttbjqvshdpvghapw
-        </property>
-
-        <property name="hibernate.connection.password">
-            %aDNQzn9!58nb2T
-        </property>
+		    jdbc:postgresql://aws-1-ap-south-1.pooler.supabase.com:6543/postgres?prepareThreshold=0
+		</property>
+		
+		<property name="hibernate.connection.username">
+		    postgres.ldrkwtfmtwbtbhxvbrpe
+		</property>
+		
+		<property name="hibernate.connection.password">
+		    bUdBat8CXKHv9193
+		</property>
 
         <property name="hibernate.dialect">
             org.hibernate.dialect.PostgreSQLDialect
