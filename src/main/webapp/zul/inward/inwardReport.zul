@@ -2,22 +2,29 @@
 <?page title="Inward Reports — NavbharatCTS"?>
 
 <zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:n="native"
     xmlns:h="http://www.w3.org/1999/xhtml">
 
 <div id="reportRoot"
      apply="com.cts.inward.composer.InwardReportComposer"
      width="100%">
 
-    <style src="/css/inward/inwardReport.css"/>
+   <style src="/css/inward/inwardReport.css?v=2"/>
 
     <!-- ══════════════════════════════════════════════════════════
          VIEW 1 — Batch List (default visible)
     ═══════════════════════════════════════════════════════════ -->
     <div id="viewBatchList" sclass="rpt-page-bg">
 
+       <div sclass="rpt-breadcrumb"
+     style="background:#1a2a4a; color:#cdd6e8; height:46px; display:flex; align-items:center; gap:6px; padding:0 24px; box-sizing:border-box; font-size:13px;">
+    <n:span style="color:#cdd6e8;">Home</n:span>
+    <n:span style="color:#6b7da3; margin:0 4px;">›</n:span>
+    <n:span style="color:#ffffff; font-weight:600;">Inward Report</n:span>
+</div>
+
         <!-- Page Header -->
         <div sclass="rpt-page-header">
-            <div sclass="rpt-page-title">Inward Reports</div>
             <div sclass="rpt-page-sub">Download RES and RRF reports for inward clearing batches</div>
         </div>
 
@@ -73,21 +80,21 @@
                      width="100%"
                      sclass="rpt-listbox"
                      emptyMessage="No batches found for the selected date.">
-				               <listhead sizable="false">
-				    <listheader width="45px">
-				        <checkbox id="chkSelectAll" tooltiptext="Select / deselect all"/>
-				    </listheader>
-				
-				    <listheader label="SNO" width="60px"/>
-				    <listheader label="BATCH NO" width="110px"/>
-				    <listheader label="DATE" width="120px"/>
-				    <listheader label="CHEQUES" width="90px"/>
-				    <listheader label="AMOUNT" width="140px"/>
-				    <listheader label="ACCEPTED" width="100px"/>
-				    <listheader label="REJECTED" width="100px"/>
-				    <listheader label="PENDING" width="90px"/>
-				    <listheader label="ACTION" width="170px"/>
-				</listhead>
+                <listhead sizable="false">
+                    <listheader width="45px">
+                        <checkbox id="chkSelectAll" tooltiptext="Select / deselect all"/>
+                    </listheader>
+
+                    <listheader label="SNO" width="60px"/>
+                    <listheader label="BATCH NO" width="110px"/>
+                    <listheader label="DATE" width="120px"/>
+                    <listheader label="CHEQUES" width="90px"/>
+                    <listheader label="AMOUNT" width="140px"/>
+                    <listheader label="ACCEPTED" width="100px"/>
+                    <listheader label="REJECTED" width="100px"/>
+                    <listheader label="PENDING" width="90px"/>
+                    <listheader label="ACTION" width="170px"/>
+                </listhead>
             </listbox>
 
         </div>

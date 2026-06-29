@@ -64,8 +64,6 @@ public class TV1_ReviewWorkspaceComposer extends SelectorComposer<Component> {
     @Wire("#chk-maker-remark")       private Label   makerRemark;
 //    @Wire("#chk-resubmitted-by")     private Label   resubmittedBy;
     @Wire("#chk-resubmitted-at")     private Label   resubmittedAt;
-    @Wire("#chk-edited-fields-banner") private org.zkoss.zul.Div editedFieldsBanner;
-    @Wire("#chk-edited-fields-list") private Label   editedFieldsList;
 
     // ── Cheque image + audit trail ─────────────────────────────────────────
     @Wire("#chq-real-front")         private org.zkoss.zul.Image realFrontImg;
@@ -252,18 +250,15 @@ public class TV1_ReviewWorkspaceComposer extends SelectorComposer<Component> {
         populateMicrAuto();
 
         // Highlight edited fields directly via server-side sclass (no client JS)
+        // Banner removed — per-field highlight + "Edited" badge already shows this.
         if (currentCheque.isEditedByMaker()) {
             String fields = currentCheque.getEditedFields() != null
                 ? currentCheque.getEditedFields() : "";
-            editedFieldsList.setValue("Changed fields: " + fields);
-            if (editedFieldsBanner != null) editedFieldsBanner.setVisible(true);
             CtsUiBridge.applyEditedFieldHighlight(
                 fields,
                 fieldChequeNo, fieldCity, fieldBank, fieldBranch, fieldTc,
                 fieldAmount, fieldDate, fieldAcc, fieldPayee
             );
-        } else if (editedFieldsBanner != null) {
-            editedFieldsBanner.setVisible(false);
         }
     }
 

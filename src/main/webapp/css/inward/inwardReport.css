@@ -16,7 +16,7 @@ body, .z-div { font-family: 'Segoe UI', Arial, sans-serif; }
 
 /* ── Page header ── */
 .rpt-page-header {
-    padding: 20px 28px 10px 28px;
+    padding: 0px 28px 10px 28px;
 }
 .rpt-page-title {
     font-size: 20px;
@@ -594,3 +594,19 @@ body, .z-div { font-family: 'Segoe UI', Arial, sans-serif; }
     font-weight: 600 !important;
     color: #1a2a4a !important;
 }
+
+/* Breadcrumb — dark bar matching Returned By Checker page */
+.rpt-breadcrumb {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: #1a2a4a !important;
+    color: #cdd6e8 !important;
+    height: 46px !important;
+    font-size: 13px !important;
+    padding: 0 24px !important;
+    box-sizing: border-box !important;
+}
+.rpt-breadcrumb .cts-breadcrumb-item { color: #cdd6e8 !important; }
+.rpt-breadcrumb .cts-breadcrumb-sep { color: #6b7da3 !important; margin: 0 2px !important; }
+.rpt-breadcrumb .cts-breadcrumb-active { color: #ffffff !important; font-weight: 600 !important; }

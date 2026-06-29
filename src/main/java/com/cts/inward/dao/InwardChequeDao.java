@@ -270,5 +270,9 @@ public interface InwardChequeDao {
     void saveCbsResult(Long chequeId, boolean isValid, String failureReason);
 
 	 List<InwardCheque> listOfReferredCheques();
+	 
+	 long countReferredCheques();
+	 
+	 int saveAll(java.util.List<InwardCheque> cheques, String batchId);
 
 }

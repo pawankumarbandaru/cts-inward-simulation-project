@@ -313,3 +313,27 @@
 	color: #00d4ff;
 	font-weight: 600;
 }
+
+.cts-sidebar span.cts-count-badge,
+.cts-sidebar span.cts-count-badge.z-label {
+    display: inline-block !important;
+    flex: 0 0 auto !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    line-height: 20px !important;
+    padding: 0 7px !important;
+    margin-left: 10px !important;
+    background-color: #DC2626 !important;
+    color: #FFFFFF !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    border-radius: 10px !important;
+    vertical-align: middle !important;
+    box-shadow: 0 0 5px rgba(220, 38, 38, 0.5) !important;
+}
+
+/* Hide the badge pill when it has no number (count = 0) */
+.cts-sidebar span.cts-count-badge:empty {
+    display: none !important;
+}

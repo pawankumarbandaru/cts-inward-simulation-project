@@ -11,6 +11,7 @@ package com.cts.inward.composer;
  */
 
 import java.util.ArrayList;
+
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.event.EventQueues;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
@@ -33,6 +35,8 @@ import org.zkoss.zul.Row;
 import org.zkoss.zul.Rows;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
+import org.zkoss.zk.ui.event.EventQueues;
+import org.zkoss.zk.ui.event.Event;
 
 import com.cts.inward.entity.InwardCheque;
 import com.cts.inward.service.InwardChequeService;
@@ -378,6 +382,12 @@ public class M_ReturnedByCheckerComposer extends SelectorComposer<Component> {
         if (countBadge     != null) countBadge.setValue(label);
         if (statusBarCount != null) statusBarCount.setValue(String.valueOf(count));
         Executions.getCurrent().getSession().setAttribute("rcbPendingCount", count);
+
+        // Tell the sidebar (and any other listener) the count changed, so the
+        // sidebar badge re-reads its number. Same queue + scope every other
+        // part of the app uses.
+        EventQueues.lookup("chequeStatusUpdated", EventQueues.DESKTOP, true)
+                   .publish(new Event("onChequeStatusUpdated"));
     }
 
     /**

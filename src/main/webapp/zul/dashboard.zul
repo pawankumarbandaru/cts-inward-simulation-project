@@ -1,51 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+    dashboard.zul — Maker Dashboard Shell
+    Layout: North (header) + West (sidebar) + Center (content)
+    FIXED: Added profile-modal.css so the upgraded header popup works correctly.
+           north size updated to 65px to match outward header height.
+-->
 <?link rel="stylesheet" href="/css/dashboard.css"?>
-<?link rel="stylesheet" href="/css/sidebar.css"?>
-<?link rel="stylesheet" href="/css/header.css"?>
+<?link rel="stylesheet" type="text/css" href="/css/sidebar.css?v=3"?>
+<?link rel="stylesheet" href="/css/inward/header.css"?>
+<?link rel="stylesheet" href="/css/profile-modal.css"?>
 
 <zk>
 
-	<borderlayout sclass="cts-dashboard-layout">
+    <borderlayout sclass="cts-dashboard-layout">
 
-		<!-- NORTH — Header bar -->
-		<!-- size="60px" is mandatory — north collapses without it -->
-		<north size="60px" border="none" splittable="false"
-			collapsible="false">
-			<include src="/component/header.zul" />
-		</north>
+        <!-- NORTH — Header bar -->
+        <north size="65px" border="none" splittable="false" collapsible="false">
+            <include src="/component/header.zul"/>
+        </north>
 
-		<!-- WEST — Sidebar -->
-		<!--
-			CHANGED: <ctsSidebar /> replaced with <include src="..."/>
-			
-			WHY:
-			<ctsSidebar /> is a ZK macro component. ZK wraps it in
-			extra generated layers (.z-macro, additional z-div wrappers)
-			which break the height: 100% chain completely.
-			
-			<include src="..."/> directly inlines the sidebar.zul content
-			into the west region with NO extra wrapper layers.
-			This means our .cts-sidebar div sits directly inside
-			.z-west-body — the height chain works perfectly.
-		-->
-		<west size="260px" border="none" splittable="false"
-			collapsible="false">
-			<include src="/component/sidebar.zul" />
-		</west>
+        <!-- WEST — Maker Sidebar -->
+        <!--
+            WHY <include> instead of <ctsSidebar/>:
+            <include> inlines sidebar.zul content directly with no extra ZK wrapper layers.
+            This keeps the height:100% chain intact so the sidebar fills the west region.
+        -->
+        <west size="240px" border="none" splittable="false" collapsible="false">
+            <include src="/component/sidebar.zul"/>
+        </west>
 
-		<!-- CENTER — Main content area -->
-		<center border="none" autoscroll="true">
+        <!-- CENTER — Main content area; DashboardComposer loads pages here -->
+        <center border="none" autoscroll="true">
+            <div sclass="cts-content"
+                 id="contentArea"
+                 apply="com.cts.composer.DashboardComposer">
+                <label value="Welcome To CTS Dashboard" sclass="cts-page-title"/>
+            </div>
+        </center>
 
-			<div sclass="cts-content" 
-					id="contentArea"
-					apply="com.cts.composer.DashboardComposer" >
-				<label value="Welcome To CTS Dashboard"
-					sclass="cts-page-title" />
-			</div>
-
-		</center>
-
-	</borderlayout>
+    </borderlayout>
 
 </zk>

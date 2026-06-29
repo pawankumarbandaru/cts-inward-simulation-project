@@ -89,27 +89,6 @@
 
             </n:div>
 
-            <!-- ── Edited Fields Banner (hidden until JS shows it) ─── -->
-            <!--
-                #chk-edited-fields-banner, #chk-edited-fields-list
-                Composer calls: CTS_CHECKER_MODAL.highlightEditedFields(csv)
-            -->
-            <n:div id="chk-edited-fields-banner"
-                   style="display:none;align-items:flex-start;gap:10px;
-                          background:#FEF9C3;border:1px solid #F59E0B;
-                          border-left:4px solid #F59E0B;border-radius:6px;
-                          padding:4px 1px;margin-bottom:10px;">
-                <n:span style="font-size:16px;">✏️</n:span>
-                <n:div>
-                    <n:div style="font-size:12px;font-weight:700;color:#92400E;">
-                        Maker edited fields in this cheque
-                    </n:div>
-                    <label id="chk-edited-fields-list"
-                           style="font-size:12px;color:#78350F;font-family:monospace;"
-                           value="—"/>
-                </n:div>
-            </n:div>
-
             <!-- ── Cheque Image Panel ─────────────────────────────── -->
             <chequeImagePanel/>
 

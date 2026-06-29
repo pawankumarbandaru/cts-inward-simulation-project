@@ -59,6 +59,33 @@
          Processes *.zul files and renders them as HTML.
          Without this every .zul URL returns 404.
     ================================================================= -->
+    
+    <!-- =================================================================
+         SECURITY FILTER — runs first. Blocks unauthenticated .zul access
+         and re-validates user status. Mapped to *.zul.
+    ================================================================= -->
+    <filter>
+        <filter-name>SecurityFilter</filter-name>
+        <filter-class>com.cts.filter.SecurityFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SecurityFilter</filter-name>
+        <url-pattern>*.zul</url-pattern>
+    </filter-mapping>
+
+    <!-- =================================================================
+         ACCESS CONTROL FILTER — runs second. Enforces role-based page
+         access for logged-in users. Mapped to *.zul.
+    ================================================================= -->
+    <filter>
+        <filter-name>AccessControlFilter</filter-name>
+        <filter-class>com.cts.filter.AccessControlFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AccessControlFilter</filter-name>
+        <url-pattern>*.zul</url-pattern>
+    </filter-mapping>
+    
 
     <servlet>
         <servlet-name>zkLoader</servlet-name>

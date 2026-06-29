@@ -166,14 +166,34 @@ public final class CtsUiBridge {
         }
     }
 
-    /** Adds "chk-field-edited" to a component's sclass if not already present. */
+    /**
+     * Adds "chk-field-edited" to a component's sclass (for the ✏ badge) AND
+     * applies the highlight colors directly via setStyle() so they are
+     * guaranteed to render regardless of CSS load order or the field's
+     * disabled state (checker/V2 fields are always disabled, and disabled
+     * inputs can pick up theme-level background/border styling that beats
+     * a plain CSS class on the wrapper).
+     */
     private static void addEditedClass(org.zkoss.zk.ui.HtmlBasedComponent field) {
         if (field == null) return;
+
         String existing = field.getSclass();
-        if (existing != null && existing.contains("chk-field-edited")) return;
-        field.setSclass(existing == null || existing.isBlank()
-                ? "chk-field-edited"
-                : existing + " chk-field-edited");
+        if (existing == null || !existing.contains("chk-field-edited")) {
+            field.setSclass(existing == null || existing.isBlank()
+                    ? "chk-field-edited"
+                    : existing + " chk-field-edited");
+        }
+
+        // Direct inline style on the wrapper — wins over any disabled-state
+        // or theme CSS without depending on selector specificity.
+        String existingStyle = field.getStyle();
+        String highlightStyle =
+                "border:1px solid #F59E0B !important;"
+              + "background-color:#FFFBEB !important;"
+              + "box-shadow:0 0 0 2px rgba(245,158,11,0.25) !important;";
+        field.setStyle(existingStyle == null || existingStyle.isBlank()
+                ? highlightStyle
+                : existingStyle + ";" + highlightStyle);
     }
 
     /**

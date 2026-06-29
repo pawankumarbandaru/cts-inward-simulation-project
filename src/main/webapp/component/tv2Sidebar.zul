@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+    tv2Sidebar.zul — TV2 Sidebar
+    FIXED: Added collapse toggle button (☰) and accordion for Clearing section,
+           matching the outward project sidebar style.
+    CSS: /css/sidebar.css
+    Composer: com.cts.composer.TV2SidebarComposer (upgraded)
+-->
 <div id="tv2SidebarRoot"
      apply="com.cts.composer.TV2SidebarComposer"
      sclass="cts-sidebar">
 
-    <!-- ── MAIN MENU ─────────────────────────── -->
-    <div sclass="cts-section-label">
+    <!-- ── COLLAPSE TOGGLE BUTTON ──────────────────────────── -->
+
+    <!-- ══ MAIN MENU ══════════════════════════════════════════ -->
+    <div sclass="cts-section-label sidebar-section">
         <label value="MAIN MENU"/>
     </div>
 
-    <div sclass="cts-menu-item active">
+    <div id="menuTV2Dashboard" sclass="cts-menu-item active">
         <custom-attributes perm="DASHBOARD_VIEW"
             pagePath="/zul/inward/tv2Dashboard_inward.zul"/>
         <div sclass="cts-row">
@@ -20,28 +29,44 @@
         </div>
     </div>
 
-    <!-- ── CLEARING ──────────────────────────── -->
-    <div sclass="cts-section-label">
+    <!-- ══ CLEARING ═══════════════════════════════════════════ -->
+    <div sclass="cts-section-label sidebar-section">
         <label value="CLEARING"/>
     </div>
 
-    <!-- TV2 QUEUE — no pagePath, navigation disabled -->
-   
-    	<div sclass="cts-menu-item">
-			<custom-attributes perm=""
-				pagePath="/zul/inward/TV2_ResubmittedQueue.zul" />
-			<div sclass="cts-sub-row">
-				<label sclass="cts-sub-label" value="Resubmitted Cheques" />
-			</div>
-		</div>
-    
-     	<div sclass="cts-menu-item">
-			<custom-attributes perm=""
-				pagePath="/zul/inward/TV2_ReferredQueue.zul" />
-			<div sclass="cts-sub-row">
-				<label sclass="cts-sub-label" value="Referred Cheques" />
-			</div>
-		</div>
-	
+    <!-- TV2 Inward Clearing accordion -->
+    <div id="tv2InwardHeader" sclass="cts-menu-header">
+        <div sclass="cts-row">
+            <div sclass="cts-icon-badge cts-icon-inward">
+                <label value="🏦"/>
+            </div>
+            <label sclass="cts-item-label" value="Inward Clearing"/>
+            <label id="tv2InwardArrow" sclass="cts-arrow" value="▼"/>
+        </div>
+    </div>
+
+    <div id="tv2InwardMenu" sclass="cts-submenu" visible="true">
+
+        <!-- TV2 resubmitted cheques queue -->
+        <div id="menuTV2Resubmitted" sclass="cts-menu-item">
+            <custom-attributes perm=""
+                pagePath="/zul/inward/TV2_ResubmittedQueue.zul"/>
+            <div sclass="cts-sub-row">
+                <label sclass="cts-sub-label" value="Resubmitted Cheques"/>
+                <label id="tv2ResubmittedBadge" sclass="cts-count-badge" visible="false"/>
+            </div>
+        </div>
+
+        <!-- TV2 referred cheques queue -->
+        <div id="menuTV2Referred" sclass="cts-menu-item">
+            <custom-attributes perm=""
+                pagePath="/zul/inward/TV2_ReferredQueue.zul"/>
+            <div sclass="cts-sub-row">
+                <label sclass="cts-sub-label" value="Referred Cheques"/>
+                <label id="tv2ReferredBadge" sclass="cts-count-badge" visible="false"/>
+            </div>
+        </div>
+
+    </div>
 
 </div>

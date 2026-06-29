@@ -1,0 +1,699 @@
+/* ================================================================
+   header.css  —  NAV BHARAT BANK / ClearPay CTS  Post-Login Header
+   ================================================================ */
+
+/* ── Google Font import ─────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Nunito+Sans:wght@400;600;700&display=swap');
+
+/* ── Design tokens ──────────────────────────────────────────── */
+:root {
+    --hdr-bg:           #1a1633;
+    --hdr-bg2:          #221e42;
+    --hdr-accent:       #e8334a;
+    --hdr-gold:         #f0c040;
+    --hdr-white:        #ffffff;
+    --hdr-muted:        #9490b8;
+    --hdr-online:       #34d399;
+    --hdr-clock-color:  #e8eaf6;
+    --hdr-date-color:   #9a9996;
+    --hdr-border:       rgba(255, 255, 255, 0.08);
+    --hdr-height:       65px;
+    --hdr-font-ui:      'Rajdhani', sans-serif;
+    --hdr-font-mono:    'Share Tech Mono', monospace;
+    --hdr-font-body:    'Nunito Sans', sans-serif;
+}
+
+/* ================================================================
+   ZK NORTH REGION OVERFLOW FIX
+   ----------------------------------------------------------------
+   ZK borderlayout north region has overflow:hidden by default
+   from zk.wcs. This clips the profile popup even when it has
+   position:fixed and z-index:2000.
+   Fix: override to overflow:visible so the popup renders
+   correctly above the page content.
+   ================================================================ */
+.z-north-body,
+.z-north-noborder {
+    overflow:   visible !important;
+    transform:  none    !important;
+    will-change: auto   !important;
+    isolation:  auto    !important;
+}
+
+/* ================================================================
+   hdrRoot — ZK wrapper div reset
+   ----------------------------------------------------------------
+   hdrRoot is a ZK <div> with no visual role.
+   ZK adds z-div class which sets display:block with margin/padding.
+   Reset everything so it does not affect layout.
+   ================================================================ */
+#hdrRoot,
+#hdrRoot.z-div {
+    display:    block;
+    padding:    0;
+    margin:     0;
+    border:     none;
+    background: transparent;
+    width:      100%;
+}
+
+/* ── HEADER BAR ─────────────────────────────────────────────── */
+.cts-header,
+#ctsHeader,
+#ctsHeader.z-div {
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    height:          var(--hdr-height);
+    width:           100%;
+    padding:         0 18px;
+    box-sizing:      border-box;
+    margin:          0;
+    border:          none;
+    background:      var(--hdr-bg);
+    border-bottom:   1px solid var(--hdr-border);
+    position:        sticky;
+    top:             0;
+    z-index:         1000;
+    user-select:     none;
+    box-shadow:      0 2px 16px rgba(0,0,0,0.45),
+                     inset 0 -1px 0 rgba(255,255,255,0.04);
+}
+
+/* ════════════════════════════════════════════════════════════
+   LEFT — Nav Bharat Bank branding
+   ════════════════════════════════════════════════════════════ */
+.hdr-left {
+    display:     flex;
+    align-items: center;
+    gap:         12px;
+    flex:        0 0 auto;
+}
+
+.hdr-nbb-logo {
+    height:     38px;
+    width:      auto;
+    display:    block;
+    object-fit: contain;
+}
+
+/* ════════════════════════════════════════════════════════════
+   CENTRE — Date + Clock
+   flex:1 centres the clock between left and right cleanly.
+   ════════════════════════════════════════════════════════════ */
+.hdr-centre,
+.hdr-centre.z-div {
+    flex:            1 1 auto;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    gap:             24px;
+    height:          100%;
+    padding:         0;
+    margin:          0;
+    border:          none;
+    background:      transparent;
+    pointer-events:  none;
+}
+
+.hdr-clock-label,
+label.hdr-clock-label {
+    font-family:          var(--hdr-font-ui);
+    font-size:            20px;
+    font-weight:          600;
+    color:                var(--hdr-clock-color);
+    letter-spacing:       4px;
+    line-height:          1;
+    display:              inline-block;
+    padding:              0;
+    margin:               0;
+    border:               none;
+    background:           transparent;
+    text-shadow:          0 0 18px rgba(200,210,255,0.3);
+    font-variant-numeric: tabular-nums;
+    width:                120px;
+    text-align:           center;
+    white-space:          nowrap;
+}
+
+.hdr-date-label,
+label.hdr-date-label {
+    font-family:          var(--hdr-font-ui);
+    font-size:            20px;
+    font-weight:          500;
+    color:                var(--hdr-date-color);
+    letter-spacing:       2px;
+    text-transform:       uppercase;
+    line-height:          1;
+    display:              inline-block;
+    padding:              0;
+    margin:               0;
+    border:               none;
+    background:           transparent;
+    font-variant-numeric: tabular-nums;
+    width:                140px;
+    text-align:           center;
+    white-space:          nowrap;
+}
+
+/* ════════════════════════════════════════════════════════════
+   RIGHT — ClearPay CTS + user controls
+   ════════════════════════════════════════════════════════════ */
+.hdr-right,
+.hdr-right.z-div {
+    display:     flex;
+    align-items: center;
+    gap:         10px;
+    flex:        0 0 auto;
+    padding:     0;
+    margin:      0;
+    border:      none;
+    background:  transparent;
+}
+
+.hdr-cp-block {
+    display:     flex;
+    align-items: center;
+}
+
+.hdr-cp-logo-img {
+    height:     38px;
+    width:      auto;
+    display:    block;
+    object-fit: contain;
+}
+
+.hdr-sep {
+    display:    block;
+    width:      1px;
+    height:     28px;
+    background: var(--hdr-border);
+}
+
+/* ── Green online dot ───────────────────────────────────── */
+.hdr-online-dot {
+    display:       block;
+    width:         9px;
+    height:        9px;
+    border-radius: 50%;
+    background:    var(--hdr-online);
+    flex-shrink:   0;
+    box-shadow:    0 0 6px rgba(52,211,153,0.7);
+    animation:     hdrPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes hdrPulse {
+    0%, 100% { opacity: 1;   box-shadow: 0 0 6px  rgba(52,211,153,0.7); }
+    50%       { opacity: 0.6; box-shadow: 0 0 12px rgba(52,211,153,0.4); }
+}
+
+/* ── Avatar circle ──────────────────────────────────────── */
+.hdr-avatar,
+label.hdr-avatar {
+    width:           30px;
+    height:          30px;
+    border-radius:   50%;
+    background:      var(--hdr-bg2);
+    border:          1.5px solid rgba(255,255,255,0.18);
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    font-family:     var(--hdr-font-ui);
+    font-size:       14px;
+    font-weight:     700;
+    color:           var(--hdr-white);
+    padding:         0;
+    margin:          0;
+    line-height:     30px;
+    text-align:      center;
+    cursor:          default;
+}
+
+/* ── Avatar button wrapper ──────────────────────────────── */
+.hdr-avatar-btn,
+.hdr-avatar-btn.z-div {
+    display:       inline-flex;
+    align-items:   center;
+    gap:           2px;
+    cursor:        pointer;
+    padding:       3px 5px;
+    border-radius: 6px;
+    transition:    background 0.18s ease;
+    background:    transparent;
+    border:        none;
+    margin:        0;
+}
+
+.hdr-avatar-btn:hover,
+.hdr-avatar-btn.z-div:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+.hdr-chevron {
+    font-size:   8px;
+    color:       var(--hdr-muted);
+    margin-left: -6px;
+}
+
+/* ── Role pill ──────────────────────────────────────────── */
+.hdr-role-pill,
+label.hdr-role-pill {
+    background:     var(--hdr-accent);
+    color:          var(--hdr-white);
+    font-family:    var(--hdr-font-ui);
+    font-size:      10px;
+    font-weight:    700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding:        3px 9px;
+    border-radius:  3px;
+    line-height:    1;
+    display:        inline-block;
+    margin:         0;
+    border:         none;
+    cursor:         default;
+    box-shadow:     0 1px 5px rgba(232,51,74,0.4);
+}
+
+/* ── ZK label resets inside header bar ─────────────────── */
+.cts-header label    { color: inherit; font-size: inherit; }
+.cts-header .z-label { display: inline-block; }
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .hdr-nbb-logo    { height: 30px; }
+    .hdr-cp-logo-img { height: 30px; }
+}
+@media (max-width: 640px) {
+    .hdr-cp-block    { display: none; }
+    .hdr-clock-label { font-size: 16px; }
+}
+
+/* ================================================================
+   PROFILE POPUP
+   ----------------------------------------------------------------
+   Hidden by default with display:none.
+   Shown by composer: setSclass("profile-popup pp-visible")
+   Hidden by composer: setSclass("profile-popup")
+   position:fixed + z-north-body overflow:visible fix above lets
+   it render outside the north region boundary correctly.
+   ================================================================ */
+.profile-popup,
+.profile-popup.z-div {
+    display:       none;
+    position:      fixed;
+    top:           70px;
+    right:         18px;
+    width:         280px;
+    background:    #1e1b3a;
+    border:        1px solid rgba(255,255,255,0.10);
+    border-radius: 14px;
+    box-shadow:    0 8px 40px rgba(0,0,0,0.55);
+    overflow:      hidden;
+    z-index:       99999;
+    padding:       0;
+    margin:        0;
+}
+
+.profile-popup.pp-visible,
+.profile-popup.z-div.pp-visible {
+    display: block;
+}
+
+/* ════════════════════════════════════════════════════════════
+   TOP SECTION — big avatar + name + email + role badge
+   ════════════════════════════════════════════════════════════ */
+.pp-top {
+    display:        flex;
+    flex-direction: column;
+    align-items:    center;
+    padding:        28px 20px 20px;
+    background:     #221e42;
+    gap:            6px;
+}
+
+.pp-avatar-big {
+    width:           72px;
+    height:          72px;
+    border-radius:   50%;
+    background:      linear-gradient(135deg, #7c3aed, #a855f7);
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    margin-bottom:   8px;
+    box-shadow:      0 0 0 3px rgba(168,85,247,0.30);
+}
+
+.pp-avatar-letter,
+label.pp-avatar-letter {
+    font-family: var(--hdr-font-ui);
+    font-size:   28px;
+    font-weight: 700;
+    color:       #ffffff;
+    display:     inline-block;
+    padding:     0;
+    margin:      0;
+    border:      none;
+    background:  transparent;
+    line-height: 1;
+}
+
+.pp-name,
+label.pp-name {
+    font-family:    var(--hdr-font-ui);
+    font-size:      15px;
+    font-weight:    600;
+    color:          #ffffff;
+    letter-spacing: 0.5px;
+    display:        inline-block;
+    padding:        0;
+    margin:         0;
+    border:         none;
+    background:     transparent;
+}
+
+.pp-email,
+label.pp-email {
+    font-family: var(--hdr-font-body);
+    font-size:   12px;
+    font-weight: 400;
+    color:       #9490b8;
+    display:     inline-block;
+    padding:     0;
+    margin:      0;
+    border:      none;
+    background:  transparent;
+}
+
+.pp-role-badge,
+label.pp-role-badge {
+    background:     var(--hdr-accent);
+    color:          #ffffff;
+    font-family:    var(--hdr-font-ui);
+    font-size:      10px;
+    font-weight:    700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding:        4px 14px;
+    border-radius:  20px;
+    margin-top:     4px;
+    display:        inline-block;
+    border:         none;
+    cursor:         default;
+    box-shadow:     0 2px 8px rgba(232,51,74,0.4);
+}
+
+/* ════════════════════════════════════════════════════════════
+   DIVIDER
+   ════════════════════════════════════════════════════════════ */
+.pp-divider {
+    height:     1px;
+    background: rgba(255,255,255,0.07);
+    margin:     0;
+}
+
+/* ════════════════════════════════════════════════════════════
+   MENU
+   ════════════════════════════════════════════════════════════ */
+.pp-menu {
+    padding:    8px 0;
+    background: #1e1b3a;
+}
+
+.pp-menu-item,
+.pp-menu-item.z-div {
+    display:     flex;
+    align-items: center;
+    gap:         14px;
+    padding:     12px 20px;
+    cursor:      pointer;
+    transition:  background 0.18s ease;
+    background:  transparent;
+    width:       100%;
+    box-sizing:  border-box;
+    border:      none;
+    margin:      0;
+}
+
+.pp-menu-item:hover,
+.pp-menu-item.z-div:hover {
+    background: rgba(255,255,255,0.06);
+}
+
+/* ── Icon coloured box ──────────────────────────────────── */
+.pp-icon {
+    width:           34px;
+    height:          34px;
+    border-radius:   8px;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    font-size:       16px;
+    flex-shrink:     0;
+}
+
+.pp-icon-profile  { background: rgba(99,102,241,0.20);  color: #818cf8; }
+.pp-icon-password { background: rgba(234,179,8,0.20);   color: #facc15; }
+.pp-icon-edit     { background: rgba(249,115,22,0.20);  color: #fb923c; }
+.pp-icon-clock    { background: rgba(56,189,248,0.18);  color: #38bdf8; }
+.pp-icon-logout   { background: rgba(239,68,68,0.20);   color: #f87171; }
+
+/* ── Menu label ─────────────────────────────────────────── */
+.pp-menu-label {
+    font-family:    var(--hdr-font-body);
+    font-size:      14px;
+    font-weight:    600;
+    color:          #e2e0f0;
+    letter-spacing: 0.2px;
+}
+
+.pp-logout .pp-menu-label { color: #f87171; }
+
+/* ════════════════════════════════════════════════════════════
+   FOOTER — active session timer
+   ════════════════════════════════════════════════════════════ */
+.pp-footer {
+    display:     flex;
+    align-items: center;
+    gap:         8px;
+    padding:     10px 20px 14px;
+    border-top:  1px solid rgba(255,255,255,0.07);
+    background:  #1e1b3a;
+}
+
+.pp-online-dot {
+    display:       block;
+    width:         7px;
+    height:        7px;
+    border-radius: 50%;
+    background:    var(--hdr-online);
+    flex-shrink:   0;
+    box-shadow:    0 0 5px rgba(52,211,153,0.6);
+}
+
+.pp-session-label,
+label.pp-session-label {
+    font-family: var(--hdr-font-mono);
+    font-size:   11px;
+    color:       #6b6890;
+    display:     inline-block;
+    padding:     0;
+    margin:      0;
+    border:      none;
+    background:  transparent;
+}
+
+/* ════════════════════════════════════════════════════════════
+   CLOCK TOGGLE — ON/OFF pill
+   ════════════════════════════════════════════════════════════ */
+.pp-toggle,
+.pp-toggle.z-div {
+    display:         inline-flex;
+    align-items:     center;
+    justify-content: center;
+    min-width:       38px;
+    height:          20px;
+    border-radius:   10px;
+    padding:         0 8px;
+    margin-left:     auto;
+    flex-shrink:     0;
+    transition:      background 0.2s ease;
+}
+
+.pp-toggle-on,
+.pp-toggle-on.z-div,
+.pp-toggle.z-div.pp-toggle-on {
+    background: rgba(52,211,153,0.22)  !important;
+    border:     1px solid rgba(52,211,153,0.40) !important;
+}
+
+.pp-toggle-off,
+.pp-toggle-off.z-div,
+.pp-toggle.z-div.pp-toggle-off {
+    background: rgba(148,144,184,0.18) !important;
+    border:     1px solid rgba(148,144,184,0.30) !important;
+}
+
+.pp-toggle-label,
+label.pp-toggle-label {
+    font-family:    var(--hdr-font-ui);
+    font-size:      10px;
+    font-weight:    700;
+    letter-spacing: 1px;
+    display:        inline-block;
+    padding:        0;
+    margin:         0;
+    border:         none;
+    background:     transparent;
+    line-height:    1;
+}
+
+.pp-toggle-on  .pp-toggle-label,
+.pp-toggle-on  label.pp-toggle-label,
+.pp-toggle.pp-toggle-on  label.z-label { color: #34d399 !important; }
+
+.pp-toggle-off .pp-toggle-label,
+.pp-toggle-off label.pp-toggle-label,
+.pp-toggle.pp-toggle-off label.z-label { color: #9490b8 !important; }
+
+/* ════════════════════════════════════════════════════════════
+   CHANGE PASSWORD MODAL
+   ════════════════════════════════════════════════════════════ */
+.chpw-modal-overlay {
+    position:        fixed;
+    inset:           0;
+    background:      rgba(0, 0, 0, 0.45);
+    z-index:         99999;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+}
+
+.chpw-modal-card {
+    background:    #fff;
+    border-radius: 12px;
+    width:         420px;
+    box-shadow:    0 8px 32px rgba(0,0,0,0.18);
+    overflow:      hidden;
+}
+
+.chpw-modal-header {
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    padding:         16px 20px;
+    background:      #3b1f6e;
+    color:           #fff;
+}
+
+.chpw-modal-title {
+    font-size:   15px;
+    font-weight: 600;
+    color:       #fff;
+}
+
+.chpw-close-btn {
+    background: transparent !important;
+    color:      #fff        !important;
+    border:     none        !important;
+    font-size:  16px;
+    cursor:     pointer;
+}
+
+.chpw-modal-body {
+    padding:        20px 24px;
+    display:        flex;
+    flex-direction: column;
+    gap:            14px;
+}
+
+.chpw-note {
+    font-size:     12px;
+    color:         #666;
+    background:    #f5f5f5;
+    border-left:   3px solid #3b1f6e;
+    padding:       8px 12px;
+    border-radius: 4px;
+}
+
+.chpw-error-label {
+    color:      #c0392b;
+    font-size:  12px;
+    min-height: 16px;
+}
+
+.chpw-modal-footer {
+    display:         flex;
+    justify-content: flex-end;
+    gap:             10px;
+    padding:         14px 24px;
+    border-top:      1px solid #eee;
+}
+
+.idle-warn-dialog .z-window-content {
+    background: #ffffff !important;
+    padding: 0 !important;
+}
+/* Idle warning dialog — clean centered card */
+.idle-warn-dialog {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25) !important;
+    border: none !important;
+}
+.idle-warn-dialog .z-window-header {
+    background: #b91c1c !important;      /* red header = urgency */
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    padding: 14px 18px !important;
+    text-align: center !important;
+}
+.idle-warn-icon {
+    font-size: 46px !important;
+    line-height: 1 !important;
+}
+.idle-warn-title {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #1f2937 !important;
+    text-align: center !important;
+}
+.idle-warn-msg {
+    font-size: 18px !important;
+    color: #b91c1c !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    letter-spacing: 0.3px !important;
+}
+.idle-stay-btn {
+    background: #1a3a6e !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 10px 20px !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    cursor: pointer !important;
+}
+.idle-stay-btn:hover { background: #142d58 !important; }
+.idle-logout-btn {
+    background: #ffffff !important;
+    color: #b91c1c !important;
+    border: 1.5px solid #e5b4b4 !important;
+    border-radius: 6px !important;
+    padding: 10px 18px !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    cursor: pointer !important;
+}
+.idle-logout-btn:hover { background: #fef2f2 !important; }
+
+.idle-warn-dialog {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+    z-index: 99999 !important;
+}

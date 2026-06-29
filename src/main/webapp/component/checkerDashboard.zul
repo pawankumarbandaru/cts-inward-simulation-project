@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+    checkerDashboard.zul — TV1 (Checker) Dashboard Shell
+    Layout: North (header) + West (TV1 sidebar) + Center (content)
+    FIXED: west size set to 240px matching sidebar.css width,
+           header.css and profile-modal.css added for upgraded header popup.
+-->
 <?link rel="stylesheet" href="/css/dashboard.css"?>
-<?link rel="stylesheet" href="/css/sidebar.css"?>
-<?link rel="stylesheet" href="/css/header.css"?>
+<?link rel="stylesheet" type="text/css" href="/css/sidebar.css?v=3"?>
+<?link rel="stylesheet" href="/css/inward/header.css"?>
+<?link rel="stylesheet" href="/css/profile-modal.css"?>
 
 <zk>
 
     <borderlayout sclass="cts-dashboard-layout">
 
-        <!-- NORTH — Header bar -->
-        <north size="60px" border="none" splittable="false" collapsible="false">
+        <!-- NORTH — Header bar (same shared header.zul used by all roles) -->
+        <north size="65px" border="none" splittable="false" collapsible="false">
             <include src="/component/header.zul"/>
         </north>
 
-        <!-- WEST — Checker Sidebar -->
-        <west size="260px" border="none" splittable="false" collapsible="false">
+        <!-- WEST — TV1 Checker Sidebar -->
+        <west size="240px" border="none" splittable="false" collapsible="false">
             <include src="/component/checkerSidebar.zul"/>
         </west>
 
-        <!-- CENTER — Main content area -->
+        <!-- CENTER — Main content area; CheckerDashboardComposer loads pages here -->
         <center border="none" autoscroll="true">
             <div sclass="cts-content"
                  id="checkerContentArea"

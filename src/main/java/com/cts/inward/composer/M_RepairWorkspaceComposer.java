@@ -200,9 +200,20 @@ public class M_RepairWorkspaceComposer extends SelectorComposer<Component> {
      * - MICR fields  → updates the live MICR line preview as the maker types
      * - City/Bank/Branch → rebuilds the MICR AUTO number field on every change
      */
+    /**
+     * Attaches live update listeners to every editable field:
+     *
+     * 1. Amount in Words          — updates label as maker types in amount
+     * 2. MICR line preview        — updates live MICR strip from 5 MICR fields
+     * 3. MICR AUTO field          — city + bank + branch concatenation
+     * 4. LIVE FIELD VALIDATION    — shows red/green border + error label on
+     *                               every keystroke (ON_CHANGING) and on blur
+     *                               (ON_CHANGE). Clears error as soon as value
+     *                               becomes valid. Fires on every field independently.
+     */
     private void attachLiveListeners() {
 
-        // Amount in Words — live update on each keystroke
+        // ── 1. Amount in Words — live update on each keystroke ───────────────
         fieldAmount.addEventListener(
             org.zkoss.zk.ui.event.Events.ON_CHANGING,
             event -> {
@@ -212,7 +223,7 @@ public class M_RepairWorkspaceComposer extends SelectorComposer<Component> {
             }
         );
 
-        // MICR line preview — updates when any of the 5 MICR fields changes
+        // ── 2. MICR line preview — one shared listener for 5 fields ─────────
         org.zkoss.zk.ui.event.EventListener<org.zkoss.zk.ui.event.Event> micrLiveListener =
             event -> formHelper.updateMicrLinePreviewLive(
                 fieldChequeNo.getValue(), fieldCity.getValue(),
@@ -224,7 +235,7 @@ public class M_RepairWorkspaceComposer extends SelectorComposer<Component> {
         fieldBranch.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGING, micrLiveListener);
         fieldTc.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGING, micrLiveListener);
 
-        // MICR AUTO field — concatenates city + bank + branch on every keystroke
+        // ── 3. MICR AUTO field — city + bank + branch concatenation ─────────
         org.zkoss.zk.ui.event.EventListener<org.zkoss.zk.ui.event.Event> micrAutoListener =
             event -> {
                 if (fieldMicrAuto == null) return;
@@ -239,6 +250,96 @@ public class M_RepairWorkspaceComposer extends SelectorComposer<Component> {
         fieldBank.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGE,   micrAutoListener);
         fieldBranch.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGING, micrAutoListener);
         fieldBranch.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGE,   micrAutoListener);
+
+        // ── 4. LIVE FIELD VALIDATION ─────────────────────────────────────────
+        //
+        // Pattern for each field:
+        //   ON_CHANGING → pass InputEvent.getValue() (in-progress text including
+        //                  the latest keystroke) to validateFieldLive()
+        //   ON_CHANGE   → pass null → validator calls getValue() itself (blur)
+        //
+        // Why both events?
+        //   ON_CHANGING = fires mid-keystroke, before getValue() updates.
+        //                 InputEvent.getValue() has the latest character.
+        //   ON_CHANGE   = fires on blur (user tabs away). Catches paste/autofill
+        //                 that may not fire ON_CHANGING.
+
+        // Cheque Number
+        fieldChequeNo.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGING, event -> {
+            org.zkoss.zk.ui.event.InputEvent ie = (org.zkoss.zk.ui.event.InputEvent) event;
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_CHEQUE_NO, ie.getValue());
+        });
+        fieldChequeNo.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGE, event ->
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_CHEQUE_NO, null)
+        );
+
+        // City Code
+        fieldCity.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGING, event -> {
+            org.zkoss.zk.ui.event.InputEvent ie = (org.zkoss.zk.ui.event.InputEvent) event;
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_CITY, ie.getValue());
+        });
+        fieldCity.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGE, event ->
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_CITY, null)
+        );
+
+        // Bank Code
+        fieldBank.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGING, event -> {
+            org.zkoss.zk.ui.event.InputEvent ie = (org.zkoss.zk.ui.event.InputEvent) event;
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_BANK, ie.getValue());
+        });
+        fieldBank.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGE, event ->
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_BANK, null)
+        );
+
+        // Branch Code
+        fieldBranch.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGING, event -> {
+            org.zkoss.zk.ui.event.InputEvent ie = (org.zkoss.zk.ui.event.InputEvent) event;
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_BRANCH, ie.getValue());
+        });
+        fieldBranch.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGE, event ->
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_BRANCH, null)
+        );
+
+        // Transaction Code
+        fieldTc.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGING, event -> {
+            org.zkoss.zk.ui.event.InputEvent ie = (org.zkoss.zk.ui.event.InputEvent) event;
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_TC, ie.getValue());
+        });
+        fieldTc.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGE, event ->
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_TC, null)
+        );
+
+        // Amount
+        fieldAmount.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGING, event -> {
+            org.zkoss.zk.ui.event.InputEvent ie = (org.zkoss.zk.ui.event.InputEvent) event;
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_AMOUNT, ie.getValue());
+        });
+        fieldAmount.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGE, event ->
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_AMOUNT, null)
+        );
+
+        // Cheque Date — Datebox fires ON_CHANGE only (no ON_CHANGING)
+        fieldDate.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGE, event ->
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_DATE, null)
+        );
+
+        // Account Number
+        fieldAcc.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGING, event -> {
+            org.zkoss.zk.ui.event.InputEvent ie = (org.zkoss.zk.ui.event.InputEvent) event;
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_ACC, ie.getValue());
+        });
+        fieldAcc.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGE, event ->
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_ACC, null)
+        );
+
+        // Payee Name
+        fieldPayee.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGING, event -> {
+            org.zkoss.zk.ui.event.InputEvent ie = (org.zkoss.zk.ui.event.InputEvent) event;
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_PAYEE, ie.getValue());
+        });
+        fieldPayee.addEventListener(org.zkoss.zk.ui.event.Events.ON_CHANGE, event ->
+            fieldValidator.validateFieldLive(MakerFieldValidator.FIELD_PAYEE, null)
+        );
     }
 
     // ── Load cheque ──────────────────────────────────────────────────────────

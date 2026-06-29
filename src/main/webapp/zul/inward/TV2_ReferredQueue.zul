@@ -1,54 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?page title="Referred Cheques | CTS" contentType="text/html;charset=UTF-8"?>
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:n="native"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
 
-<?page title="Referred Cheques - TV II"?>
+    <style src="/css/inward/Inwardmakerstyles.css"/>
+    <style src="/css/inward/checkerStyles.css"/>
+    <style src="/css/inward/cts-breadcrumb-filter-theme.css"/>
 
-<zk>
+    <!--
+        Referred Cheques — TV-II
+        Read-only tracking list: cheques TV2 has sent back to the Maker
+        (cheque_status = Repair, send_to = TV_2, decision = REFERRED).
+    -->
 
-	<div apply="com.cts.inward.composer.TV2_ReferredChequeListComposer"
-	     sclass="maker-page-root">
+    <div apply="com.cts.inward.composer.TV2_ReferredChequeListComposer"
+         sclass="rcb-page-wrap">
 
-	    <style src="/css/inward/common.css"/>
-		<style src="/css/inward/referredChequeList.css"/>
+        <div sclass="rcb-scroll-area">
 
-    	<div sclass="maker-main-content">
-
-            <div sclass="breadcrumb-bar">
-                <label value="Inward"          sclass="bread-parent"/>
-                <label value=" - "             sclass="bread-sep"/>
-                <label value="Referred Cheques" sclass="bread-current"/>
+            <!-- Breadcrumb -->
+            <div sclass="cts-breadcrumb">
+                <n:span class="cts-breadcrumb-item">Home</n:span>
+                <n:span class="cts-breadcrumb-sep">›</n:span>
+                <n:span class="cts-breadcrumb-active">Referred Cheques</n:span>
             </div>
 
-            <div sclass="page-subtitle-bar">
-                <label id="lblPageSubtitle"
-                       value="Cheques Referred to TV-II"
-                       sclass="page-subtitle-label"/>
+            <!-- Page header  sclass="v2-count-badge"-->
+            <div sclass="page-hdr">
+                <div>
+                    <div sclass="page-title">
+                        <n:span class="v2-title-dot">↪</n:span>
+                        Referred Cheques
+                        <label id="ref-count-badge"
+                              
+                               value=""/>
+                    </div>
+                    <div sclass="page-sub">
+                        Cheques sent back to Maker for correction — tracking only, no action needed here
+                    </div>
+                </div>
+                <button id="ref-btn-refresh"
+                        sclass="v2-btn-refresh"
+                        autodisable="false">
+                    ↺ Refresh
+                </button>
             </div>
 
-            <div sclass="two-panel-layout">
+            <!-- Filter bar — Dashboard style -->
+            <div sclass="search-bar">
 
-                <div sclass="right-panel">
-
-                    <listbox id="lbReferredChequeList"
-                             sclass="cheque-listbox"
-                             mold="paging"
-                             pageSize="5">
-                        <listhead sclass="cheque-list-head" sizable="true">
-                            <listheader label="#"            width="50px"/>
-                            <listheader label="Cheque No"    hflex="1"/>
-                            <listheader label="Amount"       hflex="1"/>
-                            <listheader label="Cheque Date"  hflex="1"/>
-                            <listheader label="Status"       hflex="1"/>
-                        </listhead>
-                    </listbox>
-
-                    <paging id="pgReferredChequeList" pageSize="5"/>
-
+                <div sclass="srch-field-grow">
+                    <label value="SEARCH CHEQUE / BATCH" sclass="srch-label"/>
+                    <textbox id="ref-search"
+                             placeholder="Cheque no. or Batch ID..."
+                             width="100%"/>
                 </div>
 
+                <div sclass="srch-field">
+                    <label value="BATCH NUMBER" sclass="srch-label"/>
+                    <listbox id="ref-batch-filter" mold="select" width="160px">
+                        <listitem label="All Batches" value="" selected="true"/>
+                    </listbox>
+                </div>
+
+                <button id="ref-btn-search" sclass="btn-search-srch" label="🔍 Search" autodisable="false"/>
+                <button id="ref-btn-clear-filter" sclass="btn-clear-srch" label="✕ Clear" autodisable="false"/>
+
             </div>
+
+            <!-- TABLE -->
+            <div sclass="cts-table-wrap cts-merged-table">
+                <grid id="ref-grid" sclass="rcb-grid">
+                   <columns sizable="false" sclass="cts-grid-header-blue">
+    <column label="#"              width="45px"  align="center"/>
+    <column label="Cheque No."     width="120px" align="center"/>
+    <column label="Batch ID"       width="120px" align="center"/>
+    <column label="Amount (&#8377;)" width="120px" align="center"/>
+    <column label="Cheque Date"    width="120px" align="center"/>
+    <column label="Refer Reason"   hflex="1"     align="left"/>
+    <column label="Status"         width="130px" align="center"/>
+</columns>
+                    <rows id="ref-rows">
+                        <row id="ref-empty-row" visible="false">
+                            <cell colspan="7">
+                                <n:div class="rcb-empty-state">
+                                    <n:div class="v2-empty-icon">📭</n:div>
+                                    <n:div class="v2-empty-title">
+                                        No Referred Cheques
+                                    </n:div>
+                                    <n:div class="v2-empty-desc">
+                                        No cheques are currently sent back to the Maker.
+                                    </n:div>
+                                </n:div>
+                            </cell>
+                        </row>
+                    </rows>
+                </grid>
+            </div>
+
+            <paging id="ref-paging" pageSize="5" totalSize="0"
+                    sclass="rcb-paging"/>
 
         </div>
 
-	</div>
+    </div>
 
 </zk>

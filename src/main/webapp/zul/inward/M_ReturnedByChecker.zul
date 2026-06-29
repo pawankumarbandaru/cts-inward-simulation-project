@@ -5,21 +5,15 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
 
-    <!--
-        CSS — ZK <style src="/css/..."/> automatically prepends the webapp
-        context path (/navbharat) so browser gets /navbharat/css/inward/...  ✓
-    -->
-        
     <style src="/css/inward/Inwardmakerstyles.css"/>
     <style src="/css/inward/checkerStyles.css"/>
     <style src="/css/inward/cts-breadcrumb-filter-theme.css"/>
 
-
     <div apply="com.cts.inward.composer.M_ReturnedByCheckerComposer"
          sclass="rcb-page-wrap">
 
-        <!-- Scrollable content area -->
-        <div sclass="rcb-scroll-area">
+        <!-- FIXED TOP — breadcrumb, header, banners, filters stay pinned -->
+        <div sclass="rcb-fixed-top">
 
             <!-- Breadcrumb -->
             <div sclass="cts-breadcrumb">
@@ -50,8 +44,6 @@
             </div>
 
             <!-- Success banner -->
-            <!-- FIX: replaced ZK <html> (stub-based) with <n:div id="rcb-success-text">
-                 Same fix as the other queue pages. -->
             <div id="rcb-success-banner" visible="false"
                  sclass="rcb-success-banner">
                 <n:span class="rcb-success-icon">✅</n:span>
@@ -72,93 +64,65 @@
                 </n:span>
             </div>
 
-            <!--
-                FILTER BAR + TABLE — now one merged card (no gap between them)
-                Priority filter REMOVED — priority column deleted from DB.
-                Filters: Search, Batch Number, Clear.
-            -->
-            <div sclass="cts-merged-card">
+            <!-- Filter bar — Dashboard style -->
+            <div sclass="search-bar">
 
-                <div sclass="cts-filter-card rcb-filter-bar cts-merged-filter">
-
-                    <!-- Search column -->
-                    <div sclass="rcb-filter-col rcb-filter-col-search">
-                        <n:span class="cts-filter-label">Search Cheque / Batch</n:span>
-                        <div sclass="cts-filter-input-row">
-                            <textbox id="rcb-search"
-                                     sclass="cts-filter-input rcb-filter-input"
-                                     placeholder="Cheque no. or Batch ID..."/>
-                            <button id="btn-search"
-                                    label="🔍 Search"
-                                    sclass="cts-btn-search rcb-filter-btn cts-btn-search-navy"
-                                    autodisable="false"/>
-                        </div>
-                    </div>
-
-                    <!-- Batch Number filter column -->
-                    <div sclass="rcb-filter-col">
-                        <n:span class="cts-filter-label">Batch Number</n:span>
-                        <listbox id="rcb-batch-filter"
-                                 mold="select"
-                                 sclass="cts-filter-select"
-                                 style="height:38px !important;min-height:38px !important;
-                                        max-height:38px !important;">
-                            <listitem label="All Batches" value="" selected="true"/>
-                        </listbox>
-                    </div>
-
-                    <!-- Clear button column -->
-                    <div sclass="rcb-filter-col">
-                        <n:div class="cts-filter-label-wrap"/>
-                        <button id="btn-clear-filter"
-                                label="✕ Clear"
-                                sclass="cts-btn-clear rcb-filter-btn cts-btn-clear-navy"
-                                autodisable="false"/>
-                    </div>
-
+                <div sclass="srch-field-grow">
+                    <label value="SEARCH CHEQUE / BATCH" sclass="srch-label"/>
+                    <textbox id="rcb-search"
+                             placeholder="Cheque no. or Batch ID..."
+                             width="100%"/>
                 </div>
 
-                <!--
-                    TABLE
-                    Column layout (this version):
-                      # | Batch Number | Cheque Number | Amount (₹) | Checker SendBack Reason | Action
+                <div sclass="srch-field">
+                    <label value="BATCH NUMBER" sclass="srch-label"/>
+                    <listbox id="rcb-batch-filter"
+                             mold="select"
+                             width="160px">
+                        <listitem label="All Batches" value="" selected="true"/>
+                    </listbox>
+                </div>
 
-                    Amount (₹) added to match TV1/TV2 queue pages — lets the
-                    maker see the cheque amount without opening the repair
-                    workspace. colspan = 6.
-                -->
-                <div sclass="cts-table-wrap cts-merged-table">
-                    <grid id="rcb-grid" sclass="rcb-grid">
-                        <columns sizable="false" sclass="cts-grid-header-blue">
-                            <column label="#"                        width="45px"  align="center"/>
-                            <column label="Batch Number"             width="110px" align="center"/>
-                            <column label="Cheque Number"            width="120px" align="center"/>
-                            <column label="Amount (&#8377;)"         width="105px" align="center"/>
-                            <column label="Checker SendBack Reason"  width="380px" align="left"/>
-                            <column label="Action"                   width="110px" align="center"/>
-                        </columns>
-                        <rows id="rcb-rows">
-                            <row id="rcb-empty" visible="false">
-                                <cell colspan="6">
-                                    <n:div class="rcb-empty-state">
-                                        <n:div class="rcb-empty-icon">✅</n:div>
-                                        <n:div class="rcb-empty-title">
-                                            No Returned Cheques
-                                        </n:div>
-                                        <n:div class="rcb-empty-desc">
-                                            All cheques are clear — no corrections pending from any Checker.
-                                        </n:div>
+                <button id="btn-search" sclass="btn-search-srch" label="🔍 Search" autodisable="false"/>
+                <button id="btn-clear-filter" sclass="btn-clear-srch" label="✕ Clear" autodisable="false"/>
+
+            </div>
+
+        </div>
+
+        <!-- SCROLL AREA — ONLY the table + paging scroll -->
+        <div sclass="rcb-scroll-area">
+
+            <div sclass="cts-table-wrap">
+                <grid id="rcb-grid" sclass="rcb-grid">
+                    <columns sizable="false" sclass="cts-grid-header-blue">
+                        <column label="#"                        width="45px"  align="center"/>
+                        <column label="Batch Number"             width="110px" align="center"/>
+                        <column label="Cheque Number"            width="120px" align="center"/>
+                        <column label="Amount (&#8377;)"         width="105px" align="center"/>
+                        <column label="Checker SendBack Reason"  width="380px" align="left"/>
+                        <column label="Action"                   width="110px" align="center"/>
+                    </columns>
+                    <rows id="rcb-rows">
+                        <row id="rcb-empty" visible="false">
+                            <cell colspan="6">
+                                <n:div class="rcb-empty-state">
+                                    <n:div class="rcb-empty-icon">✅</n:div>
+                                    <n:div class="rcb-empty-title">
+                                        No Returned Cheques
                                     </n:div>
-                                </cell>
-                            </row>
-                        </rows>
-                    </grid>
-                </div>
+                                    <n:div class="rcb-empty-desc">
+                                        All cheques are clear — no corrections pending from any Checker.
+                                    </n:div>
+                                </n:div>
+                            </cell>
+                        </row>
+                    </rows>
+                </grid>
+            </div>
 
-                <paging id="rcb-paging" pageSize="2" totalSize="0"
-                        sclass="rcb-paging"/>
-
-            </div><!-- /cts-merged-card -->
+            <paging id="rcb-paging" pageSize="5" totalSize="0"
+                    sclass="rcb-paging"/>
 
         </div>
 

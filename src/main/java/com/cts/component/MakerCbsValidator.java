@@ -222,11 +222,9 @@ public class MakerCbsValidator {
 
 		Html passBox = new Html();
 		passBox.setContent("<div class='cbs-pass-box'>"
-				+ "<div class='cbs-pass-title'>✅ All 5 CBS Checks Passed Successfully</div>"
+				+ "<div class='cbs-pass-title'>✅ All 5 CBS Checks Passed</div>"
 				+ "<div class='cbs-pass-note'>" + escapeHtml(routingNote) + "</div>"
-				+ "<div style='font-size:10px;font-weight:700;color:#6B7280;"
-				+ "text-transform:uppercase;letter-spacing:.4px;'>Cheque will be sent to:</div>"
-				+ "<div class='cbs-pass-dest'>" + escapeHtml(destination) + "</div>" + "</div>");
+				+ "<div class='cbs-pass-dest'>Sending to: " + escapeHtml(destination) + "</div>" + "</div>");
 		resultArea.appendChild(passBox);
 
 		final double finalAmount = amount;
@@ -235,7 +233,7 @@ public class MakerCbsValidator {
 		Div footerDiv = new Div();
 		footerDiv.setSclass("cbs-popup-footer");
 
-		Button submitBtn = new Button("📤 Transfer to " + destination + " & Back to Queue");
+		Button submitBtn = new Button("✔ OK");
 		submitBtn.setSclass("btn-submit-checker");
 		submitBtn.setStyle("flex:1;");
 		submitBtn.addEventListener(Events.ON_CLICK, event -> {
@@ -258,9 +256,7 @@ public class MakerCbsValidator {
 
 		Html failBox = new Html();
 		failBox.setContent("<div class='cbs-fail-box'>" + "<div class='cbs-fail-title'>❌ CBS Validation Failed</div>"
-				+ "<div class='cbs-fail-note'>" + escapeHtml(failureMessage) + "</div>"
-				+ "<div style='font-size:10px;color:#9B1C1C;margin-top:4px;font-style:italic;'>"
-				+ "Cheque cannot be forwarded. Generate RRF to return to NPCI.</div>" + "</div>");
+				+ "<div class='cbs-fail-note'>" + escapeHtml(failureMessage) + "</div>" + "</div>");
 		resultArea.appendChild(failBox);
 
 		final String finalFailureCode = failureCode;
@@ -268,7 +264,7 @@ public class MakerCbsValidator {
 		Div footerDiv = new Div();
 		footerDiv.setSclass("cbs-popup-footer");
 
-		Button btnRRF = new Button("📋 Generate RRF (Return to NPCI)");
+		Button btnRRF = new Button("✔ OK");
 		btnRRF.setSclass("btn-rrf");
 		btnRRF.setStyle("flex:1;");
 		btnRRF.addEventListener(Events.ON_CLICK, event -> {

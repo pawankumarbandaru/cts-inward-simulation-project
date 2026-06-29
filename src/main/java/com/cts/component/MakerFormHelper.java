@@ -217,7 +217,7 @@ public class MakerFormHelper {
         String cityV  = safeOrDash(city,     "[0-9]{3}");
         String bankV  = safeOrDash(bank,     "[0-9]{3}");
         String branchV= safeOrDash(branch,   "[0-9]{3}");
-        String tcV    = safeOrDash(tc,        "[0-9]+");
+        String tcV    = safeOrDash(tc,        "[0-9]{2}");
 
         micrStripLive.setValue(
             "⑆" + chq + "⑆ " + cityV + bankV + branchV + "⑈ ⑉" + tcV + "⑉"
@@ -354,10 +354,35 @@ public class MakerFormHelper {
      * Call this BEFORE populatePage() in the Maker composer.
      */
     public void setEditMode() {
-        fieldAcc   .setReadonly(false);
-        fieldDate  .setReadonly(false);
-        fieldAmount.setReadonly(false);
-        fieldPayee .setReadonly(false);
+        // Remove readonly from ALL editable fields.
+        // ZUL macros set readonly="true" on acc/date/amount/payee to protect
+        // the Checker view. We unlock them here for the Maker repair workspace.
+        // chequeNo, city, bank, branch, tc do NOT have readonly in ZUL but we
+        // clear it defensively in case the ZUL ever changes.
+        fieldChequeNo.setReadonly(false);
+        fieldCity    .setReadonly(false);
+        fieldBank    .setReadonly(false);
+        fieldBranch  .setReadonly(false);
+        fieldTc      .setReadonly(false);
+        fieldAcc     .setReadonly(false);
+        fieldDate    .setReadonly(false);
+        fieldAmount  .setReadonly(false);
+        fieldPayee   .setReadonly(false);
+
+        // Remove ZK inline constraints from all textbox fields.
+        // The ZUL macros declare constraint="/^[0-9]*$/: Digits only" on chequeNo,
+        // city, bank, branch, tc, amount, and acc. ZK enforces these constraints
+        // BEFORE firing ON_CHANGING — so a mid-keystroke partial value that fails
+        // the regex (e.g. non-digit typed) blocks our Java live-validation listener
+        // from ever receiving the event. We handle all validation in Java
+        // (MakerFieldValidator) so ZK constraints are redundant and harmful here.
+        fieldChequeNo.setConstraint((org.zkoss.zul.Constraint) null);
+        fieldCity    .setConstraint((org.zkoss.zul.Constraint) null);
+        fieldBank    .setConstraint((org.zkoss.zul.Constraint) null);
+        fieldBranch  .setConstraint((org.zkoss.zul.Constraint) null);
+        fieldTc      .setConstraint((org.zkoss.zul.Constraint) null);
+        fieldAmount  .setConstraint((org.zkoss.zul.Constraint) null);
+        fieldAcc     .setConstraint((org.zkoss.zul.Constraint) null);
     }
 
     /**

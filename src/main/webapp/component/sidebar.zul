@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    sidebar.zul — ClearPay CTS Sidebar Component
-    Sub-items: indentation + font styling only, no icon boxes.
-    Emoji/icons to be added later.
+    sidebar.zul — Inward ClearPay CTS Sidebar Component
+    Upgraded to match Outward project style:
+      - Collapse toggle button (☰) at the top
+      - Accordion expand/collapse for all menu sections
+      - Section labels: MAIN MENU, CLEARING, REPORTS
+      - Icon badges on menu items
+      - Active state tracking
+    CSS: /css/sidebar.css  (copied from outward project)
+    Composer: com.cts.composer.SidebarComposer  (upgraded version)
+
+    NOTE: page paths kept as inward project paths — only UI style changed.
 -->
 <div id="sidebarRoot" apply="com.cts.composer.SidebarComposer"
     sclass="cts-sidebar">
 
-    <!-- ── MAIN MENU ─────────────────────────── -->
-    <div sclass="cts-section-label">
+    <!-- ── COLLAPSE TOGGLE BUTTON ──────────────────────────── -->
+   
+
+    <!-- ══ MAIN MENU ══════════════════════════════════════════ -->
+    <div sclass="cts-section-label sidebar-section">
         <label value="MAIN MENU" />
     </div>
 
-    <div sclass="cts-menu-item active">
+    <div id="menuDashboard" sclass="cts-menu-item active">
         <custom-attributes perm="DASHBOARD_VIEW"
             pagePath="/zul/inward/inwardDashboard.zul" />
         <div sclass="cts-row">
@@ -24,23 +35,25 @@
         </div>
     </div>
 
-    <!-- ── CLEARING ──────────────────────────── -->
-    <div sclass="cts-section-label">
+    <!-- ══ CLEARING ═══════════════════════════════════════════ -->
+    <div sclass="cts-section-label sidebar-section">
         <label value="CLEARING" />
     </div>
 
-    <!-- INWARD CLEARING — static heading, always expanded -->
-    <div sclass="cts-menu-header">
+    <!-- INWARD CLEARING accordion -->
+    <div id="inwardHeader" sclass="cts-menu-header">
         <div sclass="cts-row">
             <div sclass="cts-icon-badge cts-icon-inward">
                 <label value="🏦" />
             </div>
             <label sclass="cts-item-label" value="Inward Clearing" />
+           <label id="inwardArrow" sclass="cts-arrow" value="▼" />
         </div>
     </div>
 
     <div id="inwardMenu" sclass="cts-submenu" visible="true">
-        <div sclass="cts-menu-item">
+
+        <div id="menuUploadService" sclass="cts-menu-item">
             <custom-attributes perm=""
                 pagePath="/zul/inward/uploadService.zul" />
             <div sclass="cts-sub-row">
@@ -48,17 +61,43 @@
             </div>
         </div>
 
-        <div sclass="cts-menu-item">
+       <div id="menuReturnCheques" sclass="cts-menu-item">
             <custom-attributes perm=""
                 pagePath="/zul/inward/M_ReturnedByChecker.zul" />
             <div sclass="cts-sub-row">
                 <label sclass="cts-sub-label" value="Return Cheques" />
+                <label id="makerReturnBadge" sclass="cts-count-badge" visible="false"/>
             </div>
         </div>
+
+      <!--  <div id="menuTV1Resubmitted" sclass="cts-menu-item">
+            <custom-attributes perm=""
+                pagePath="/zul/inward/TV1_ResubmittedQueue.zul" />
+            <div sclass="cts-sub-row">
+                <label sclass="cts-sub-label" value="Resubmitted Queue V-I" />
+            </div>
+        </div>
+
+        <div id="menuTV2Resubmitted" sclass="cts-menu-item">
+            <custom-attributes perm=""
+                pagePath="/zul/inward/TV2_ResubmittedQueue.zul" />
+            <div sclass="cts-sub-row">
+                <label sclass="cts-sub-label" value="Resubmitted Queue V-II" />
+            </div>
+        </div>
+
+        <div id="menuTV2ReferredQueue" sclass="cts-menu-item">
+            <custom-attributes perm=""
+                pagePath="/zul/inward/TV2_ReferredQueue.zul" />
+            <div sclass="cts-sub-row">
+                <label sclass="cts-sub-label" value="Referred Cheques" />
+            </div>
+        </div>
+  -->
     </div>
 
-    <!-- ── REPORTS ───────────────────────────── -->
-    <div sclass="cts-section-label">
+    <!-- ══ REPORTS ═════════════════════════════════════════════ -->
+    <div sclass="cts-section-label sidebar-section">
         <label value="REPORTS" />
     </div>
 
@@ -73,14 +112,15 @@
     </div>
 
     <div id="inwardReportsMenu" sclass="cts-submenu" visible="false">
-        <div sclass="cts-menu-item">
+
+        <div id="menuInwardReport" sclass="cts-menu-item">
             <custom-attributes perm=""
                 pagePath="/zul/inward/inwardReport.zul" />
             <div sclass="cts-sub-row">
                 <label sclass="cts-sub-label" value="Maker Report" />
             </div>
         </div>
-       
+
     </div>
 
 </div>

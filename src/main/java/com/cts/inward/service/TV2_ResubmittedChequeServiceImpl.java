@@ -129,7 +129,9 @@ public class TV2_ResubmittedChequeServiceImpl implements TV2_ResubmittedChequeSe
     /**
      * Returns the cheque to maker for re-correction.
      * Sets chequeStatus = Repair, decision = REFERRED, sendTo = MAKER.
-     * The refer-back reason is stored in checker_refer_reason.
+     * The refer-back reason is stored in checker_sendback_reason (setSendbackReason) —
+     * NOT checker_refer_reason. referReason is a separate field only ever set by
+     * the legacy ChequeEditPopupComposer "Confirm Refer" flow, never by this method.
      * Resets isEditedByMaker and editedFields for a fresh correction round.
      */
     @Override
