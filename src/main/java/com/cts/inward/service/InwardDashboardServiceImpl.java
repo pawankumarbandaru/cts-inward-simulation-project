@@ -70,15 +70,34 @@ public class InwardDashboardServiceImpl implements InwardDashboardService {
 	/**
 	 * Converts entity list to DTO list.
 	 *
+	 * PERFORMANCE FIX: previously this looped through batches and called
+	 * batchDao.getInvalidCountByBatchId() ONCE PER BATCH — that meant a
+	 * dashboard showing 20 batches made 20 separate DB round trips just for
+	 * this one number. Now we fetch ALL invalid counts in a single bulk query
+	 * (getInvalidCountsForBatchIds) BEFORE the loop, then just look values up
+	 * from the in-memory map inside the loop — zero extra DB calls per row.
+	 *
 	 * @param batches List of InwardBatch entities
 	 * @return List of InwardBatchDTO
 	 */
 	private List<InwardBatchDTO> convertToDTOList(List<InwardBatch> batches) {
 		List<InwardBatchDTO> dtoList = new ArrayList<>();
-		if (batches == null)
+		if (batches == null || batches.isEmpty())
 			return dtoList;
+
+		// Collect every batch ID up front so we can fetch all invalid
+		// counts in ONE query instead of one query per batch.
+		List<Long> batchIds = batches.stream()
+				.map(InwardBatch::getId)
+				.collect(Collectors.toList());
+
+		// Single bulk query — replaces what used to be N separate queries.
+		// Map key = batch.id, value = invalid cheque count for that batch.
+		java.util.Map<Long, Long> invalidCountsByBatchId =
+				batchDao.getInvalidCountsForBatchIds(batchIds);
+
 		for (InwardBatch batch : batches) {
-			dtoList.add(convertToDTO(batch));
+			dtoList.add(convertToDTO(batch, invalidCountsByBatchId));
 		}
 		return dtoList;
 	}
@@ -89,10 +108,13 @@ public class InwardDashboardServiceImpl implements InwardDashboardService {
      * Also calculates accepted, rejected, pending,
      * valid and invalid cheque counts.
      *
-     * @param batch Batch entity from database
+     * @param batch                   Batch entity from database
+     * @param invalidCountsByBatchId  Pre-fetched map of batchId -> invalid
+     *                                count (built once for the whole list by
+     *                                convertToDTOList — avoids a DB call here)
      * @return Fully populated InwardBatchDTO
      */
-	private InwardBatchDTO convertToDTO(InwardBatch batch) {
+	private InwardBatchDTO convertToDTO(InwardBatch batch, java.util.Map<Long, Long> invalidCountsByBatchId) {
 		InwardBatchDTO dto = new InwardBatchDTO();
 		// Basic batch information	
 		dto.setId(batch.getId());
@@ -115,7 +137,9 @@ public class InwardDashboardServiceImpl implements InwardDashboardService {
 		Integer total = batch.getTotalCheques() == null ? 0 : batch.getTotalCheques();
 		
 
-		Long invalid = batchDao.getInvalidCountByBatchId(batch.getId());
+		// Look up invalid count from the pre-fetched map instead of a DB call.
+		// A batch with 0 invalid cheques simply won't be in the map — default to 0.
+		Long invalid = invalidCountsByBatchId.getOrDefault(batch.getId(), 0L);
 		Long valid = total - invalid;
 		dto.setValidCheques(valid != null ? valid.intValue() : 0);
 		dto.setInvalidCheques(invalid != null ? invalid.intValue() : 0);

@@ -65,7 +65,7 @@ button {
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	margin-left: 25px;
+	margin-left: -9px;
 }
 
 .page-sub {
@@ -1275,7 +1275,7 @@ button {
 /* RRF Generate button — full width amber/brown */
 .btn-rrf .z-button, .btn-rrf {
 	width: 100%;
-	height: 40px;
+	height: 34px;
 	border-radius: 6px;
 	border: none;
 	background: linear-gradient(135deg, #92400E, #D97706);
@@ -1309,7 +1309,7 @@ button {
 /* Submit to Checker/BM button */
 .btn-submit-checker .z-button, .btn-submit-checker {
 	width: 100%;
-	height: 40px;
+	height: 34px;
 	border-radius: 7px;
 	border: none;
 	background: #1a3a6e;
@@ -1883,9 +1883,9 @@ to {
 .cbs-popup-card {
 	background: #fff;
 	border-radius: 10px;
-	width: 400px;
+	width: 320px;
 	max-width: calc(100vw - 32px);
-	max-height: 85vh;
+	max-height: 80vh;
 	overflow-y: auto;
 	box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
 	animation: cbs-popup-in .22s cubic-bezier(.22, 1, .36, 1);
@@ -1906,44 +1906,44 @@ to {
 .cbs-popup-hdr {
 	background: linear-gradient(135deg, #0F2748, #1E4D8C);
 	border-radius: 10px 10px 0 0;
-	padding: 10px 14px;
+	padding: 8px 12px;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 }
 
 .cbs-popup-hdr-title {
-	font-size: 12.5px;
+	font-size: 11.5px;
 	font-weight: 700;
 	color: #fff;
 	letter-spacing: .3px;
 }
 
 .cbs-popup-hdr-sub {
-	font-size: 10px;
+	font-size: 9px;
 	color: #9BBDE0;
 	margin-top: 2px;
 }
 
 /* Popup body */
 .cbs-popup-body {
-	padding: 12px 14px;
+	padding: 10px 12px;
 }
 
 /* CBS check rows inside popup */
 .cbs-check-rows {
 	display: flex;
 	flex-direction: column;
-	gap: 5px;
-	margin-bottom: 8px;
+	gap: 4px;
+	margin-bottom: 6px;
 }
 
 .cbs-check-row {
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	padding: 6px 10px;
-	border-radius: 6px;
+	gap: 6px;
+	padding: 4px 8px;
+	border-radius: 5px;
 	border: 1px solid transparent;
 }
 
@@ -1964,8 +1964,8 @@ to {
 }
 
 .cbs-check-icon {
-	font-size: 14px;
-	min-width: 18px;
+	font-size: 12px;
+	min-width: 16px;
 	text-align: center;
 }
 
@@ -1977,46 +1977,46 @@ to {
 }
 
 .cbs-check-name {
-	font-size: 11.5px;
+	font-size: 10px;
 	font-weight: 600;
 	color: #1F2937;
 }
 
 .cbs-check-detail {
-	font-size: 10.5px;
+	font-size: 9px;
 	color: #6B7280;
 }
 
 .cbs-check-status-pass {
-	font-size: 9.5px;
+	font-size: 8.5px;
 	font-weight: 700;
 	color: #16A34A;
 	background: #DCFCE7;
 	border: 1px solid #BBF7D0;
 	border-radius: 100px;
-	padding: 2px 7px;
+	padding: 1px 6px;
 	white-space: nowrap;
 }
 
 .cbs-check-status-fail {
-	font-size: 9.5px;
+	font-size: 8.5px;
 	font-weight: 700;
 	color: #DC2626;
 	background: #FEE2E2;
 	border: 1px solid #FECACA;
 	border-radius: 100px;
-	padding: 2px 7px;
+	padding: 1px 6px;
 	white-space: nowrap;
 }
 
 .cbs-check-status-skipped {
-	font-size: 9.5px;
+	font-size: 8.5px;
 	font-weight: 700;
 	color: #9CA3AF;
 	background: #F3F4F6;
 	border: 1px solid #E5E7EB;
 	border-radius: 100px;
-	padding: 2px 7px;
+	padding: 1px 6px;
 	white-space: nowrap;
 }
 
@@ -2024,55 +2024,55 @@ to {
 .cbs-pass-box {
 	background: linear-gradient(135deg, #F0FDF4, #ECFDF5);
 	border: 2px solid #86EFAC;
-	border-radius: 8px;
-	padding: 10px 12px;
-	margin-top: 8px;
+	border-radius: 7px;
+	padding: 8px 10px;
+	margin-top: 6px;
 }
 
 .cbs-pass-title {
-	font-size: 12.5px;
+	font-size: 11px;
 	font-weight: 700;
 	color: #166534;
-	margin-bottom: 3px;
+	margin-bottom: 2px;
 }
 
 .cbs-pass-note {
-	font-size: 10.5px;
+	font-size: 9.5px;
 	color: #15803D;
-	margin-bottom: 6px;
+	margin-bottom: 3px;
 }
 
 .cbs-pass-dest {
-	font-size: 14px;
+	font-size: 11.5px;
 	font-weight: 700;
 	color: #15803D;
-	margin-top: 3px;
+	margin-top: 2px;
 }
 
 /* CBS FAIL result box inside popup */
 .cbs-fail-box {
 	background: #FEF2F2;
 	border: 2px solid #FECACA;
-	border-radius: 8px;
-	padding: 10px 12px;
-	margin-top: 8px;
+	border-radius: 7px;
+	padding: 8px 10px;
+	margin-top: 6px;
 }
 
 .cbs-fail-title {
-	font-size: 12.5px;
+	font-size: 11px;
 	font-weight: 700;
 	color: #991B1B;
-	margin-bottom: 3px;
+	margin-bottom: 2px;
 }
 
 .cbs-fail-note {
-	font-size: 11px;
+	font-size: 10px;
 	color: #B91C1C;
 }
 
 /* Popup footer buttons area */
 .cbs-popup-footer {
-	padding: 8px 14px 12px;
+	padding: 6px 12px 10px;
 	display: flex;
 	gap: 8px;
 }
@@ -2588,10 +2588,10 @@ to {
 .rcb-page-wrap {
 	display: flex;
 	flex-direction: column;
-	height: 100vh;
+	height: 100%;          /* fill the center region, NOT the whole viewport */
+	max-height: 100%;
 	overflow: hidden;
 }
-
 .rcb-scroll-area {
 	flex: 1;
 	overflow-y: auto;
@@ -3662,4 +3662,369 @@ div.z-div.cts-table-wrap {
     color: #ffffff !important;
 }
 
-/* ══ END ══ */
+
+/* ════════════════════════════════════════════════════════════
+   RETURN-BY-CHECKER — FIXED HEADER + SCROLLING TABLE (clean)
+   ════════════════════════════════════════════════════════════ */
+
+/* Page fills the center region, never the whole viewport */
+.rcb-page-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+/* Fixed top — breadcrumb, header, banners, filters stay pinned */
+.rcb-fixed-top {
+    flex-shrink: 0;
+    background: #f0f2f5;
+    box-sizing: border-box;
+}
+
+/* Breadcrumb — full width edge-to-edge dark bar */
+.rcb-fixed-top > .cts-breadcrumb {
+    background: #1a2a4a;
+    color: #cdd6e8;
+    padding: 0 24px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Header, banners, filter bar — 24px side margins, fill the rest */
+.rcb-fixed-top > .page-hdr,
+.rcb-fixed-top > .rcb-success-banner,
+.rcb-fixed-top > .rcb-alert-banner,
+.rcb-fixed-top > .cts-filter-card,
+.rcb-fixed-top > .rcb-filter-bar {
+    margin: 12px 24px;
+    width: auto;
+    box-sizing: border-box;
+}
+
+/* Scroll area — only the table scrolls */
+.rcb-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 0 24px 16px 24px;
+}
+
+/* Table fills the scroll-area width */
+.rcb-scroll-area > .cts-table-wrap {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+.rcb-scroll-area .cts-table-wrap .z-grid {
+    width: 100% !important;
+}
+/* Breadcrumb spans edge-to-edge with its own dark background */
+.rcb-fixed-top > .cts-breadcrumb {
+    width: 100%;
+    box-sizing: border-box;
+    /* keeps its existing dark bar style; padding comes from .cts-breadcrumb rule */
+}
+
+
+/* breadcrumb full-width (edge to edge) */
+.rcb-fixed-top > .cts-breadcrumb {
+    background: #1a2a4a;
+    color: #cdd6e8;
+    padding: 0 24px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* everything else gets 24px side padding via a padded inner zone */
+.rcb-fixed-top > .page-hdr,
+.rcb-fixed-top > .rcb-success-banner,
+.rcb-fixed-top > .rcb-alert-banner,
+.rcb-fixed-top > .cts-filter-card {
+    margin: 12px 24px;
+    width: auto;          /* fill between the margins */
+}
+
+.rcb-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 0 24px 16px 24px;
+}
+.rcb-scroll-area > .cts-table-wrap {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Scroll area now holds only the table — give it side padding too */
+.rcb-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 0 24px 16px 24px;
+}
+/* Breadcrumb now lives in .rcb-fixed-top (was .rcb-scroll-area) */
+.rcb-fixed-top > .cts-breadcrumb {
+    background: #1a2a4a;
+    color: #cdd6e8;
+    padding: 0 24px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Breadcrumb now lives in .rcb-fixed-top (was .rcb-scroll-area) */
+.rcb-fixed-top > .cts-breadcrumb {
+    background: #1a2a4a;
+    color: #cdd6e8;
+    padding: 0 24px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* Make the Return-By-Checker filter bar and table span full width
+   (match the dashboard — no empty gap on the right). */
+.rcb-fixed-top > .cts-filter-card,
+.rcb-fixed-top > .rcb-filter-bar {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.rcb-scroll-area > .cts-table-wrap {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* The grid inside should also fill the wrap */
+.rcb-scroll-area .cts-table-wrap .z-grid {
+    width: 100% !important;
+}
+
+/* ════════════════════════════════════════════════════════════
+   SEARCH BAR — FINAL (full width, no empty right gap)
+   This block is LAST so it overrides all earlier .search-bar rules.
+   ════════════════════════════════════════════════════════════ */
+.search-bar,
+div.z-div.search-bar {
+	flex-wrap: nowrap !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-end !important;
+    gap: 16px !important;
+    padding: 14px 20px !important;
+    margin: 12px 24px !important;        /* matches the table width */
+    border: 1px solid #e8edf4 !important;
+    border-radius: 8px !important;
+    background: #fafbfd !important;
+    
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    box-sizing: border-box !important;
+}
+
+/* Search box — GROWS to fill all free space (no max-width cap) */
+.search-bar .srch-field-grow {
+    flex: 1 1 auto !important;
+    max-width: none !important;          /* remove the cap that left empty space */
+    min-width: 240px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+}
+
+/* BATCH NUMBER column — sits right after the (now wide) search box */
+.search-bar .srch-field {
+    flex: 0 0 auto !important;
+    margin-left: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+    min-width: 180px !important;
+    align-items: flex-start !important;
+}
+
+/* Buttons stay at the far right, no auto-margin needed now
+   because the search box growing already pushes them there */
+.search-bar .btn-search-srch,
+.search-bar .btn-clear-srch {
+    margin-left: 0 !important;
+}
+/* Breadcrumb on TV1/TV2/Referred pages — match the Maker page exactly.
+   These pages put the breadcrumb inside .rcb-scroll-area, so target that. */
+.rcb-scroll-area > .cts-breadcrumb {
+    background: #1a2a4a !important;
+    color: #cdd6e8 !important;
+    height: 46px !important;
+    display: flex !important;
+    align-items: center !important;
+    font-size: 13px !important;
+
+    /* Break out of .cts-content's 24px side padding to touch the edges */
+    margin: 0 -24px 0 -24px !important;
+    padding: 0 24px !important;
+    box-sizing: border-box !important;
+}
+
+/* ════════════════════════════════════════════════════════════
+   SEARCH BAR BUTTONS — re-assert navy/white (LAST, so it wins)
+   ════════════════════════════════════════════════════════════ */
+
+/* Search button — NAVY */
+.search-bar .btn-search-srch.z-button,
+.search-bar .btn-search-srch {
+    background: #1a3a6e !important;
+    background-color: #1a3a6e !important;
+    background-image: none !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 5px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 0 16px !important;
+    height: 38px !important;
+    cursor: pointer !important;
+    align-self: flex-end !important;
+    box-shadow: none !important;
+}
+.search-bar .btn-search-srch.z-button:hover,
+.search-bar .btn-search-srch:hover {
+    background: #142d58 !important;
+    background-color: #142d58 !important;
+    background-image: none !important;
+}
+
+/* Clear button — WHITE + border */
+.search-bar .btn-clear-srch.z-button,
+.search-bar .btn-clear-srch {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #374151 !important;
+    border: 1.5px solid #d0d7e3 !important;
+    border-radius: 5px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding: 0 14px !important;
+    height: 38px !important;
+    cursor: pointer !important;
+    align-self: flex-end !important;
+    box-shadow: none !important;
+}
+.search-bar .btn-clear-srch.z-button:hover,
+.search-bar .btn-clear-srch:hover {
+    background: #f3f4f6 !important;
+    background-color: #f3f4f6 !important;
+    background-image: none !important;
+    color: #374151 !important;
+}
+
+/* BATCH NUMBER dropdown — bigger to match the search box */
+.search-bar .srch-field .z-select,
+.search-bar select.z-select,
+.search-bar .z-listbox {
+    width: 200px !important;        /* wider */
+    height: 38px !important;        /* same height as search box */
+    min-height: 38px !important;
+    line-height: 38px !important;
+    border: 1.5px solid #d0d7e3 !important;
+    border-radius: 6px !important;
+    box-sizing: border-box !important;
+    padding: 0 12px !important;
+    font-size: 13px !important;
+    color: #374151 !important;
+    background: #ffffff !important;
+}
+
+/* Both filter labels — consistent font/size/color */
+.search-bar .srch-label {
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    color: #8a9bb8 !important;
+    letter-spacing: 0.07em !important;
+    text-transform: uppercase !important;
+    font-family: var(--font) !important;
+    margin-bottom: 5px !important;
+    display: block !important;
+}
+
+/* ════════════════════════════════════════════════════════════
+   SEARCH BAR — label alignment + bigger dropdown (FINAL)
+   ════════════════════════════════════════════════════════════ */
+
+/* Align both columns from the TOP so labels line up at the same height */
+.search-bar,
+div.z-div.search-bar {
+    align-items: flex-start !important;   /* was flex-end — top-align the columns */
+}
+
+/* Both columns stack: label on top, input below */
+.search-bar .srch-field-grow,
+.search-bar .srch-field {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+}
+
+/* Both labels — same fixed height so the inputs below them line up */
+.search-bar .srch-label {
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    color: #8a9bb8 !important;
+    letter-spacing: 0.07em !important;
+    text-transform: uppercase !important;
+    font-family: var(--font) !important;
+    height: 18px !important;             /* fixed label height = aligned */
+    line-height: 18px !important;
+    margin-bottom: 6px !important;
+    display: block !important;
+}
+
+/* BATCH NUMBER dropdown — bigger, same height as search box */
+.search-bar .srch-field .z-select,
+.search-bar select.z-select,
+.search-bar .z-listbox {
+    width: 200px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    line-height: 38px !important;
+    border: 1.5px solid #d0d7e3 !important;
+    border-radius: 6px !important;
+    box-sizing: border-box !important;
+    padding: 0 12px !important;
+    font-size: 13px !important;
+    color: #374151 !important;
+    background: #ffffff !important;
+}
+
+/* Search textbox — same height, aligned under its label */
+.search-bar .z-textbox {
+    width: 100% !important;
+    height: 38px !important;
+    border: 1.5px solid #d0d7e3 !important;
+    border-radius: 6px !important;
+    box-sizing: border-box !important;
+}
+
+/* Buttons — drop them to the bottom so they line up with the inputs,
+   not with the labels (since columns are now top-aligned) */
+.search-bar .btn-search-srch,
+.search-bar .btn-clear-srch {
+    align-self: flex-start !important;
+    margin-top: 24px !important;        /* 18px label + 6px gap = drops button to input row */
+}
+

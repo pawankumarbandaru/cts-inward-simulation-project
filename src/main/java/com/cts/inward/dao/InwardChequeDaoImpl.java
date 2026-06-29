@@ -140,73 +140,55 @@ public class InwardChequeDaoImpl implements InwardChequeDao {
 			BatchStatus batchStatus = batch.getBatchStatus();
 
 			// PendingAtChecker -> only CBS Valid cheques
-			if (BatchStatus.PendingAtChecker.equals(batchStatus)
-					|| BatchStatus.ClearedAtChecker.equals(batchStatus)) {
+			if (BatchStatus.PendingAtChecker.equals(batchStatus) || BatchStatus.ClearedAtChecker.equals(batchStatus)) {
 
 				return session.createNativeQuery(
-						"SELECT * FROM inward_cheque "
-						+ "WHERE batch_id = :batchId "
-						+ "AND cbs_validation = CAST('Valid' AS cbs_validation) "
-						+ "ORDER BY id ASC", InwardCheque.class)
-						.setParameter("batchId", batchId)
-						.list();
+						"SELECT * FROM inward_cheque " + "WHERE batch_id = :batchId "
+								+ "AND cbs_validation = CAST('Valid' AS cbs_validation) " + "ORDER BY id ASC",
+						InwardCheque.class).setParameter("batchId", batchId).list();
 
 			}
 			// Cleared & ClearedAtChecker -> only Normal cheques
 			else if (BatchStatus.Cleared.equals(batchStatus) || BatchStatus.ClearedAtChecker.equals(batchStatus)) {
 
 				return session.createNativeQuery(
-						"SELECT * FROM inward_cheque "
-						+ "WHERE batch_id = :batchId "
-						+ "AND cheque_status = CAST('Normal' AS cheque_status) "
-						+ "ORDER BY id ASC", InwardCheque.class)
-						.setParameter("batchId", batchId)
-						.list();
+						"SELECT * FROM inward_cheque " + "WHERE batch_id = :batchId "
+								+ "AND cheque_status = CAST('Normal' AS cheque_status) " + "ORDER BY id ASC",
+						InwardCheque.class).setParameter("batchId", batchId).list();
 
 			}
 			// Draft & Pending -> all cheques
 			else {
 
 				return session.createNativeQuery(
-						"SELECT * FROM inward_cheque "
-						+ "WHERE batch_id = :batchId "
-						+ "ORDER BY id ASC", InwardCheque.class)
-						.setParameter("batchId", batchId)
-						.list();
+						"SELECT * FROM inward_cheque " + "WHERE batch_id = :batchId " + "ORDER BY id ASC",
+						InwardCheque.class).setParameter("batchId", batchId).list();
 			}
 		}
 	}
 
 	@Override
 	public List<InwardCheque> TV1_ChequesList(Long batchId) {
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-	        return session.createNativeQuery(
-	            "SELECT * FROM inward_cheque "
-	            + "WHERE batch_id = :batchId "
-	            + "AND cbs_validation = CAST('Valid' AS cbs_validation) "
-	            + "AND amount <= :maxAmount "
-	            + "ORDER BY id ASC", InwardCheque.class)
-	            .setParameter("batchId",    batchId)
-	            .setParameter("maxAmount",  new BigDecimal("100000"))
-	            .list();
-	    }
+			return session
+					.createNativeQuery("SELECT * FROM inward_cheque " + "WHERE batch_id = :batchId "
+							+ "AND cbs_validation = CAST('Valid' AS cbs_validation) " + "AND amount <= :maxAmount "
+							+ "ORDER BY id ASC", InwardCheque.class)
+					.setParameter("batchId", batchId).setParameter("maxAmount", new BigDecimal("100000")).list();
+		}
 	}
 
 	@Override
 	public List<InwardCheque> TV2_ChequesList(Long batchId) {
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-	        return session.createNativeQuery(
-	            "SELECT * FROM inward_cheque "
-	            + "WHERE batch_id = :batchId "
-	            + "AND cbs_validation = CAST('Valid' AS cbs_validation) "
-	            + "AND amount > :minAmount "
-	            + "ORDER BY id ASC", InwardCheque.class)
-	            .setParameter("batchId",   batchId)
-	            .setParameter("minAmount", new BigDecimal("100000"))
-	            .list();
-	    }
+			return session
+					.createNativeQuery("SELECT * FROM inward_cheque " + "WHERE batch_id = :batchId "
+							+ "AND cbs_validation = CAST('Valid' AS cbs_validation) " + "AND amount > :minAmount "
+							+ "ORDER BY id ASC", InwardCheque.class)
+					.setParameter("batchId", batchId).setParameter("minAmount", new BigDecimal("100000")).list();
+		}
 	}
 
 	@Override
@@ -226,32 +208,28 @@ public class InwardChequeDaoImpl implements InwardChequeDao {
 	@Override
 	public long countByBatchId(Long batchId, String role) {
 
-	    String sql = "SELECT COUNT(*) FROM inward_cheque WHERE batch_id = :batchId";
+		String sql = "SELECT COUNT(*) FROM inward_cheque WHERE batch_id = :batchId";
 
-	    // TV1 and TV2 should see only CBS Valid cheques
-	    if ("TV1".equalsIgnoreCase(role) || "TV2".equalsIgnoreCase(role)) {
-	        sql += " AND cbs_validation = CAST('Valid' AS cbs_validation)";
-	    }
+		// TV1 and TV2 should see only CBS Valid cheques
+		if ("TV1".equalsIgnoreCase(role) || "TV2".equalsIgnoreCase(role)) {
+			sql += " AND cbs_validation = CAST('Valid' AS cbs_validation)";
+		}
 
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-	        Number result = (Number) session.createNativeQuery(sql)
-	                .setParameter("batchId", batchId)
-	                .getSingleResult();
+			Number result = (Number) session.createNativeQuery(sql).setParameter("batchId", batchId).getSingleResult();
 
-	        return result != null ? result.longValue() : 0L;
-	    }
+			return result != null ? result.longValue() : 0L;
+		}
 	}
 
 	@Override
 	public long countMicrErrorsByBatchId(Long batchId) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			Number result = (Number) session.createNativeQuery(
-					"SELECT COUNT(*) FROM inward_cheque "
-					+ "WHERE batch_id = :batchId "
-					+ "AND cheque_status = CAST('Repair' AS cheque_status)")
-					.setParameter("batchId", batchId)
-					.getSingleResult();
+			Number result = (Number) session
+					.createNativeQuery("SELECT COUNT(*) FROM inward_cheque " + "WHERE batch_id = :batchId "
+							+ "AND cheque_status = CAST('Repair' AS cheque_status)")
+					.setParameter("batchId", batchId).getSingleResult();
 			return result != null ? result.longValue() : 0L;
 		}
 	}
@@ -365,12 +343,10 @@ public class InwardChequeDaoImpl implements InwardChequeDao {
 	@Override
 	public List<InwardCheque> findInvalidByBatchId(Long batchId) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			return session.createNativeQuery(
-					"SELECT * FROM inward_cheque "
-					+ "WHERE batch_id = :batchId "
-					+ "AND cbs_validation = CAST('Invalid' AS cbs_validation)", InwardCheque.class)
-					.setParameter("batchId", batchId)
-					.list();
+			return session
+					.createNativeQuery("SELECT * FROM inward_cheque " + "WHERE batch_id = :batchId "
+							+ "AND cbs_validation = CAST('Invalid' AS cbs_validation)", InwardCheque.class)
+					.setParameter("batchId", batchId).list();
 		}
 	}
 
@@ -378,35 +354,29 @@ public class InwardChequeDaoImpl implements InwardChequeDao {
 	@Override
 	public long getChequeCountByRole(Long batchId, String role) {
 
-	    String sql;
+		String sql;
 
-	    if ("TV1".equalsIgnoreCase(role)) {
+		if ("TV1".equalsIgnoreCase(role)) {
 
-	        sql = "SELECT COUNT(*) FROM inward_cheque "
-	            + "WHERE batch_id = :batchId "
-	            + "AND amount <= :limit "
-	            + "AND cbs_validation = CAST('Valid' AS cbs_validation)";
+			sql = "SELECT COUNT(*) FROM inward_cheque " + "WHERE batch_id = :batchId " + "AND amount <= :limit "
+					+ "AND cbs_validation = CAST('Valid' AS cbs_validation)";
 
-	    } else if ("TV2".equalsIgnoreCase(role)) {
+		} else if ("TV2".equalsIgnoreCase(role)) {
 
-	        sql = "SELECT COUNT(*) FROM inward_cheque "
-	            + "WHERE batch_id = :batchId "
-	            + "AND amount > :limit "
-	            + "AND cbs_validation = CAST('Valid' AS cbs_validation)";
+			sql = "SELECT COUNT(*) FROM inward_cheque " + "WHERE batch_id = :batchId " + "AND amount > :limit "
+					+ "AND cbs_validation = CAST('Valid' AS cbs_validation)";
 
-	    } else {
-	        return 0L;
-	    }
+		} else {
+			return 0L;
+		}
 
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-	        Number count = (Number) session.createNativeQuery(sql)
-	                .setParameter("batchId", batchId)
-	                .setParameter("limit", new BigDecimal("100000"))
-	                .getSingleResult();
+			Number count = (Number) session.createNativeQuery(sql).setParameter("batchId", batchId)
+					.setParameter("limit", new BigDecimal("100000")).getSingleResult();
 
-	        return count == null ? 0L : count.longValue();
-	    }
+			return count == null ? 0L : count.longValue();
+		}
 	}
 
 	// cbs button enable and disable is dependent on this method in maker
@@ -416,12 +386,10 @@ public class InwardChequeDaoImpl implements InwardChequeDao {
 
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-			Number count = (Number) session.createNativeQuery(
-					"SELECT COUNT(*) FROM inward_cheque "
-					+ "WHERE batch_id = :batchId "
-					+ "AND cheque_status <> CAST('Normal' AS cheque_status)")
-					.setParameter("batchId", batchId)
-					.getSingleResult();
+			Number count = (Number) session
+					.createNativeQuery("SELECT COUNT(*) FROM inward_cheque " + "WHERE batch_id = :batchId "
+							+ "AND cheque_status <> CAST('Normal' AS cheque_status)")
+					.setParameter("batchId", batchId).getSingleResult();
 
 			return count == null ? 0L : count.longValue();
 		}
@@ -463,10 +431,9 @@ public class InwardChequeDaoImpl implements InwardChequeDao {
 	@Override
 	public Optional<InwardCheque> findByChequeNumber(String chequeNumber) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			InwardCheque result = (InwardCheque) session.createNativeQuery(
-					"SELECT * FROM inward_cheque WHERE cheque_no = :chequeNo", InwardCheque.class)
-					.setParameter("chequeNo", chequeNumber)
-					.uniqueResult();
+			InwardCheque result = (InwardCheque) session
+					.createNativeQuery("SELECT * FROM inward_cheque WHERE cheque_no = :chequeNo", InwardCheque.class)
+					.setParameter("chequeNo", chequeNumber).uniqueResult();
 			return Optional.ofNullable(result);
 		} catch (Exception e) {
 			throw new RuntimeException("Error finding cheque: " + e.getMessage(), e);
@@ -584,10 +551,9 @@ public class InwardChequeDaoImpl implements InwardChequeDao {
 	public long countNeedingCorrection() {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			Number count = (Number) session.createNativeQuery(
-					"SELECT COUNT(*) FROM inward_cheque "
-					+ "WHERE cheque_status = CAST('Repair' AS cheque_status) "
-					+ "AND   decision      = CAST('REFERRED' AS decision_status) "
-					+ "AND   send_to       = CAST('MAKER' AS send_to_enum)")
+					"SELECT COUNT(*) FROM inward_cheque " + "WHERE cheque_status = CAST('Repair' AS cheque_status) "
+							+ "AND   decision      = CAST('REFERRED' AS decision_status) "
+							+ "AND   send_to       = CAST('MAKER' AS send_to_enum)")
 					.getSingleResult();
 			return count != null ? count.longValue() : 0L;
 		} catch (Exception e) {
@@ -646,27 +612,22 @@ public class InwardChequeDaoImpl implements InwardChequeDao {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
 			String sql = "SELECT b.batch_id, c.cheque_no, c.cheque_date, c.micr_code, c.payee_name, "
-					+ "       c.amount, c.cbs_reject_reason "
-					+ "FROM inward_cheque c "
-					+ "JOIN inward_batch b ON c.batch_id = b.id "
-					+ "WHERE b.batch_id = :batchId "
+					+ "       c.amount, c.cbs_reject_reason " + "FROM inward_cheque c "
+					+ "JOIN inward_batch b ON c.batch_id = b.id " + "WHERE b.batch_id = :batchId "
 					+ "AND c.cheque_status = CAST('Reject' AS cheque_status) "
-					+ "AND c.decision      = CAST('REJECTED' AS decision_status) "
-					+ "ORDER BY b.batch_id";
+					+ "AND c.decision      = CAST('REJECTED' AS decision_status) " + "ORDER BY b.batch_id";
 
-			List<Object[]> rows = session.createNativeQuery(sql)
-					.setParameter("batchId", batchId).list();
+			List<Object[]> rows = session.createNativeQuery(sql).setParameter("batchId", batchId).list();
 
 			List<ChequeReportDTO> result = new ArrayList<>();
 			for (Object[] row : rows) {
-				result.add(new ChequeReportDTO(
-						(String) row[0], // batchId
+				result.add(new ChequeReportDTO((String) row[0], // batchId
 						(String) row[1], // chequeNo
 						row[2] != null ? ((java.sql.Timestamp) row[2]).toLocalDateTime() : null, // chequeDate
 						(String) row[3], // micrCode
 						(String) row[4], // payeeName
 						(BigDecimal) row[5], // amount
-						(String) row[6]  // errorReason
+						(String) row[6] // errorReason
 				));
 			}
 			return result;
@@ -761,12 +722,10 @@ public class InwardChequeDaoImpl implements InwardChequeDao {
 	public List<InwardCheque> findResubmittedForChecker() {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			return session.createNativeQuery(
-					"SELECT * FROM inward_cheque "
-					+ "WHERE cheque_status = CAST('Resubmitted' AS cheque_status) "
-					+ "AND   send_to       = CAST('TV_1' AS send_to_enum) "
-					+ "AND   decision      = CAST('REFERRED' AS decision_status) "
-					+ "ORDER BY created_at DESC", InwardCheque.class)
-					.list();
+					"SELECT * FROM inward_cheque " + "WHERE cheque_status = CAST('Resubmitted' AS cheque_status) "
+							+ "AND   send_to       = CAST('TV_1' AS send_to_enum) "
+							+ "AND   decision      = CAST('REFERRED' AS decision_status) " + "ORDER BY created_at DESC",
+					InwardCheque.class).list();
 		} catch (Exception e) {
 			throw new RuntimeException("Error loading resubmitted cheques for checker: " + e.getMessage(), e);
 		}
@@ -775,12 +734,10 @@ public class InwardChequeDaoImpl implements InwardChequeDao {
 	@Override
 	public long countResubmittedForChecker() {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			Number count = (Number) session.createNativeQuery(
-					"SELECT COUNT(*) FROM inward_cheque "
+			Number count = (Number) session.createNativeQuery("SELECT COUNT(*) FROM inward_cheque "
 					+ "WHERE cheque_status = CAST('Resubmitted' AS cheque_status) "
 					+ "AND   send_to       = CAST('TV_1' AS send_to_enum) "
-					+ "AND   decision      = CAST('REFERRED' AS decision_status)")
-					.getSingleResult();
+					+ "AND   decision      = CAST('REFERRED' AS decision_status)").getSingleResult();
 			return count != null ? count.longValue() : 0L;
 		} catch (Exception e) {
 			throw new RuntimeException("Error counting resubmitted cheques: " + e.getMessage(), e);
@@ -822,10 +779,9 @@ public class InwardChequeDaoImpl implements InwardChequeDao {
 	@Override
 	public Optional<InwardCheque> findByChequeNoTV1(String chequeNo) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			InwardCheque result = (InwardCheque) session.createNativeQuery(
-					"SELECT * FROM inward_cheque WHERE cheque_no = :chequeNo", InwardCheque.class)
-					.setParameter("chequeNo", chequeNo)
-					.uniqueResult();
+			InwardCheque result = (InwardCheque) session
+					.createNativeQuery("SELECT * FROM inward_cheque WHERE cheque_no = :chequeNo", InwardCheque.class)
+					.setParameter("chequeNo", chequeNo).uniqueResult();
 			return Optional.ofNullable(result);
 		} catch (Exception e) {
 			throw new RuntimeException("Error fetching cheque by number: " + e.getMessage(), e);
@@ -1123,16 +1079,74 @@ public class InwardChequeDaoImpl implements InwardChequeDao {
 	}
 
 	@Override
-    public List<InwardCheque> listOfReferredCheques() {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createNativeQuery(
-                    "SELECT * FROM inward_cheque "
-                    + "WHERE cheque_status = CAST('Repair' AS cheque_status) "
-                    + "AND   send_to       = CAST('TV_2' AS send_to_enum) "
-                    + "AND   decision      = CAST('REFERRED' AS decision_status)",
-                    InwardCheque.class)
-                    .list();
-        }
-    }
+	public List<InwardCheque> listOfReferredCheques() {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+			return session
+					.createNativeQuery(
+							"SELECT * FROM inward_cheque " + "WHERE cheque_status = CAST('Repair' AS cheque_status) "
+									+ "AND   send_to       = CAST('TV_2' AS send_to_enum) "
+									+ "AND   decision      = CAST('REFERRED' AS decision_status)",
+							InwardCheque.class)
+					.list();
+		}
+	}
+
+	@Override
+	public long countReferredCheques() {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+			Number count = (Number) session.createNativeQuery(
+					"SELECT COUNT(*) FROM inward_cheque " + "WHERE cheque_status = CAST('Repair' AS cheque_status) "
+							+ "AND   send_to       = CAST('TV_2' AS send_to_enum) "
+							+ "AND   decision      = CAST('REFERRED' AS decision_status)")
+					.getSingleResult();
+			return count != null ? count.longValue() : 0L;
+		}
+	}
+
+	/**
+	 * Saves many cheques in ONE session and ONE transaction. Fetches the managed
+	 * batch only once (not per cheque). Hibernate batching flushes inserts in
+	 * groups for speed.
+	 */
+	@Override
+	public int saveAll(List<InwardCheque> cheques, String batchId) {
+		Transaction tx = null;
+		int saved = 0;
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+			tx = session.beginTransaction();
+
+			// Fetch the managed batch ONCE
+			InwardBatch managedBatch = (InwardBatch) session
+					.createNativeQuery("SELECT * FROM inward_batch WHERE batch_id = :batchId", InwardBatch.class)
+					.setParameter("batchId", batchId).uniqueResult();
+			if (managedBatch == null) {
+				throw new RuntimeException("InwardBatch not found for batchId: " + batchId);
+			}
+
+			int i = 0;
+			for (InwardCheque cheque : cheques) {
+				cheque.setBatch(managedBatch);
+				session.persist(cheque);
+				saved++;
+
+				// Flush + clear every 30 rows to keep memory low (Hibernate batching)
+				if (++i % 30 == 0) {
+					session.flush();
+					session.clear();
+					managedBatch = session.get(InwardBatch.class, managedBatch.getId());
+				}
+			}
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null && tx.isActive()) {
+				try {
+					tx.rollback();
+				} catch (Exception rb) {
+					/* ignore */ }
+			}
+			throw new RuntimeException("Batch save failed: " + e.getMessage(), e);
+		}
+		return saved;
+	}
 
 }

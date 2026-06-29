@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import com.cts.inward.dao.InwardBatchDao;
 import com.cts.inward.dao.InwardBatchDaoImpl;
@@ -38,7 +39,7 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
 
         // Variables declaration - finally block can access them
         Map<String, File> images=null;
-        
+
         try {
             // STEP 1 : Parse XML
             List<ChequeDTO> cheques = xmlService.parseXml(xmlFile);
@@ -77,7 +78,15 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
             // STEP 5 : Process cheques one by one
             for (ChequeDTO dto : cheques) {
 
-                if (dto == null) continue;
+                if (dto == null) {
+                    // A null DTO still counts against the total, so mark it failed
+                    // to keep the running counts honest (inserted+skipped+failed).
+                    failed++;
+                    if (listener != null) {
+                        listener.onProgress(inserted + skipped + failed, total);
+                    }
+                    continue;
+                }
 
                 String chequeNo = dto.getChequeNumber();
 
@@ -117,8 +126,25 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
                     cheque.setAmountInWords(dto.getAmountInWords());
                     cheque.setIfscCode(dto.getIfscCode());
                     cheque.setChequeDate(dto.getChequeDate());
-                    cheque.setFrontImagePath(uploadImage(images, dto.getFrontImage(), batchId));
-                    cheque.setRearImagePath(uploadImage(images, dto.getBackImage(), batchId));
+
+                    // ── SPEED-UP : upload the front and rear images AT THE SAME
+                    //    TIME instead of one after the other. Each upload is a
+                    //    network call to Supabase; doing them together roughly
+                    //    halves the image wait per cheque. The two uploads are
+                    //    independent, so this is safe.
+                    final Map<String, File> imgs = images;
+                    final String bId = batchId;
+                    CompletableFuture<String> frontFuture =
+                            CompletableFuture.supplyAsync(
+                                () -> uploadImage(imgs, dto.getFrontImage(), bId));
+                    CompletableFuture<String> rearFuture =
+                            CompletableFuture.supplyAsync(
+                                () -> uploadImage(imgs, dto.getBackImage(), bId));
+
+                    // join() waits for each upload to finish and returns its result
+                    cheque.setFrontImagePath(frontFuture.join());
+                    cheque.setRearImagePath(rearFuture.join());
+
                     validateCheque(cheque);
                     chequeDao.save(cheque);
                     System.out.println("Cheque Saved : " + cheque.getChequeNumber() + " | Status : " + cheque.getChequeStatus());
@@ -134,7 +160,7 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
                     listener.onProgress(inserted + skipped + failed, total);
                 }
             }
-            
+
          // ── All cheques processed — print final counts ──────────────────
             System.out.println("========================================");
             System.out.println("Batch ID        : " + batchId);
@@ -144,6 +170,18 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
             System.out.println("Failed          : " + failed);
             System.out.println("========================================");
 
+            // ── SAFETY CHECK : inserted + skipped + failed must equal total.
+            //    If this ever prints, it means the same cheque was counted
+            //    twice — usually because the batch was processed concurrently
+            //    (e.g. a double-click). The button guard in BatchComposer
+            //    should prevent this, but we log it just in case.
+            int accounted = inserted + skipped + failed;
+            if (accounted != total) {
+                System.out.println("WARNING : count mismatch! total=" + total
+                        + " but inserted+skipped+failed=" + accounted
+                        + " (possible double processing of the same batch)");
+            }
+
          // STEP 6 : Update batch
          // Fetch fresh from DB — existing session from STEP 4 is already closed.
          // We fetch again to get a live managed object safe for update.
@@ -151,26 +189,18 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
          if (batchToUpdate != null) {
 
              // Add current run's inserted count to whatever is already in DB.
-             // Example : DB has successCount = 7 (from previous run)
-             //           This run inserted    = 3
-             //           Final successCount   = 7 + 3 = 10
-             // This handles the case where batch is re-processed after partial failure.
              int updatedSuccessCount = batchToUpdate.getSuccessCount() + inserted;
              batchToUpdate.setSuccessCount(updatedSuccessCount);
 
              // Total cheques always comes from XML — never changes across runs.
-             // It is always the full count of cheques present in the XML file.
              batchToUpdate.setTotalCheques(total);
 
              // Update createdAt to current date and time of this run.
-             // This reflects the latest processing time of the batch.
-             // Example : First run  -> 2026-06-25 10:29:56
-             //           Second run -> 2026-06-25 11:45:30  (updated to this)
              batchToUpdate.setCreatedAt(LocalDateTime.now());
 
              batchDao.update(batchToUpdate);
          }
-            
+
 
             return batchId + "|" + total + "|" + inserted + "|" + skipped + "|" + failed;
 
@@ -225,7 +255,7 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
 
         return storageService.uploadFile(imageFile, batchId);
     }
-    
+
     /**
      * Validates all business rules for a cheque.
      *
@@ -320,7 +350,6 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
         // =====================================================
         // STEP 2 : Cheque Number Validation
         // Rule : Must be exactly 6 digits
-        // Example : 100456
         // =====================================================
         if (!isBlank(cheque.getChequeNumber())
                 && !cheque.getChequeNumber().matches("\\d{6}")) {
@@ -332,7 +361,6 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
         // =====================================================
         // STEP 3 : Account Number Validation
         // Rule : Must be exactly 15 digits
-        // Example : 078902000018888
         // =====================================================
         if (!isBlank(cheque.getAccountNumber())
                 && !cheque.getAccountNumber().matches("\\d{15}")) {
@@ -346,10 +374,6 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
         // Rules:
         // 1. Length must be 11
         // 2. 5th character (index 4) must be '0'
-        //
-        // Example:
-        // NVBK0123456  -> Valid
-        // ABCD0123456  -> Valid
         // =====================================================
         if (!isBlank(cheque.getIfscCode())) {
 
@@ -366,7 +390,6 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
         // Rules:
         // 1. MICR Code should not be null or blank
         // 2. MICR Code must contain exactly 9 digits
-        // Example : 400002123
         // =====================================================
         if (!isBlank(cheque.getMicrCode())) {
 
@@ -405,7 +428,7 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
                 System.out.println("Cheque exceded 90 days: " + cheque.getChequeNo());
             }
         }
-        
+
 	     // =====================================================
 	     // STEP 7 : Image Path Validation
 	     // Rule : Front and Rear image paths must not be blank
@@ -433,12 +456,9 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
     private static boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
     }
-    
+
  // ============================================================
  // TEMP FILE CLEANUP
- // Deletes the uploaded XML file and all extracted
- // image files after batch processing is complete.
- // Called from finally block to ensure cleanup always happens.
  // ============================================================
 	private void cleanupTempFiles(File xmlFile, File zipFile, Map<String, File> images) {
 
@@ -499,10 +519,10 @@ public class BatchProcessingServiceImpl implements BatchProcessingService {
 	        return null;
 	    }
 	}
-	
+
 	@Override
 	public void updateBatchStatusIfCompleted(Long batchId) {
 	    batchDao.updateBatchStatusIfCompleted(batchId);
 	}
-    
+
 }

@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+    checkerSidebar.zul — TV1 (Checker) Sidebar
+    FIXED: Added collapse toggle button (☰) and accordion for Clearing section,
+           matching the outward project sidebar style.
+    Added: live "Resubmitted Cheques" count badge (#tv1ResubmittedBadge).
+    CSS: /css/sidebar.css
+    Composer: com.cts.composer.CheckerSidebarComposer (upgraded)
+-->
 <div id="checkerSidebarRoot"
      apply="com.cts.composer.CheckerSidebarComposer"
      sclass="cts-sidebar">
 
-    <!-- ── MAIN MENU ─────────────────────────── -->
-    <div sclass="cts-section-label">
+    <!-- ── COLLAPSE TOGGLE BUTTON ──────────────────────────── -->
+    
+
+    <!-- ══ MAIN MENU ══════════════════════════════════════════ -->
+    <div sclass="cts-section-label sidebar-section">
         <label value="MAIN MENU"/>
     </div>
 
-    <div sclass="cts-menu-item active">
+    <div id="menuCheckerDashboard" sclass="cts-menu-item active">
         <custom-attributes perm="DASHBOARD_VIEW"
             pagePath="/zul/inward/checkerDashboard_inward.zul"/>
         <div sclass="cts-row">
@@ -20,17 +31,34 @@
         </div>
     </div>
 
-    <!-- ── CLEARING ──────────────────────────── -->
-    <div sclass="cts-section-label">
+    <!-- ══ CLEARING ═══════════════════════════════════════════ -->
+    <div sclass="cts-section-label sidebar-section">
         <label value="CLEARING"/>
     </div>
 
-    <div sclass="cts-menu-item">
-        <custom-attributes perm=""
-            pagePath="/zul/inward/TV1_ResubmittedQueue.zul"/>
-        <div sclass="cts-sub-row">
-            <label sclass="cts-sub-label" value="Resubmitted Cheques"/>
+    <!-- TV1 Inward Clearing accordion -->
+    <div id="tv1InwardHeader" sclass="cts-menu-header">
+        <div sclass="cts-row">
+            <div sclass="cts-icon-badge cts-icon-inward">
+                <label value="🏦"/>
+            </div>
+            <label sclass="cts-item-label" value="Inward Clearing"/>
+           <label id="tv1InwardArrow" sclass="cts-arrow" value="▼"/>
         </div>
+    </div>
+
+    <div id="tv1InwardMenu" sclass="cts-submenu" visible="true">
+
+        <!-- TV1 resubmitted cheques queue -->
+        <div id="menuTV1Resubmitted" sclass="cts-menu-item">
+            <custom-attributes perm=""
+                pagePath="/zul/inward/TV1_ResubmittedQueue.zul"/>
+            <div sclass="cts-sub-row">
+                <label sclass="cts-sub-label" value="Resubmitted Cheques"/>
+                <label id="tv1ResubmittedBadge" sclass="cts-count-badge" visible="false"/>
+            </div>
+        </div>
+
     </div>
 
 </div>

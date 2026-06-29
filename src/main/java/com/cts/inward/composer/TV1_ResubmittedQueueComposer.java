@@ -227,7 +227,7 @@ public class TV1_ResubmittedQueueComposer extends SelectorComposer<Component> {
 
         // Col 4 — Amount (₹)
         String amountStr = cheque.getAmount() != null
-            ? "₹ " + String.format("%,.2f", cheque.getAmount()) : "—";
+            ?  String.format("%,.2f", cheque.getAmount()) : "—";
         Label amountLabel = new Label(amountStr);
         amountLabel.setSclass("chk-col-amount");
         row.appendChild(amountLabel);
@@ -315,6 +315,12 @@ public class TV1_ResubmittedQueueComposer extends SelectorComposer<Component> {
                 .setAttribute("checkerSuccessMessage", successMessage);
         }
         loadData();
+        
+        // Tell the sidebar (and any other listener) that cheque counts changed,
+        // so the live badge refreshes immediately.
+        org.zkoss.zk.ui.event.EventQueues
+            .lookup("chequeStatusUpdated", org.zkoss.zk.ui.event.EventQueues.DESKTOP, true)
+            .publish(new org.zkoss.zk.ui.event.Event("onChequeStatusUpdated", null, null));
     }
 
     // ── Event Listeners ────────────────────────────────────────────────────

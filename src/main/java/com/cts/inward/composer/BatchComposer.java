@@ -14,6 +14,7 @@ import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
+import org.zkoss.zul.Button;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Listbox;
@@ -52,7 +53,12 @@ public class BatchComposer extends SelectorComposer<Component> {
 
 	@Wire
 	private Div zipStatusDot;
-	
+
+	// The "Proceed" button — we disable it during processing to block
+	// double-clicks. (Make sure the button in the ZUL has id="processBtn".)
+	@Wire
+	private Button processBtn;
+
 	// ==========================
 	// FIELDS
 	// ==========================
@@ -61,10 +67,16 @@ public class BatchComposer extends SelectorComposer<Component> {
 	private File zipFile;
 
 	private final BatchProcessingService batchService = new BatchProcessingServiceImpl();
-	
-	// Used to look up the DB primary key (id) from the batchId string
-	// after processing, so we can pass it to MakerBatchDetailComposer.
-	
+
+	// ──────────────────────────────────────────────────────────────
+	// DOUBLE-CLICK GUARD
+	// 'volatile' because it is read/written from both the ZK UI thread
+	// and the background worker thread. When true, a batch is already
+	// being processed and further clicks on Proceed are ignored.
+	// This is the fix for the "6 inserted + 5 skipped" bug, which was
+	// caused by two worker threads racing on the same file.
+	// ──────────────────────────────────────────────────────────────
+	private volatile boolean processing = false;
 
 	// ==========================
 	// XML UPLOAD
@@ -103,6 +115,13 @@ public class BatchComposer extends SelectorComposer<Component> {
 	@Listen("onClick = #processBtn")
 	public void processBatch() {
 
+		// ── GUARD : if a batch is already being processed, ignore this click.
+		//    This stops a second worker thread from starting and racing
+		//    against the first one (the cause of the wrong duplicate counts).
+		if (processing) {
+			return;
+		}
+
 		if (xmlFile == null) {
 		    xmlStatusDot.setStyle(redDotStyle());
 		    xmlStatusLabel.setValue("BPXF file not selected — please upload");
@@ -115,6 +134,12 @@ public class BatchComposer extends SelectorComposer<Component> {
 	        zipStatusLabel.setValue("BIGF file not selected — please upload");
 	        Messagebox.show("Please upload the BIGF (ZIP) file first");
 	        return;
+	    }
+
+	    // ── Mark processing as STARTED and lock the button ──────────────
+	    processing = true;
+	    if (processBtn != null) {
+	        processBtn.setDisabled(true);
 	    }
 
 	    // Show the centered progress dialog
@@ -163,6 +188,14 @@ public class BatchComposer extends SelectorComposer<Component> {
 
 	        Executions.schedule(desktop, evt -> {
 
+	            // ── UNLOCK : processing finished, allow Proceed again ────────
+	            //    Done first so the button is usable even if anything below
+	            //    throws. Runs on the ZK thread, so it is safe to touch UI.
+	            processing = false;
+	            if (processBtn != null) {
+	                processBtn.setDisabled(false);
+	            }
+
 	            progressWindow.detach(); // close progress dialog
 	            desktop.enableServerPush(false);
 
@@ -181,7 +214,7 @@ public class BatchComposer extends SelectorComposer<Component> {
 	            String   failed   = parts[4];
 
 	            final Long batchDbId = batchService.resolveBatchDbId(batchId);
-	            
+
 	         // Delete only the current upload's temporary XML file
                 if (xmlFile != null && xmlFile.exists()) {
                     System.out.println("Deleting XML Temp File : " + xmlFile.getAbsolutePath());
@@ -371,15 +404,6 @@ public class BatchComposer extends SelectorComposer<Component> {
 	// NAVIGATE TO MICR SERVICE
 	// ==========================
 
-	/**
-	 * Called after the user dismisses the success dialog.
-	 *
-	 * Passes batchDbId as an execution attribute so that MakerBatchDetailComposer
-	 * can read it with: Executions.getCurrent().getAttribute("batchDbId")
-	 *
-	 * @param batchDbId the Long primary key of the just-processed batch, or null if
-	 *                  lookup failed (falls back to default 1L in target)
-	 */
 	private void navigateToMicrService(Long batchDbId) {
 		Map<String, Object> args = new HashMap<>();
 		if (batchDbId != null) {
@@ -389,23 +413,13 @@ public class BatchComposer extends SelectorComposer<Component> {
 	}
 
 	// ==========================
-	// RESOLVE BATCH DB ID
-	// ==========================
-
-	/**
-	 * Look up the Long primary key of the batch by its batchId string. Returns null
-	 * if the batch cannot be found (unlikely right after processing).
-	 */
-
-
-	// ==========================
 	// FILE SAVE HELPERS
 	// ==========================
 
 	private File saveXmlToTempFile(Media media) throws Exception {
 
         File file = File.createTempFile("BPXF_", ".xml");
-        
+
         System.out.println("XML Temp File Path: " + file.getAbsolutePath());
 
         try (FileWriter writer = new FileWriter(file)) {
@@ -418,7 +432,7 @@ public class BatchComposer extends SelectorComposer<Component> {
     private File saveZipToTempFile(Media media) throws Exception {
 
         File file = File.createTempFile("BIGF_", ".zip");
-        
+
         System.out.println("ZIP Temp File Path: " + file.getAbsolutePath());
 
         try (InputStream in = media.getStreamData();
@@ -434,8 +448,8 @@ public class BatchComposer extends SelectorComposer<Component> {
 
         return file;
     }
-    
-    
+
+
 	// ==========================
 	// STYLE HELPERS
 	// ==========================

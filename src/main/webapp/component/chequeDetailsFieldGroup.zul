@@ -30,8 +30,7 @@
                 <n:span class="req-star">*</n:span>
             </div>
             <textbox id="rcb-f-acc" sclass="fi mono" placeholder="Digits only"
-                     maxlength="18" readonly="true"
-                     constraint="/^[0-9]*$/: Digits only"/>
+                     maxlength="18"/>
             <label id="err-rcb-f-acc" sclass="field-err-msg" visible="false" value=""/>
         </div>
 
@@ -40,7 +39,7 @@
                 <n:span class="field-lbl">Date</n:span>
                 <n:span class="req-star">*</n:span>
             </div>
-            <datebox id="rcb-f-date" sclass="fi-datebox" format="dd/MM/yyyy" readonly="true"/>
+            <datebox id="rcb-f-date" sclass="fi-datebox" format="dd/MM/yyyy"/>
             <label id="err-rcb-f-date" sclass="field-err-msg" visible="false" value=""/>
         </div>
 
@@ -50,8 +49,7 @@
                 <n:span class="req-star">*</n:span>
             </div>
             <textbox id="rcb-f-amount" sclass="fi mono" placeholder="e.g. 25000"
-                     maxlength="12" readonly="true"
-                     constraint="/^[0-9]*$/: Digits only"/>
+                     maxlength="12"/>
             <label id="err-rcb-f-amount" sclass="field-err-msg" visible="false" value=""/>
         </div>
 
@@ -61,7 +59,7 @@
                 <n:span class="req-star">*</n:span>
             </div>
             <textbox id="rcb-f-payee" sclass="fi" placeholder="Full name on cheque"
-                     maxlength="100" readonly="true"/>
+                     maxlength="100"/>
             <label id="err-rcb-f-payee" sclass="field-err-msg" visible="false" value=""/>
         </div>
 

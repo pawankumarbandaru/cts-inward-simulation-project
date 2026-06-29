@@ -72,21 +72,6 @@
 
             </n:div>
 
-            <!-- ── Edited Fields Banner (hidden until JS shows it) ────── -->
-            <!-- #v2-edited-fields-banner, #v2-edited-fields-list -->
-            <n:div id="v2-edited-fields-banner"
-                   class="v2-edited-fields-banner">
-                <n:span style="font-size:15px;">✏️</n:span>
-                <n:div>
-                    <n:div style="font-size:12px;font-weight:700;color:#92400E;">
-                        Maker edited fields in this cheque
-                    </n:div>
-                    <label id="v2-edited-fields-list"
-                           style="font-size:12px;color:#78350F;font-family:monospace;"
-                           value="—"/>
-                </n:div>
-            </n:div>
-
             <!-- ── Cheque Image Panel ─────────────────────────────────── -->
             <!--
                 Uses chequeImagePanel.zul macro.

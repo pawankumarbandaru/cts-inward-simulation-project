@@ -191,16 +191,29 @@
 
 .fi.chk-field-edited .z-textbox-inp,
 .chk-field-edited input,
-.fi-auto.chk-field-edited .z-textbox-inp {
+.fi-auto.chk-field-edited .z-textbox-inp,
+.fi.chk-field-edited .z-textbox-inp:disabled,
+.chk-field-edited input:disabled,
+.fi-auto.chk-field-edited .z-textbox-inp:disabled,
+.fi.chk-field-edited.z-textbox-disd .z-textbox-inp,
+.fi-auto.chk-field-edited.z-textbox-disd .z-textbox-inp {
     border-color: #F59E0B !important;
     background: #FFFBEB !important;
+    background-color: #FFFBEB !important;
     box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25) !important;
+    -webkit-text-fill-color: inherit !important;
+    opacity: 1 !important;
 }
 
-.fi-datebox.chk-field-edited .z-datebox-inp {
+.fi-datebox.chk-field-edited .z-datebox-inp,
+.fi-datebox.chk-field-edited .z-datebox-inp:disabled,
+.fi-datebox.chk-field-edited.z-datebox-disd .z-datebox-inp {
     border-color: #F59E0B !important;
     background: #FFFBEB !important;
+    background-color: #FFFBEB !important;
     box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25) !important;
+    -webkit-text-fill-color: inherit !important;
+    opacity: 1 !important;
 }
 
 /* Small "✏ Edited" chip floating above the top-right corner of the field.
@@ -764,6 +777,28 @@
     white-space: nowrap;
     cursor: help;
     display: inline-block;
+}
+
+/* Status pill for read-only tracking lists (e.g. Referred Cheques) —
+   neutral blue tone since it's informational, not an action signal. */
+.chk-badge-tracking {
+    background: #EFF6FF;
+    color: #1D4ED8;
+    border: 1px solid #93C5FD;
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+/* Clickable row — Referred Cheques rows open a read-only detail popup. */
+.rcb-row-clickable {
+    cursor: pointer;
+}
+.rcb-row-clickable:hover {
+    background-color: #F3F6FB !important;
 }
 
 

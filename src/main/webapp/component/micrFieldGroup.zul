@@ -38,7 +38,7 @@
                 <n:span class="req-star">*</n:span>
             </div>
             <textbox id="rcb-f-chqno" sclass="fi mono" placeholder="e.g. 000501"
-                     maxlength="12" constraint="/^[0-9]*$/: Digits only"/>
+                     maxlength="12"/>
             <label id="err-rcb-f-chqno" sclass="field-err-msg" visible="false" value=""/>
         </div>
 
@@ -49,7 +49,7 @@
                 <n:span class="req-star">*</n:span>
             </div>
             <textbox id="rcb-f-city" sclass="fi mono" placeholder="3 dig."
-                     maxlength="3" constraint="/^[0-9]*$/: Digits only"/>
+                     maxlength="3"/>
             <label id="err-rcb-f-city" sclass="field-err-msg" visible="false" value=""/>
         </div>
 
@@ -60,7 +60,7 @@
                 <n:span class="req-star">*</n:span>
             </div>
             <textbox id="rcb-f-bank" sclass="fi mono" placeholder="3 dig."
-                     maxlength="3" constraint="/^[0-9]*$/: Digits only"/>
+                     maxlength="3"/>
             <label id="err-rcb-f-bank" sclass="field-err-msg" visible="false" value=""/>
         </div>
 
@@ -71,7 +71,7 @@
                 <n:span class="req-star">*</n:span>
             </div>
             <textbox id="rcb-f-branch" sclass="fi mono" placeholder="3 dig."
-                     maxlength="3" constraint="/^[0-9]*$/: Digits only"/>
+                     maxlength="3"/>
             <label id="err-rcb-f-branch" sclass="field-err-msg" visible="false" value=""/>
         </div>
 
@@ -82,7 +82,7 @@
                 <n:span class="req-star">*</n:span>
             </div>
             <textbox id="rcb-f-tc" sclass="fi mono" placeholder="e.g. 10"
-                     maxlength="4" constraint="/^[0-9]*$/: Digits only"/>
+                     maxlength="4"/>
             <label id="err-rcb-f-tc" sclass="field-err-msg" visible="false" value=""/>
         </div>
 

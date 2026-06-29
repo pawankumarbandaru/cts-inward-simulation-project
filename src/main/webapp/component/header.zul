@@ -1,55 +1,240 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-	header.zul — Post-Login Header
-	CSS is loaded from dashboard.zul at root level
-	apply= uses com.iispl.* package (your project package)
+    header.zul — Inward ClearPay CTS Post-Login Header
+    Upgraded to match Outward project style:
+      - Profile popup (avatar, name, email, role badge)
+      - Clock toggle (ON/OFF)
+      - Change Password modal
+      - Click-outside overlay catcher
+    CSS: /css/header.css  /css/profile-modal.css  (copied from outward project)
+    Composer: com.cts.composer.HeaderComposer  (upgraded version)
 -->
+<?link rel="stylesheet" href="/css/inward/header.css"?>
+
 <zk xmlns:n="native">
 
-	<!-- Timer fires every 1000ms — updates clock in HeaderComposer -->
+    <!-- Root div — HeaderComposer is applied here; controls all child components -->
+    <div id="hdrRoot" apply="com.cts.composer.HeaderComposer">
 
-	<n:div class="cts-header"
-		apply="com.cts.composer.HeaderComposer">
+        <!-- Timer fires every 1 second to update live clock and session time -->
+        <timer id="hdrTimer" delay="1000" repeats="true" running="true" />
+        
+        <!-- ════════════════════════════════════════════════════
+             IDLE AUTO-LOGOUT
+             Logs out after 1 minute of no mouse/keyboard activity.
+             Warns 30 seconds before with a live countdown.
+             ════════════════════════════════════════════════════ -->
 
+        <!-- This timer ticks every 1s ONLY while the warning is showing,
+             to update the countdown number. Off until warning appears. -->
+        <timer id="idleCountdownTimer" delay="1000" repeats="true" running="false"/>
 
-		<!-- LEFT : Nav Bharat Bank logo image -->
-		<n:div class="hdr-left">
-			<n:img src="../images/navbharat.jpg" class="hdr-nbb-logo"
-				alt="Nav Bharat Bank" />
-		</n:div>
+        <!-- Warning modal — hidden until 30s before logout -->
+        <window id="idleWarnDialog" title="Session Timeout Warning"
+                width="380px"  closable="false"
+                visible="false" sclass="idle-warn-dialog">
+            <vbox align="center" pack="center" spacing="14px"
+                  style="padding:22px;">
+                <n:div class="idle-warn-icon">⏳</n:div>
+                <label value="You've been inactive for 30 sec and  more...."
+                       sclass="idle-warn-title"/>
+                <label id="idleWarnMsg"
+                       value="You will be logged out in 30 seconds."
+                       sclass="idle-warn-msg"/>
+                <hbox spacing="10px">
+                    <button id="idleStayBtn" label="Stay Logged In"
+                            sclass="idle-stay-btn" autodisable="false"/>
+                    <button id="idleLogoutNowBtn" label="Logout Now"
+                            sclass="idle-logout-btn" autodisable="false"/>
+                </hbox>
+            </vbox>
+        </window>
 
-		<timer id="hdrTimer" delay="1000" repeats="true" running="true" />
-		<!-- CENTRE : Live clock + date -->
-		<n:div class="hdr-centre">
-			<label id="lblHdrDate" sclass="hdr-date-label"
-				value="01 JAN 2000" />
-			<label id="lblHdrTime" sclass="hdr-clock-label"
-				value="00:00:00" />
-		</n:div>
+        <!-- ── HEADER BAR ──────────────────────────────────────── -->
+        <div id="ctsHeader" sclass="cts-header">
 
-		<!-- RIGHT : ClearPay CTS logo + user controls -->
-		<n:div class="hdr-right">
+            <!-- Left: Nav Bharat Bank logo -->
+            <n:div class="hdr-left">
+                <image src="/images/navbharat.jpg" sclass="hdr-nbb-logo" />
+            </n:div>
 
-			<n:div class="hdr-cp-block">
-				<n:img src="../images/clearpay.jpg" class="hdr-cp-logo-img"
-					alt="ClearPay CTS" />
-			</n:div>
+            <!-- Centre: live date + clock labels updated by hdrTimer -->
+            <div id="hdrCentre" sclass="hdr-centre">
+                <label id="lblHdrDate" sclass="hdr-date-label" value="01 JAN 2000" />
+                <label id="lblHdrTime" sclass="hdr-clock-label" value="00:00 AM" />
+            </div>
 
-			<n:span class="hdr-sep" />
-			<n:span class="hdr-online-dot" title="Online" />
+            <!-- Right: ClearPay logo + avatar button -->
+            <div sclass="hdr-right">
+                <n:div class="hdr-cp-block">
+                    <image src="/images/clearpay.jpg" sclass="hdr-cp-logo-img" />
+                </n:div>
+                <!-- Clicking avatar opens the profile popup -->
+                <div id="avatarBtn" sclass="hdr-avatar-btn">
+                    <label id="lblHdrAvatar" sclass="hdr-avatar" value="A" />
+                </div>
+            </div>
 
-			<!-- Avatar — first letter of logged in user, set by HeaderComposer -->
-			<label id="lblHdrAvatar" sclass="hdr-avatar" value="A" />
+        </div>
 
-			<n:span class="hdr-chevron">&#9660;</n:span>
+        <!-- CLICK-OUTSIDE OVERLAY
+             Full-screen transparent overlay behind the popup.
+             Any click outside the popup lands here → closes popup. -->
+        <div id="ppOverlay" visible="false"
+             style="position:fixed; top:0; left:0; width:100%; height:100%;
+                    background:transparent; z-index:99998;" />
 
-			<!-- Role pill — set by HeaderComposer from session -->
-			<label id="lblHdrRole" sclass="hdr-role-pill"
-				value="OPERATOR" />
+        <!-- PROFILE POPUP: shown/hidden by composer when avatar is clicked -->
+        <div id="profilePopup" sclass="profile-popup">
 
-		</n:div>
+            <!-- Top: avatar letter, user name, email, role badge -->
+            <n:div class="pp-top">
+                <n:div class="pp-avatar-big">
+                    <label id="lblPopupAvatar" sclass="pp-avatar-letter" value="A" />
+                </n:div>
+                <label id="lblPopupName"  sclass="pp-name"       value="User" />
+                <label id="lblPopupEmail" sclass="pp-email"       value="user@navbharatbank.in" />
+                <label id="lblPopupRole"  sclass="pp-role-badge"  value="OPERATOR" />
+            </n:div>
 
-	</n:div>
+            <n:div class="pp-divider" />
+
+            <!-- Popup menu items -->
+            <n:div class="pp-menu">
+
+                <!-- Change Password -->
+                <div id="btnChangePassword" sclass="pp-menu-item">
+                    <n:span class="pp-icon pp-icon-profile">&#128273;</n:span>
+                    <n:span class="pp-menu-label">Change Password</n:span>
+                </div>
+
+                <!-- Clock toggle: ON/OFF pill -->
+                <div id="btnToggleClock" sclass="pp-menu-item">
+                    <n:span class="pp-icon pp-icon-clock">&#128336;</n:span>
+                    <n:span class="pp-menu-label">Show Clock</n:span>
+                    <div id="clockTogglePill" sclass="pp-toggle pp-toggle-on">
+                        <label id="lblClockToggle" sclass="pp-toggle-label" value="ON" />
+                    </div>
+                </div>
+
+                <!-- Logout -->
+                <div id="btnLogout" sclass="pp-menu-item pp-logout">
+                    <n:span class="pp-icon pp-icon-logout">&#9211;</n:span>
+                    <n:span class="pp-menu-label">Logout</n:span>
+                </div>
+
+            </n:div>
+
+            <!-- Footer: online dot + session duration -->
+            <n:div class="pp-footer">
+                <n:span class="pp-online-dot" />
+                <label id="lblSessionTime" sclass="pp-session-label"
+                    value="Active session · 00:00:00" />
+            </n:div>
+
+        </div>
+
+        <!-- CHANGE PASSWORD MODAL -->
+        <div id="chpwModalOverlay" sclass="chpw-modal-overlay" visible="false">
+            <div sclass="chpw-modal-card">
+
+                <div sclass="chpw-modal-header">
+                    <n:span class="chpw-modal-title">&#128273; Change Password</n:span>
+                    <button id="btnChpwClose" sclass="btn btn-ghost btn-sm chpw-close-btn" label="✕" />
+                </div>
+
+                <div sclass="chpw-modal-body">
+                    <n:div class="chpw-note">
+                        Password must be ≥8 chars with at least one uppercase letter,
+                        one digit, and one special character.
+                    </n:div>
+
+                    <div sclass="field-group">
+                        <n:div class="field-label">Current Password <n:span class="req">*</n:span></n:div>
+                        <textbox id="txtCurrentPw" sclass="field-input"
+                            type="password" placeholder="Enter current password" />
+                    </div>
+
+                    <div sclass="field-group">
+                        <n:div class="field-label">New Password <n:span class="req">*</n:span></n:div>
+                        <textbox id="txtNewPw" sclass="field-input"
+                            type="password" placeholder="Enter new password" />
+                    </div>
+
+                    <div sclass="field-group">
+                        <n:div class="field-label">Confirm New Password <n:span class="req">*</n:span></n:div>
+                        <textbox id="txtConfirmPw" sclass="field-input"
+                            type="password" placeholder="Repeat new password" />
+                    </div>
+
+                    <label id="lblChpwError" sclass="chpw-error-label" value="" />
+                </div>
+
+                <div sclass="chpw-modal-footer">
+                    <button id="btnSavePassword" sclass="btn btn-primary"  label="Save Password" />
+                    <button id="btnChpwCancel"   sclass="btn btn-outline"  label="Cancel" />
+                </div>
+
+            </div>
+        </div>
+
+			
+			
+			<!-- Client-side idle watcher.
+             Counts seconds of inactivity. Resets on any mouse/key/scroll.
+             At 30s left → fires 'onIdleWarn' to server (show dialog).
+             At 0s       → fires 'onIdleLogout' to server (logout). -->
+        <script defer="true"><![CDATA[
+            (function () {
+                var IDLE_LIMIT   = 60;   // total seconds before logout (1 min)
+                var WARN_AT      = 30;   // show warning when this many seconds left
+                var secondsIdle  = 0;
+                var warned       = false;
+                var tickHandle   = null;
+
+                // Find the server-side widgets so we can post events to them
+                function widget(id) {
+                    return zk.Widget.$('$' + id);
+                }
+
+                function resetIdle() {
+                    secondsIdle = 0;
+                    if (warned) {
+                        warned = false;
+                        // user came back during warning → tell server to hide dialog
+                        var w = widget('idleWarnDialog');
+                        if (w) zAu.send(new zk.Event(w, 'onIdleReset', null, {toServer:true}));
+                    }
+                }
+
+                function tick() {
+                    secondsIdle++;
+                    var left = IDLE_LIMIT - secondsIdle;
+
+                    if (left === WARN_AT && !warned) {
+                        warned = true;
+                        var w = widget('idleWarnDialog');
+                        if (w) zAu.send(new zk.Event(w, 'onIdleWarn', null, {toServer:true}));
+                    }
+                    if (left <= 0) {
+                        clearInterval(tickHandle);
+                        var w = widget('idleWarnDialog');
+                        if (w) zAu.send(new zk.Event(w, 'onIdleLogout', null, {toServer:true}));
+                    }
+                }
+
+                // Activity events that count as "user is active"
+                ['mousemove','mousedown','keydown','scroll','touchstart','click']
+                    .forEach(function (ev) {
+                        document.addEventListener(ev, resetIdle, true);
+                    });
+
+                // Start the 1-second idle counter
+                tickHandle = setInterval(tick, 1000);
+            })();
+        ]]></script>
+        
+    </div>
 
 </zk>

@@ -225,7 +225,7 @@ public class TV2_ResubmittedQueueComposer extends SelectorComposer<Component> {
 
         // Col 4 — Amount (₹)
         String amountStr = cheque.getAmount() != null
-            ? "₹ " + String.format("%,.2f", cheque.getAmount()) : "—";
+            ? String.format("%,.2f", cheque.getAmount()) : "—";
         Label amountLabel = new Label(amountStr);
         amountLabel.setSclass("chk-col-amount v2-col-amount-hv");
         row.appendChild(amountLabel);
@@ -319,6 +319,12 @@ public class TV2_ResubmittedQueueComposer extends SelectorComposer<Component> {
                 .setAttribute("v2SuccessMessage", successMessage);
         }
         loadData();
+        
+        // Tell the sidebar (and any other listener) that cheque counts changed,
+        // so the live badge refreshes immediately.
+        org.zkoss.zk.ui.event.EventQueues
+            .lookup("chequeStatusUpdated", org.zkoss.zk.ui.event.EventQueues.DESKTOP, true)
+            .publish(new org.zkoss.zk.ui.event.Event("onChequeStatusUpdated", null, null));
     }
 
     // ── Event Listeners ────────────────────────────────────────────────────
@@ -400,8 +406,8 @@ public class TV2_ResubmittedQueueComposer extends SelectorComposer<Component> {
      * Updates the pending count badge shown on the page header and status bar.
      */
     private void updateBadgeCount(int count) {
-        String label = count + " Cheque" + (count != 1 ? "s" : "") + " Awaiting";
-        if (countBadge     != null) countBadge.setValue(label);
+//        String label = count + " Cheque" + (count != 1 ? "s" : "") + " Awaiting";
+//        if (countBadge     != null) countBadge.setValue(label);
         if (statusBarCount != null) statusBarCount.setValue(String.valueOf(count));
     }
 

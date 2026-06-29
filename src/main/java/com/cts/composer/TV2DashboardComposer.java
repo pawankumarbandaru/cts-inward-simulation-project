@@ -8,6 +8,9 @@ import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Div;
 
+import com.cts.security.SecurityUtil;
+import com.cts.uam.model.User;
+
 public class TV2DashboardComposer extends SelectorComposer<Component> {
 
     private static final long serialVersionUID = 1L;
@@ -20,10 +23,9 @@ public class TV2DashboardComposer extends SelectorComposer<Component> {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        
-        String role =
-                Executions.getCurrent()
-                          .getParameter("role");
+
+        // Trusted role from the logged-in User (not the URL).
+        String role = resolveRole();
 
         Executions.getCurrent()
                   .getDesktop()
@@ -34,9 +36,19 @@ public class TV2DashboardComposer extends SelectorComposer<Component> {
                 + Executions.getCurrent().getDesktop().getId()
                 + " Role="
                 + role);
-        
+
         instance = this;
         loadPage("/zul/inward/tv2Dashboard_inward.zul");
+    }
+
+    /** Read role from the logged-in User; fall back to URL param if absent. */
+    private String resolveRole() {
+        User user = SecurityUtil.getCurrentUser();
+        if (user != null && user.getRoleLabel() != null && !user.getRoleLabel().isBlank()) {
+            return user.getRoleLabel().trim().toUpperCase();
+        }
+        String param = Executions.getCurrent().getParameter("role");
+        return (param != null) ? param.trim().toUpperCase() : "";
     }
 
     public static TV2DashboardComposer getInstance() {

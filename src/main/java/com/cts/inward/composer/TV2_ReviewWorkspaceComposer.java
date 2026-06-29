@@ -59,8 +59,6 @@ public class TV2_ReviewWorkspaceComposer extends SelectorComposer<Component> {
     // ── Correction summary labels ──────────────────────────────────────────
     @Wire("#v2-original-remark")    private Label   originalRemark;
     @Wire("#v2-maker-remark")       private Label   makerRemark;
-    @Wire("#v2-edited-fields-banner") private org.zkoss.zul.Div editedFieldsBanner;
-    @Wire("#v2-edited-fields-list") private Label   editedFieldsList;
 
     // ── Cheque image + audit trail ─────────────────────────────────────────
     // IDs come from chequeImagePanel.zul macro — they do NOT have a v2- prefix
@@ -250,18 +248,15 @@ public class TV2_ReviewWorkspaceComposer extends SelectorComposer<Component> {
         populateMicrAuto();
 
         // Highlight edited fields directly via server-side sclass (no client JS)
+        // Banner removed — per-field highlight + "Edited" badge already shows this.
         if (currentCheque.isEditedByMaker()) {
             String fields = currentCheque.getEditedFields() != null
                 ? currentCheque.getEditedFields() : "";
-            editedFieldsList.setValue("Changed fields: " + fields);
-            if (editedFieldsBanner != null) editedFieldsBanner.setVisible(true);
             CtsUiBridge.applyEditedFieldHighlight(
                 fields,
                 fieldChequeNo, fieldCity, fieldBank, fieldBranch, fieldTc,
                 fieldAmount, fieldDate, fieldAcc, fieldPayee
             );
-        } else if (editedFieldsBanner != null) {
-            editedFieldsBanner.setVisible(false);
         }
     }
 

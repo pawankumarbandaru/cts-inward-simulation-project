@@ -38,6 +38,18 @@ public interface InwardBatchDao {
 
 	Long getInvalidCountByBatchId(Long batchId);
 
+	/**
+	 * Bulk version of getInvalidCountByBatchId() — returns invalid cheque
+	 * counts for ALL given batch IDs in a single query, instead of one query
+	 * per batch. Used by the dashboard list to avoid N+1 queries.
+	 *
+	 * @param batchIds list of inward_batch.id values to look up
+	 * @return map of batchId -> invalid cheque count (batches with 0 invalid
+	 *         cheques will simply be absent from the map — caller should
+	 *         treat a missing key as 0)
+	 */
+	java.util.Map<Long, Long> getInvalidCountsForBatchIds(List<Long> batchIds);
+
 	void updateBatchStatus(Long id, BatchStatus batchStatus);
 
 	InwardBatch findById(Long id);

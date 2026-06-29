@@ -277,6 +277,49 @@ public class InwardBatchDaoImpl implements InwardBatchDao {
 		}
 	}
 
+	/**
+	 * Bulk version — does the SAME count as getInvalidCountByBatchId(), but for
+	 * every batch in one query using GROUP BY, instead of opening one session
+	 * per batch in a loop.
+	 *
+	 * Performance note: this is the fix for the Maker Dashboard N+1 problem —
+	 * previously this same count was fetched once PER ROW (one DB round trip
+	 * per batch shown on screen). Now it is fetched once for the whole page.
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public java.util.Map<Long, Long> getInvalidCountsForBatchIds(List<Long> batchIds) {
+
+		java.util.Map<Long, Long> resultMap = new java.util.HashMap<>();
+
+		// Nothing to look up — avoid running a query with an empty IN ( ) list
+		if (batchIds == null || batchIds.isEmpty()) {
+			return resultMap;
+		}
+
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			List<Object[]> rows = session.createNativeQuery(
+					"SELECT batch_id, COUNT(*) FROM inward_cheque " +
+					"WHERE batch_id IN (:batchIds) " +
+					"AND (cheque_status = 'Repair' OR cbs_validation = 'Invalid') " +
+					"GROUP BY batch_id")
+					.setParameter("batchIds", batchIds)
+					.getResultList();
+
+			// Each row is [batch_id, count] — load into the map
+			for (Object[] row : rows) {
+				Long batchId = ((Number) row[0]).longValue();
+				Long invalidCount = ((Number) row[1]).longValue();
+				resultMap.put(batchId, invalidCount);
+			}
+		}
+
+		// Batches with ZERO invalid cheques will not appear in the GROUP BY
+		// result at all — that's fine, caller treats a missing key as 0.
+		return resultMap;
+	}
+
 	@Override
 	public void save(InwardBatch batch) {
 

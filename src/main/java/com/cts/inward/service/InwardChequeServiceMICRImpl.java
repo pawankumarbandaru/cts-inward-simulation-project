@@ -433,9 +433,10 @@ public class InwardChequeServiceMICRImpl implements InwardChequeMICRService {
         return cheque.isEditedByMaker()
             && cheque.getChequeStatus()   == ChequeStatus.Processed
             && cheque.getDecision() == DecisionStatus.PENDING
-            && cheque.getSendTo()         == SendTo.TV_1
-            || cheque.getSendTo()         == SendTo.TV_2
-            && cheque.getCbsValidation()  == CbsValidation.Valid;
+            && (cheque.getSendTo()         == SendTo.TV_1
+            || cheque.getSendTo()         == SendTo.TV_2)
+            && cheque.getCbsValidation()  == CbsValidation.Valid
+            && cheque.isEditedByMaker();
     }
 
     @Override
@@ -538,6 +539,7 @@ public class InwardChequeServiceMICRImpl implements InwardChequeMICRService {
 
         cheque.setChequeStatus(ChequeStatus.Normal);
         cheque.setErrorReason(null);
+        cheque.setIsEditedByMaker(true);
 
         inwardChequeDao.update(cheque);
         if (cheque.getBatch() != null) {
